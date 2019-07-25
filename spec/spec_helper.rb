@@ -1,4 +1,5 @@
 require "bundler/setup"
+Bundler.require :default
 require "ruspea"
 
 RSpec.configure do |config|
