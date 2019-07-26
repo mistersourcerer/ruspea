@@ -9,6 +9,10 @@ module Ruspea::Runtime
       @id == other.id
     end
 
+    def to_s
+      @id
+    end
+
     protected
 
     attr_reader :id

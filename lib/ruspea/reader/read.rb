@@ -22,6 +22,7 @@ module Ruspea::Reader
 
     SEPARATOR = /\A[\s,]/
     CLOSING_DELIMITER = /\A[\)]/
+    QUOTER = /\A'/
 
     def new_form_from(source, token = "")
       return [form_for(token), ""] if source.length == 0
@@ -33,6 +34,9 @@ module Ruspea::Reader
         [form_for(token), source]
       when "("
         read_list(source[1..source.length])
+      when "'"
+        next_form, new_source = new_form_from(source[1..source.length], "")
+        [quote(next_form), new_source]
       else
         new_form_from(source[1..source.length], token + source[0])
       end
@@ -71,6 +75,11 @@ module Ruspea::Reader
       end
 
       read_list(new_source, new_forms)
+    end
+
+    def quote(form)
+      @quote ||= Sym.new("quote")
+      List.create(@quote, form)
     end
   end
 end
