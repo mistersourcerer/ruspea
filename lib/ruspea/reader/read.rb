@@ -3,30 +3,29 @@ module Ruspea::Reader
     include Ruspea::Runtime
     include Lisp
 
-    def call(code)
-      return nil if code.length == 0
+    def call(source)
+      return Empty.instance if source.length == 0
 
-      source = Str.create code
-      case source.head
+      case source[0]
       when "("
-        read_list source.tail
+        read_list source[1..source.length]
       end
     end
 
     def read_list(source, token = "", list = [])
       # TODO: raises if no ) was found
-      return list if source.empty?
+      return list if source.length == 0
 
-      if source.head == ")"
+      if source[0] == ")"
         return list + [token] if token.length > 0
         return list
       end
 
-      if source.head == " " || source.head == ","
+      if source[0] == " " || source[0] == ","
         # consume all separators
-        read_list source.tail, "",  list + [token]
+        read_list source[1..source.length], "",  list + [token]
       else
-        read_list source.tail, token + source.head, list
+        read_list source[1..source.length], token + source[0], list
       end
     end
   end
