@@ -67,11 +67,7 @@ module Ruspea::Reader
       new_forms = new_form.nil? ? forms : forms + [new_form]
 
       if new_source[0] == ")"
-        return [
-          {
-            form: List.create(*new_forms),
-            closed: true
-          }, new_source[1..new_source.length]]
+        return [List.create(*new_forms), new_source[1..new_source.length]]
       end
 
       read_list(new_source, new_forms)

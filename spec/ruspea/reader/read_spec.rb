@@ -12,10 +12,7 @@ module Ruspea::Reader
         context "delimiting" do
           it "knows how to read a list" do
             expect(reader.call("(one pretty list)")).to eq [
-              {
-                form: builder.create(sym("one"), sym("pretty"), sym("list")),
-                closed: true,
-              }
+              builder.create(sym("one"), sym("pretty"), sym("list")),
             ]
           end
 
@@ -33,17 +30,11 @@ module Ruspea::Reader
 
           it "recognizes nested lists" do
             expect(reader.call("(one (pretty list) here)")).to eq [
-              {
-                form: builder.create(
-                  sym("one"),
-                  {
-                    form: builder.create(sym("pretty"), sym("list")),
-                    closed: true
-                  },
-                  sym("here"),
-                ),
-                closed: true,
-              },
+              builder.create(
+                sym("one"),
+                builder.create(sym("pretty"), sym("list")),
+                sym("here"),
+              )
             ]
           end
         end
@@ -53,15 +44,29 @@ module Ruspea::Reader
             expressions = reader.call("(one pretty list) (and another)")
 
             expect(expressions).to eq [
-              {
-                form: builder.create(
-                  sym("one"), sym("pretty"), sym("list")),
-                closed: true,
-              },
-              {
-                form: builder.create(sym("and"), sym("another")),
-                closed: true,
-              },
+              builder.create(sym("one"), sym("pretty"), sym("list")),
+              builder.create(sym("and"), sym("another")),
+            ]
+          end
+        end
+
+        context "quoting" do
+          it "reads quoting for lists" do
+            expressions = reader.call("'(lol bbq)")
+
+            expect(expressions).to eq [
+              builder.create(
+                sym("quote"),
+                builder.create(sym("lol"), sym("bbq")),
+              ),
+            ]
+          end
+
+          it "reads quoting for symbols" do
+            expressions = reader.call("'lol")
+
+            expect(expressions).to eq [
+              builder.create(sym("quote"), sym("lol")),
             ]
           end
         end
