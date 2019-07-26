@@ -3,31 +3,38 @@ module Ruspea::Reader
     include Ruspea::Runtime
     include Lisp
 
-    def call(source, expressions = [])
-      return expressions if source.length == 0
+    def call(source, forms = [])
+      return forms if source.length == 0
 
-      new_expressions, remaining_source = new_expression_from(source)
+      new_forms, remaining_source = new_form_from(source)
 
-      current_expressions =
-        if new_expressions.nil?
-          expressions
+      current_forms =
+        if new_forms.nil?
+          forms
         else
-          expressions + [new_expressions]
+          forms + [new_forms]
         end
 
-      call(remaining_source, current_expressions)
+      call(remaining_source, current_forms)
     end
 
     private
 
     SEPARATOR = /\A[\s,]/
+    CLOSING_DELIMITER = /\A[\)]/
 
-    def new_expression_from(source)
+    def new_form_from(source, token = "")
+      return [form_for(token), ""] if source.length == 0
+
       case source[0]
       when SEPARATOR
-        [nil, ignore_separators(source)]
+        [form_for(token), ignore_separators(source)]
+      when CLOSING_DELIMITER
+        [form_for(token), source]
       when "("
         read_list(source[1..source.length])
+      else
+        new_form_from(source[1..source.length], token + source[0])
       end
     end
 
@@ -42,37 +49,32 @@ module Ruspea::Reader
     end
 
     def form_for(token)
+      return if token.length == 0
       Sym.new(token)
     end
 
-    def read_list(source, token = "", tokens = [])
+    def read_list(source, forms = [])
       if source.length == 0
-        new_tokens = token.length > 0 ? tokens + [form_for(token)] : tokens
         return [
           {
             type: List,
-            tokens: new_tokens,
+            tokens: forms,
             closed: false,
           }, source]
       end
 
-      if source[0] == ")"
-        new_tokens = token.length > 0 ? tokens + [form_for(token)] : tokens
+      new_form, new_source = new_form_from(source)
+      new_forms = new_form.nil? ? forms : forms + [new_form]
+
+      if new_source[0] == ")"
         return [
           {
-            form: List.create(*new_tokens),
+            form: List.create(*new_forms),
             closed: true
-          }, source[1..source.length]]
+          }, new_source[1..new_source.length]]
       end
 
-      new_source, new_token, new_tokens =
-        if SEPARATOR.match?(source[0])
-          [ignore_separators(source), "", tokens + [form_for(token)]]
-        else
-          [source[1..source.length], token + source[0], tokens]
-        end
-
-      read_list(new_source, new_token, new_tokens)
+      read_list(new_source, new_forms)
     end
   end
 end

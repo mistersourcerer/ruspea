@@ -30,6 +30,22 @@ module Ruspea::Reader
               }
             ]
           end
+
+          it "recognizes nested lists" do
+            expect(reader.call("(one (pretty list) here)")).to eq [
+              {
+                form: builder.create(
+                  sym("one"),
+                  {
+                    form: builder.create(sym("pretty"), sym("list")),
+                    closed: true
+                  },
+                  sym("here"),
+                ),
+                closed: true,
+              },
+            ]
+          end
         end
 
         context "multiple expressions" do
