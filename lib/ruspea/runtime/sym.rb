@@ -13,6 +13,10 @@ module Ruspea::Runtime
       @id
     end
 
+    def print
+      @id
+    end
+
     protected
 
     attr_reader :id
