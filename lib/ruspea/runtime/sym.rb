@@ -4,17 +4,25 @@ module Ruspea::Runtime
       @id = String(id)
     end
 
-    def ==(other)
-      return false if self.class != other.class
-      @id == other.id
+    def print
+      @id
     end
 
     def to_s
       @id
     end
 
-    def print
-      @id
+    def eql?(other)
+      self == other
+    end
+
+    def ==(other)
+      return false if self.class != other.class
+      @id == other.id
+    end
+
+    def hash
+      @id.hash + :rsp_sym.hash
     end
 
     protected
