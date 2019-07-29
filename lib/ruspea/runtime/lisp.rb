@@ -8,7 +8,7 @@ module Ruspea::Runtime
       list.empty?
     end
 
-    def quote(params, env:)
+    def quote(params, env: nil)
       params.head
     end
 

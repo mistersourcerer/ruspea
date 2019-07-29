@@ -22,7 +22,15 @@ module Ruspea::Runtime
       end
     end
 
-    describe "#quote"
+    describe "#quote" do
+      it "returns the parameter as it is" do
+        symbol = builder.create(Sym.new("lol"))
+        expect(lisp.quote(symbol)).to eq Sym.new("lol")
+
+        list = builder.create(builder.create(1))
+        expect(lisp.quote(list)).to eq builder.create(1)
+      end
+    end
 
     describe "#def" do
       it "returns the value associated with the symbol" do
