@@ -37,7 +37,7 @@ module Ruspea::Reader
               )
             ]
           end
-        end
+        end # delimiting
 
         context "multiple expressions" do
           it "creates one 'node' for each expression found" do
@@ -48,7 +48,7 @@ module Ruspea::Reader
               builder.create(sym("and"), sym("another")),
             ]
           end
-        end
+        end # multiple expressions
 
         context "quoting" do
           it "reads quoting for lists" do
@@ -69,8 +69,61 @@ module Ruspea::Reader
               builder.create(sym("quote"), sym("lol")),
             ]
           end
+        end # quoting
+      end # lisping
+
+      context "numbers" do
+        it "recognizes int as first class citzens" do
+          expressions = reader.call("1")
+
+          expect(expressions).to eq [ 1 ]
         end
-      end
-    end
+
+        it "recognizes floats" do
+          expressions = reader.call("4.20")
+
+          expect(expressions).to eq [ 4.20 ]
+        end
+
+        it "emulates ruby's _ to make numeric values readable" do
+          expressions = reader.call("4_20 4.2_0")
+
+          expect(expressions).to eq [ 420, 4.20 ]
+        end
+
+        it "recognizes negatives" do
+          expressions = reader.call("-1 -4.20")
+
+          expect(expressions).to eq [ -1, -4.20 ]
+        end
+
+        context "incomplete (possible) number" do
+          it "recognizes an 'incomplete' number" do
+            expect(reader.call("-")).to eq [ sym("-") ]
+          end
+
+          it "recognizes an 'incomplete' number amongst others" do
+            expect(reader.call("420 - 42")).to eq [ 420, sym("-"), 42 ]
+          end
+        end
+
+        context "invalid numbers" do
+          it "raises for invalid numbers (too much .)" do
+            expect {
+              reader.call("4.2.0")
+            }.to raise_error(
+              Ruspea::Error::Syntax, "Invalid number: 4.2.(...)")
+          end
+
+          it "raises for invalid numbers (invalid chars)" do
+            expect {
+              reader.call("4*2.0")
+            }.to raise_error(
+              Ruspea::Error::Syntax, "Invalid number: 4*(...)")
+          end
+        end
+      end# numbers
+
+    end # call
   end
 end

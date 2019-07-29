@@ -1,6 +1,7 @@
 module Ruspea::Reader
   class Read
     include Ruspea::Runtime
+    include Ruspea::Error
 
     def call(source, forms = [])
       return forms if source.length == 0
@@ -22,6 +23,8 @@ module Ruspea::Reader
     SEPARATOR = /\A[\s,]/
     CLOSING_DELIMITER = /\A[\)]/
     QUOTER = /\A'/
+    DIGIT = /\A[\d-]/
+    NUMERIC = /\A[\d_\.]/
 
     def new_form_from(source, token = "")
       return [form_for(token), ""] if source.length == 0
@@ -36,6 +39,8 @@ module Ruspea::Reader
       when "'"
         next_form, new_source = new_form_from(source[1..source.length], "")
         [quote(next_form), new_source]
+      when DIGIT
+        read_numeric(source[1..source.length], source[0])
       else
         new_form_from(source[1..source.length], token + source[0])
       end
@@ -79,6 +84,40 @@ module Ruspea::Reader
     def quote(form)
       @quote ||= Sym.new("quote")
       List.create(@quote, form)
+    end
+
+    def read_numeric(source, number, float: false)
+      if source.length == 0 || SEPARATOR.match?(source[0])
+        value =
+          if number == "-"
+            @hyfen ||= Sym.new("-")
+          else
+            float ? Float(number) : Integer(number)
+          end
+
+        return [value, source]
+      end
+
+      now_float, new_number, new_source =
+        if source[0] == "."
+          if float
+            raise Syntax.new("Invalid number: #{number + source[0]}(...)")
+          else
+            [true, number + ".", source[1..source.length]]
+          end
+        else
+          [float, number, source]
+        end
+
+      if !NUMERIC.match?(new_source[0])
+        raise Syntax.new("Invalid number: #{number + source[0]}(...)")
+      end
+
+      read_numeric(
+        new_source[1..new_source.length],
+        new_number + new_source[0],
+        float: now_float
+      )
     end
   end
 end
