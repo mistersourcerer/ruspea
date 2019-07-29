@@ -8,11 +8,16 @@ module Ruspea::Evaler
     end
 
     context "function calls" do
-      it "knows how to (quote symbols)" do
-        invocation = builder.create sym("quote"), sym("symbols")
+      it "delegates the fn to the underlying Lisp XD" do
+        fake_lisp = double("Lisp")
+        allow(fake_lisp)
+          .to receive(:lol)
+          .and_return 1
+        invocation = builder.create sym("lol"), sym("param")
 
-        expect(evaler.call(invocation)).to eq sym("symbols")
+        expect(evaler.call(invocation, lisp: fake_lisp)).to eq 1
       end
     end
+
   end
 end

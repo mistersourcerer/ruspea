@@ -1,7 +1,6 @@
 module Ruspea::Reader
   class Read
     include Ruspea::Runtime
-    include Lisp
 
     def call(source, forms = [])
       return forms if source.length == 0

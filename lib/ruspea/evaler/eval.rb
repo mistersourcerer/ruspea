@@ -1,22 +1,23 @@
 module Ruspea::Evaler
-  include Ruspea::Runtime
-
   class Eval
-    def call(form)
-      return invoke(form) if form.is_a? Ruspea::Runtime::List
+    include Ruspea::Runtime
+
+    def initialize
+      @lisp = Ruspea::Runtime::Lisp.new
+    end
+
+    def call(form, env: Env.new, lisp: nil)
+      lisp ||= @lisp
+      return invoke(form, env: env, lisp: lisp) if form.is_a? List
     end
 
     private
 
-    def invoke(form)
+    def invoke(form, env:, lisp:)
       fn = form.head
-      if respond_to? fn.to_s, true
-        send fn.to_s, form.tail.head
+      if lisp.respond_to? fn.to_s
+        lisp.public_send fn.to_s, form.tail, env: env
       end
-    end
-
-    def quote(params)
-      params
     end
   end
 end
