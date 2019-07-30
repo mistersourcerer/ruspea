@@ -165,6 +165,34 @@ module Ruspea::Reader
         end
       end
 
+      context "hash" do
+        it "reads a map as first class citzen" do
+          hash = "{one: 1 two: \"2\"}"
+          expect(reader.call(hash)).to eq [
+            {
+              key("one") => 1,
+              key("two") => "2",
+            }
+          ]
+
+          hash = "{one: 1, two: \"2\"}"
+          expect(reader.call(hash)).to eq [
+            {
+              key("one") => 1,
+              key("two") => "2",
+            }
+          ]
+        end
+
+        it "raises if map does not contain an even number of forms" do
+          expect {
+            reader.call "{one: 1 two:}"
+          }.to raise_error(
+            Ruspea::Error::Syntax,
+            "Map must contain an even number of forms")
+        end
+      end
+
     end # call
   end
 end

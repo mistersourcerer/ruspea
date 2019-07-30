@@ -21,7 +21,7 @@ module Ruspea::Reader
     private
 
     SEPARATOR = /\A[\s,]/
-    CLOSING_DELIMITER = /\A[\)\]]/
+    CLOSING_DELIMITER = /\A[\)\]\}]/
     QUOTER = /\A'/
     DIGIT = /\A[\d-]/
     NUMERIC = /\A[\d_\.]/
@@ -47,6 +47,8 @@ module Ruspea::Reader
         read_string(source[1..source.length])
       when "["
         read_array(source[1..source.length])
+      when "{"
+        read_hash(source[1..source.length])
       else
         new_form_from(source[1..source.length], token + source[0])
       end
@@ -159,6 +161,30 @@ module Ruspea::Reader
       end
 
       read_array(new_source, new_elements)
+    end
+
+    def read_hash(source, elements = [])
+      if source.length == 0
+        return [
+          {
+            type: Array,
+            tokens: elements,
+            closed: false,
+          }, ""]
+      end
+
+      new_form, new_source = new_form_from(source)
+      new_elements = new_form.nil? ? elements : elements + [new_form]
+
+      if new_source[0] == "}"
+        if (new_elements.length % 2) != 0
+          raise Syntax.new("Map must contain an even number of forms")
+        end
+
+        return [Hash[*new_elements], new_source[1..new_source.length]]
+      end
+
+      read_hash(new_source, new_elements)
     end
   end
 end
