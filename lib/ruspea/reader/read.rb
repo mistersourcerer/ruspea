@@ -42,6 +42,8 @@ module Ruspea::Reader
         [quote(next_form), new_source]
       when DIGIT
         read_numeric(source[1..source.length], source[0])
+      when "\""
+        read_string(source[1..source.length])
       else
         new_form_from(source[1..source.length], token + source[0])
       end
@@ -119,6 +121,21 @@ module Ruspea::Reader
         new_number + new_source[0],
         float: now_float
       )
+    end
+
+    def read_string(source, string = "")
+      return [string, source[1..source.length]] if source[0] == "\""
+
+      if source.length == 0
+        return [
+          {
+            type: String,
+            tokens: [string],
+            closed: false,
+          }, ""]
+      end
+
+      read_string(source[1..source.length], string + source[0])
     end
   end
 end

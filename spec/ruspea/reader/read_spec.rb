@@ -132,6 +132,22 @@ module Ruspea::Reader
         end
       end# numbers
 
+      context "strings" do
+        it "reads strings as first class citzens" do
+          expect(reader.call("\"lol\"")).to eq ["lol"]
+        end
+
+        it "recognizes 'not closed' strings" do
+          expect(reader.call("\"one pretty string")).to eq [
+            {
+              type: String,
+              closed: false,
+              tokens: ["one pretty string"],
+            }
+          ]
+        end
+      end# strings
+
     end # call
   end
 end
