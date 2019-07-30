@@ -26,6 +26,7 @@ module Ruspea::Reader
     DIGIT = /\A[\d-]/
     NUMERIC = /\A[\d_\.]/
     TOKEN_LIMIT = Regexp.union(SEPARATOR, CLOSING_DELIMITER)
+    KEYWORD = /:\z/
 
     def new_form_from(source, token = "")
       return [form_for(token), ""] if source.length == 0
@@ -63,7 +64,7 @@ module Ruspea::Reader
 
     def form_for(token)
       return if token.length == 0
-      Sym.new(token)
+      KEYWORD.match?(token) ? Keyword.new(token) : Sym.new(token)
     end
 
     def read_list(source, forms = [])

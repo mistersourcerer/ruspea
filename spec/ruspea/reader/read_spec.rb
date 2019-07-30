@@ -7,6 +7,10 @@ module Ruspea::Reader
       Ruspea::Runtime::Sym.new string
     end
 
+    def key(string)
+      Ruspea::Runtime::Keyword.new string
+    end
+
     describe "#call" do
       context "lisping!" do
         context "delimiting" do
@@ -147,6 +151,12 @@ module Ruspea::Reader
           ]
         end
       end# strings
+
+      context "keywords" do
+        it "reads keywords as first class citzens" do
+          expect(reader.call("lol:")).to eq [ key("lol") ]
+        end
+      end
 
       context "arrays" do
         it "reads an array as first class citzen" do
