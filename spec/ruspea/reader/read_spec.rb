@@ -148,6 +148,13 @@ module Ruspea::Reader
         end
       end# strings
 
+      context "arrays" do
+        it "reads an array as first class citzen" do
+          expect(reader.call("[1 2 \"three\"]")).to eq [[1, 2, "three"]]
+          expect(reader.call("[1, 2, \"three\"]")).to eq [[1, 2, "three"]]
+        end
+      end
+
     end # call
   end
 end

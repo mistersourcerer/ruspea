@@ -21,7 +21,7 @@ module Ruspea::Reader
     private
 
     SEPARATOR = /\A[\s,]/
-    CLOSING_DELIMITER = /\A[\)]/
+    CLOSING_DELIMITER = /\A[\)\]]/
     QUOTER = /\A'/
     DIGIT = /\A[\d-]/
     NUMERIC = /\A[\d_\.]/
@@ -44,6 +44,8 @@ module Ruspea::Reader
         read_numeric(source[1..source.length], source[0])
       when "\""
         read_string(source[1..source.length])
+      when "["
+        read_array(source[1..source.length])
       else
         new_form_from(source[1..source.length], token + source[0])
       end
@@ -136,6 +138,26 @@ module Ruspea::Reader
       end
 
       read_string(source[1..source.length], string + source[0])
+    end
+
+    def read_array(source, elements = [])
+      if source.length == 0
+        return [
+          {
+            type: Array,
+            tokens: elements,
+            closed: false,
+          }, ""]
+      end
+
+      new_form, new_source = new_form_from(source)
+      new_elements = new_form.nil? ? elements : elements + [new_form]
+
+      if new_source[0] == "]"
+        return [new_elements, new_source[1..new_source.length]]
+      end
+
+      read_array(new_source, new_elements)
     end
   end
 end
