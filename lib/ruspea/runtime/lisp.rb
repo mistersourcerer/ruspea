@@ -9,6 +9,8 @@ module Ruspea::Runtime
     end
 
     def quote(params, env: nil)
+      return params if params.count > 1
+
       params.head
     end
 

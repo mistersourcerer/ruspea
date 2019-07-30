@@ -58,6 +58,14 @@ module Ruspea::Runtime
           expect(list.cdr).to eq builder.create(2, 3, 4)
         end
       end
-    end
+
+      describe "#count" do
+        it "knows the total size of a list" do
+          expect(list.count).to eq 4
+          expect(list.cons(0).count).to eq 5
+          expect(builder.create(0, list).count).to eq 5
+        end
+      end
+    end # inspecting Lists
   end
 end
