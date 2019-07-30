@@ -25,6 +25,7 @@ module Ruspea::Reader
     QUOTER = /\A'/
     DIGIT = /\A[\d-]/
     NUMERIC = /\A[\d_\.]/
+    TOKEN_LIMIT = Regexp.union(SEPARATOR, CLOSING_DELIMITER)
 
     def new_form_from(source, token = "")
       return [form_for(token), ""] if source.length == 0
@@ -87,7 +88,7 @@ module Ruspea::Reader
     end
 
     def read_numeric(source, number, float: false)
-      if source.length == 0 || SEPARATOR.match?(source[0])
+      if source.length == 0 || TOKEN_LIMIT.match?(source[0])
         value =
           if number == "-"
             @hyfen ||= Sym.new("-")

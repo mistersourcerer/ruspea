@@ -52,12 +52,12 @@ module Ruspea::Reader
 
         context "quoting" do
           it "reads quoting for lists" do
-            expressions = reader.call("'(lol bbq)")
+            expressions = reader.call("'(def omg 1)")
 
             expect(expressions).to eq [
               builder.create(
                 sym("quote"),
-                builder.create(sym("lol"), sym("bbq")),
+                builder.create(sym("def"), sym("omg"), 1),
               ),
             ]
           end
@@ -77,6 +77,14 @@ module Ruspea::Reader
           expressions = reader.call("1")
 
           expect(expressions).to eq [ 1 ]
+        end
+
+        it "recognizes lists with numbers" do
+          expressions = reader.call("'(1)")
+
+          expect(expressions).to eq [
+            builder.create(sym("quote"), builder.create(1))
+          ]
         end
 
         it "recognizes floats" do
