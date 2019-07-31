@@ -17,6 +17,7 @@ module Ruspea::Runtime
       @head = head
       @tail = tail
       @count = count
+      @lisp = Lisp.new
     end
 
     def cons(el)
@@ -35,6 +36,22 @@ module Ruspea::Runtime
 
     def empty?
       head.nil? && tail.empty?
+    end
+
+    def print
+      elements = @lisp.take(10, self).to_a.join " "
+      and_more = count > 10 ? " ...) // count: #{count}" : ")"
+      "(#{elements}#{and_more}"
+    end
+
+    def inspect
+      print
+    end
+
+    def to_a(list = self, array = [])
+      return array if list.empty?
+
+      to_a(list.tail, array + [list.head])
     end
 
     def eq?(other)

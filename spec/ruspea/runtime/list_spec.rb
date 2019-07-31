@@ -57,6 +57,12 @@ module Ruspea::Runtime
         it "also works with cdr" do
           expect(list.cdr).to eq builder.create(2, 3, 4)
         end
+
+        it "doesn't go bananas when tail is a list" do
+          list = builder.create Sym.new("quote"), builder.create(1)
+
+          expect(list.tail).to eq builder.create(1)
+        end
       end
 
       describe "#count" do
@@ -64,6 +70,32 @@ module Ruspea::Runtime
           expect(list.count).to eq 4
           expect(list.cons(0).count).to eq 5
           expect(builder.create(0, list).count).to eq 5
+        end
+      end
+
+      describe "#print" do
+        it "prints the list in the 'syntax' form" do
+          expect(list.print).to eq "(1 2 3 4)"
+        end
+
+        it "uses ellipses when we have more then 10 items in a list" do
+          list = builder.create 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+
+          expect(list.print).to eq "(1 2 3 4 5 6 7 8 9 10 ...) // count: 11"
+        end
+      end
+
+      describe "#inspect" do
+        it "implements inspect in terms of #print" do
+          list = builder.create 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+
+          expect(list.inspect).to eq list.print
+        end
+      end
+
+      describe "#to_a" do
+        it "turns the list into a (Ruby) array" do
+          expect(list.to_a).to eq [1, 2, 3, 4]
         end
       end
     end # inspecting Lists
