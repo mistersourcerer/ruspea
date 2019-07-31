@@ -16,6 +16,16 @@ module Ruspea::Runtime
       end
     end
 
+    describe "#take" do
+      it "returns the first N elements from the list" do
+        list = builder.create(1, 2, 3, 4)
+
+        expect(lisp.take(0, list)).to eq Empty.instance
+        expect(lisp.take(1, list)).to eq builder.create(1)
+        expect(lisp.take(2, list)).to eq builder.create(1, 2)
+      end
+    end
+
     describe "#empty?" do
       it "check if a list is empty" do
         expect(lisp.empty?(builder.create)).to eq true

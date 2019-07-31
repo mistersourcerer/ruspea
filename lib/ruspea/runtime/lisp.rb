@@ -4,13 +4,18 @@ module Ruspea::Runtime
       list.cons(el)
     end
 
+    # TODO: can we write it in a TCO friendly manner?
+    def take(n, list)
+      return Empty.instance if list.empty? || n == 0
+
+      cons(list.head, take(n - 1, list.tail))
+    end
+
     def empty?(list)
       list.empty?
     end
 
     def quote(params, env: nil)
-      return params if params.count > 1
-
       params.head
     end
 
