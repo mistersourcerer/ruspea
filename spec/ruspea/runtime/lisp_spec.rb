@@ -40,6 +40,16 @@ module Ruspea::Runtime
         list = builder.create(builder.create(1))
         expect(lisp.quote(list)).to eq builder.create(1)
       end
+
+      it "returns quoted lists" do
+        list = builder.create(
+          builder.create(Sym.new("lol"))
+        )
+        expect(lisp.quote(list)).to eq builder.create(Sym.new("lol"))
+
+        list = builder.create(builder.create(1))
+        expect(lisp.quote(list)).to eq builder.create(1)
+      end
     end
 
     describe "#def" do

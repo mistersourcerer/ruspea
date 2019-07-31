@@ -8,7 +8,15 @@ module Ruspea::Evaler
 
     def call(form, env: Env.new, lisp: nil)
       lisp ||= @lisp
-      return invoke(form, env: env, lisp: lisp) if form.is_a? List
+
+      case form
+      when List
+        invoke(form, env: env, lisp: lisp)
+      when Sym
+        nil
+      else
+        form
+      end
     end
 
     private
@@ -16,7 +24,9 @@ module Ruspea::Evaler
     def invoke(form, env:, lisp:)
       fn = form.head
       if lisp.respond_to? fn.to_s
-        lisp.public_send fn.to_s, form.tail, env: env
+        # TODO: Not sure about this if =(((
+        params = form.tail.count > 1 ? List.create(form.tail) : form.tail
+        lisp.public_send fn.to_s, params, env: env
       end
     end
   end

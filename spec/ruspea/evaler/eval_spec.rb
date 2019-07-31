@@ -18,14 +18,16 @@ module Ruspea::Evaler
         expect(evaler.call(invocation, lisp: fake_lisp)).to eq 1
       end
 
-      it "returns quoted lists" do
-        invocation = builder.create(
-          sym("quote"),
-          builder.create(sym("def"), sym("omg"), 1)
-        )
+      context "quoting" do
+        it "returns quoted lists" do
+          invocation = builder.create(
+            sym("quote"),
+            builder.create(sym("def"), sym("omg"), 1)
+          )
 
-        expect(evaler.call(invocation)).to eq builder.create(
-          sym("def"), sym("omg"), 1)
+          expect(evaler.call(invocation)).to eq builder.create(
+            sym("def"), sym("omg"), 1)
+        end
       end
     end
   end
