@@ -2,6 +2,8 @@ module Ruspea::Evaler
   RSpec.describe Eval do
     let(:builder) { Ruspea::Runtime::List }
     let(:env) { Ruspea::Runtime::Env }
+    let(:fn) { Ruspea::Runtime::Fn }
+
     subject(:evaler) { described_class.new }
 
     def sym(string)
@@ -17,6 +19,14 @@ module Ruspea::Evaler
         invocation = builder.create sym("lol"), sym("param")
 
         expect(evaler.call(invocation, lisp: fake_lisp)).to eq 1
+      end
+
+      it "invokes user defined functions" do
+        new_env = env.new
+        new_env.define sym("lol"), fn.new([1])
+
+        invocation = builder.create sym("lol")
+        expect(evaler.call(invocation, env: new_env)).to eq 1
       end
     end
 

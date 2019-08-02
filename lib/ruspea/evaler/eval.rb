@@ -13,7 +13,7 @@ module Ruspea::Evaler
       when List
         invoke(form, env: env, lisp: lisp)
       when Sym
-        env.lookup form
+        form = env.lookup form
       else
         form
       end
@@ -23,8 +23,11 @@ module Ruspea::Evaler
 
     def invoke(form, env:, lisp:)
       fn = form.head
-      if lisp.respond_to? fn.to_s
+      native_function = lisp.respond_to? fn.to_s
+      if native_function
         lisp.public_send fn.to_s, form.tail, env: env
+      else
+        env.lookup(fn).call(form.tail)
       end
     end
   end

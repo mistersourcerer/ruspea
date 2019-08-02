@@ -66,6 +66,16 @@ module Ruspea::Runtime
 
         expect(env.lookup(Sym.new("lol"))).to eq 1
       end
+
+      it "evaluates expression before defining it" do
+        definition = builder.create(
+          Sym.new("lol"),
+          builder.create("fn", [], 1)
+        )
+        lisp.def definition, env: env
+
+        expect(env.lookup(Sym.new("lol"))).to eq Fn.new([1])
+      end
     end
 
     describe "#fn" do

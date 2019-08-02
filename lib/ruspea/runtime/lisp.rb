@@ -25,7 +25,12 @@ module Ruspea::Runtime
     end
 
     def def(params, env:)
-      env.define params.head, params.tail.head
+      if params.tail.count == 1
+        env.define params.head, EVALER.call(params.tail.head, env: env)
+      else
+        env.define params.head, EVALER.call(params.tail, env: env)
+      end
+
     end
 
     def fn(params, env: nil)
@@ -34,5 +39,9 @@ module Ruspea::Runtime
 
       Fn.new(body, params: fn_params, context: env)
     end
+
+    private
+
+    EVALER = Ruspea::Evaler::Eval.new
   end
 end

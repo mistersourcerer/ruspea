@@ -10,7 +10,7 @@ module Ruspea::Repl
       @printer = printer
     end
 
-    def run(input: $stdin, evaler: nil)
+    def run(input: $stdin, evaler: nil, env: Ruspea::Runtime::Env.new)
       evaler ||= @evaler
       while(line = input.gets&.chomp)
         begin
@@ -19,7 +19,7 @@ module Ruspea::Repl
 
           forms = @reader.call(line)
           forms.each do |form|
-            @printer.call evaler.call(form)
+            @printer.call evaler.call(form, env: env)
           end
           @printer.puts ""
         rescue Ruspea::Error::Standard => e
