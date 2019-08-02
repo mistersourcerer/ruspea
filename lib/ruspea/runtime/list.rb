@@ -18,6 +18,7 @@ module Ruspea::Runtime
       @tail = tail
       @count = count
       @lisp = Lisp.new
+      @printer = Ruspea::Printer::Print.new
     end
 
     def cons(el)
@@ -38,14 +39,8 @@ module Ruspea::Runtime
       head.nil? && tail.empty?
     end
 
-    def print
-      elements = @lisp.take(10, self).to_a.join " "
-      and_more = count > 10 ? " ...) // count: #{count}" : ")"
-      "(#{elements}#{and_more}"
-    end
-
     def inspect
-      print
+      @printer.printable(self)
     end
 
     def to_a(list = self, array = [])

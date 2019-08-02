@@ -73,23 +73,45 @@ module Ruspea::Runtime
         end
       end
 
-      describe "#print" do
-        it "prints the list in the 'syntax' form" do
-          expect(list.print).to eq "(1 2 3 4)"
+      describe "#inspect" do
+        it "inspects the list in the 'syntax' form" do
+          expect(list.inspect).to eq "(1 2 3 4)"
         end
 
         it "uses ellipses when we have more then 10 items in a list" do
           list = builder.create 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
 
-          expect(list.print).to eq "(1 2 3 4 5 6 7 8 9 10 ...) // count: 11"
+          expect(list.inspect).to eq "(1 2 3 4 5 6 7 8 9 10 ...) // count: 11"
         end
-      end
 
-      describe "#inspect" do
-        it "implements inspect in terms of #print" do
-          list = builder.create 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+        it "inspects pretty nested lists" do
+          list = builder.create(
+            "wow",
+            builder.create(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11),
+            "much nested",
+          )
 
-          expect(list.inspect).to eq list.print
+          expect(list.inspect)
+            .to eq [
+              "(\"wow\"",
+              "(1 2 3 4 5 6 7 8 9 10 ...) // count: 11",
+              "\"much nested\")"].join(",\n")
+        end
+
+        it "inspects internal arrays" do
+          list = builder.create(
+            "wow",
+            builder.create(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11),
+            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+            "much nested",
+          )
+
+          expect(list.inspect)
+            .to eq [
+              "(\"wow\"",
+              "(1 2 3 4 5 6 7 8 9 10 ...) // count: 11",
+              "[1 2 3 4 5 6 7 8 9 10 ...] // length: 11",
+              "\"much nested\")"].join(",\n")
         end
       end
 
