@@ -25,5 +25,13 @@ module Ruspea::Runtime
     def count
       0
     end
+
+    def to_a
+      ARRAY
+    end
+
+    private
+
+    ARRAY = []
   end
 end

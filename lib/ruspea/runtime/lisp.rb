@@ -16,11 +16,23 @@ module Ruspea::Runtime
     end
 
     def quote(params, env: nil)
-      params.head
+      # TODO: Not sure about this if
+      if params.count == 1
+        params.head
+      else
+        params
+      end
     end
 
     def def(params, env:)
       env.define params.head, params.tail.head
+    end
+
+    def fn(params, env: nil)
+      fn_params = params.head # check if it is array
+      body = params.tail.to_a
+
+      Fn.new(body, params: fn_params, context: env)
     end
   end
 end

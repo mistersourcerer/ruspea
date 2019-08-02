@@ -2,6 +2,7 @@ module Ruspea::Runtime
   RSpec.describe Lisp do
     let(:builder) { Ruspea::Runtime::List }
     let(:env) { Ruspea::Runtime::Env.new }
+
     subject(:lisp) { described_class.new }
 
     describe "#cons" do
@@ -64,6 +65,27 @@ module Ruspea::Runtime
         lisp.def definition, env: env
 
         expect(env.lookup(Sym.new("lol"))).to eq 1
+      end
+    end
+
+    describe "#fn" do
+      it "creates a no-op function if no args are given" do
+        invocation = builder.create([])
+
+        expect(lisp.fn(invocation)).to eq Fn.new
+      end
+
+      it "creates a function that receives two args" do
+        invocation = builder.create([Sym.new("a"), Sym.new("b")])
+
+        expect(lisp.fn(invocation))
+          .to eq Fn.new(params: [Sym.new("a"), Sym.new("b")])
+      end
+
+      it "creates a function with some body that returns 1" do
+        invocation = builder.create([], Sym.new("lol"), 1)
+
+        expect(lisp.fn(invocation)).to eq Fn.new [Sym.new("lol"), 1]
       end
     end
   end

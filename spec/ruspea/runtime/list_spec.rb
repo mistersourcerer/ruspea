@@ -119,6 +119,10 @@ module Ruspea::Runtime
         it "turns the list into a (Ruby) array" do
           expect(list.to_a).to eq [1, 2, 3, 4]
         end
+
+        it "returns empty array if list is empty" do
+          expect(builder.create.to_a).to eq []
+        end
       end
     end # inspecting Lists
   end
