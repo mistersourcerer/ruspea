@@ -3,24 +3,29 @@ module Ruspea::Repl
     def initialize(
       reader: Ruspea::Reader::Read.new,
       evaler: Ruspea::Evaler::Eval.new,
-      printer: Printer.new
+      printer: Ruspea::Printer::Print.new
     )
       @reader = reader
       @evaler = evaler
       @printer = printer
     end
 
-    def run(input: $stdin)
-      while(line = input.gets.chomp)
-        # TODO: replace special treatment by normal function eval
-        break if line == "(bye)"
+    def run(input: $stdin, evaler: nil)
+      evaler ||= @evaler
+      while(line = input.gets&.chomp)
+        begin
+          # TODO: replace special treatment by normal function eval
+          break if line == "(bye)"
 
-        forms = @reader.call(line)
-        forms.each do |form|
-          @printer.print @evaler.call(form)
+          forms = @reader.call(line)
+          forms.each do |form|
+            @printer.call evaler.call(form)
+          end
+          @printer.puts ""
+        rescue Ruspea::Error::Standard => e
+          @printer.puts e.class
+          @printer.puts e.message
         end
-        @printer.puts ""
-
       end
 
       @printer.puts "See you soon."

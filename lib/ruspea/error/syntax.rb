@@ -1,4 +1,4 @@
 module Ruspea::Error
-  class Syntax < StandardError
+  class Syntax < Standard
   end
 end
