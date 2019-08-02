@@ -13,7 +13,7 @@ module Ruspea::Evaler
       when List
         invoke(form, env: env, lisp: lisp)
       when Sym
-        nil
+        env.lookup form
       else
         form
       end
