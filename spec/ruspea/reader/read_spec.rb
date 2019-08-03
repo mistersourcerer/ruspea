@@ -193,6 +193,19 @@ module Ruspea::Reader
         end
       end
 
+      context "functions" do
+        it "reads function declarations correctly" do
+          declaration = "(fn [str] (. Kernel print str))"
+
+          expect(reader.call(declaration)).to eq [
+            builder.create(
+              sym("fn"),
+              [sym("str")],
+              builder.create(sym("."), sym("Kernel"), sym("print"), sym("str"))
+          )]
+        end
+      end # functions
+
     end # call
   end
 end

@@ -97,6 +97,30 @@ module Ruspea::Runtime
 
         expect(lisp.fn(invocation)).to eq Fn.new [Sym.new("lol"), 1]
       end
+
+      it "creates a function that (list)invokes other function" do
+        # (fn [str] (. Kernel puts str))
+        invocation = builder.create(
+          [Sym.new("str")],
+          1,
+          builder.create(
+            Sym.new("."),
+            Sym.new("Kernel"),
+            Sym.new("puts"),
+            Sym.new("str")
+          ),
+        )
+
+        expect(lisp.fn(invocation)).to eq Fn.new([
+          1,
+          builder.create(
+            Sym.new("."),
+            Sym.new("Kernel"),
+            Sym.new("puts"),
+            Sym.new("str")
+          )], params: [Sym.new("str")]
+        )
+      end
     end
   end
 end

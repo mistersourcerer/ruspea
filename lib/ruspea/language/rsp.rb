@@ -11,9 +11,9 @@ module Ruspea::Language
     private
 
     def interop
-      @interop ||= ->(list, env: Env.new(self)) {
+      @interop ||= ->(list, invocation_context: Env.new(self)) {
         _interop ||= Ruspea::Language::Interop.new
-        _interop.call list
+        _interop.call list, invocation_context: invocation_context
       }
     end
   end

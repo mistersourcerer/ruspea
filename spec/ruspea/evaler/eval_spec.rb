@@ -31,7 +31,7 @@ module Ruspea::Evaler
 
       it "invokes user defined functions (when they are ruby lambdas too)" do
         new_env = env.new
-        new_env.define sym("lol"), ->(list) { list.head }
+        new_env.define sym("lol"), ->(list, _) { list.head }
 
         invocation = builder.create sym("lol"), 1
         expect(evaler.call(invocation, env: new_env)).to eq 1

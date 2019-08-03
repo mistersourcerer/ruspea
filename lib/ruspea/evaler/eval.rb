@@ -28,7 +28,7 @@ module Ruspea::Evaler
       if native_function
         lisp.public_send fn.to_s, form.tail, env: env
       else
-        env.lookup(fn).call(form.tail)
+        env.lookup(fn).call(form.tail, invocation_context: env)
       end
     end
   end

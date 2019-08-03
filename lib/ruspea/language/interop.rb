@@ -1,12 +1,23 @@
 module Ruspea::Language
   class Interop
-    def call(path, env: nil)
-      dot(path.head, path.tail.head, *path.tail.tail.to_a, env: env)
+    def initialize
+      @evaler = Ruspea::Evaler::Eval.new
+    end
+
+    # TODO: is "just" a function
+    def call(path, invocation_context: nil)
+      target = path.head
+      method = path.tail.head
+      params = path.tail.tail.to_a.map { |param|
+        @evaler.call(param, env: invocation_context)
+      }
+
+      dot(target, method, *params)
     end
 
     private
 
-    def dot(target, method, args = [], env:)
+    def dot(target, method, args = [])
       final_target =
         if target.is_a?(String) || target.is_a?(Symbol) || target.is_a?(::Ruspea::Runtime::Sym)
           constantize(target.to_s)

@@ -7,10 +7,12 @@ module Ruspea::Runtime
       @context = context
     end
 
-    def call(*args)
+    def call(args = [], invocation_context: nil)
       env = Env.new(@context)
+      arguments = Array(args)
+
       @params.each_with_index { |sym, idx|
-        env.define sym, args[idx]
+        env.define sym, arguments[idx]
       }
 
       @body.reduce(nil) { |result, expression|
