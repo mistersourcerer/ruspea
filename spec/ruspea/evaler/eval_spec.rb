@@ -28,6 +28,14 @@ module Ruspea::Evaler
         invocation = builder.create sym("lol")
         expect(evaler.call(invocation, env: new_env)).to eq 1
       end
+
+      it "invokes user defined functions (when they are ruby lambdas too)" do
+        new_env = env.new
+        new_env.define sym("lol"), ->(list) { list.head }
+
+        invocation = builder.create sym("lol"), 1
+        expect(evaler.call(invocation, env: new_env)).to eq 1
+      end
     end
 
     context "quoting" do
@@ -53,6 +61,31 @@ module Ruspea::Evaler
         expect {
           evaler.call(sym("lol"))
         }.to raise_error Ruspea::Error::Resolution
+      end
+    end
+
+    context "interop" do
+      it "calls the underlying ruby method" do
+        invocation = builder.create(
+          sym("."),
+          1,
+          sym("+"),
+          2
+        )
+        ruspea = Ruspea::Language::Rsp.new
+
+        expect(evaler.call(invocation, env: ruspea)).to eq 3
+      end
+
+      it "creates ruby land objects" do
+        invocation = builder.create(
+          sym("."),
+          sym("Array"),
+          sym("new"),
+        )
+        ruspea = Ruspea::Language::Rsp.new
+
+        expect(evaler.call(invocation, env: ruspea)).to eq []
       end
     end
   end

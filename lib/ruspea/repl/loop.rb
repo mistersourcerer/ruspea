@@ -10,7 +10,7 @@ module Ruspea::Repl
       @printer = printer
     end
 
-    def run(input: $stdin, evaler: nil, env: Ruspea::Runtime::Env.new)
+    def run(input: $stdin, evaler: nil, env: Ruspea::Language::User.new)
       evaler ||= @evaler
       while(line = input.gets&.chomp)
         begin

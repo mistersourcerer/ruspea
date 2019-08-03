@@ -1,21 +1,25 @@
 module Ruspea::Language
   class Interop
-    def dot(target, method, args = [])
+    def call(path, env: nil)
+      dot(path.head, path.tail.head, *path.tail.tail.to_a, env: env)
+    end
+
+    private
+
+    def dot(target, method, args = [], env:)
       final_target =
-        if target.is_a?(String) || target.is_a?(Symbol)
-          constantize(target)
+        if target.is_a?(String) || target.is_a?(Symbol) || target.is_a?(::Ruspea::Runtime::Sym)
+          constantize(target.to_s)
         else
           target
         end
 
       if args.is_a? Array
-        final_target.public_send(method, *args)
+        final_target.public_send(method.to_s, *args)
       else
-        final_target.public_send(method, args)
+        final_target.public_send(method.to_s, args)
       end
     end
-
-    private
 
     # WARNING: the code below was copy and pasted from Rails XD
     # File activesupport/lib/active_support/inflector/methods.rb, line 272

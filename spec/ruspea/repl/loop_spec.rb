@@ -17,15 +17,17 @@ module Ruspea::Repl
 
       context "Handling errors" do
         it "doesn't explodes when an error happens" do
-          evaler = ->(_) { raise Ruspea::Error::Standard.new }
+          evaler = ->(*_) { raise Ruspea::Error::Standard.new }
 
           expect {
-            looop.run input: input("1"), evaler: evaler
+            expect {
+              looop.run input: input("1"), evaler: evaler
+            }.to output.to_stdout
           }.to_not raise_error
         end
 
         it "shows error messages nicely" do
-          evaler = ->(_) { raise Ruspea::Error::Standard.new("omg") }
+          evaler = ->(*_) { raise Ruspea::Error::Standard.new("omg") }
 
           expect {
             looop.run input: input("1"), evaler: evaler
