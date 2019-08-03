@@ -19,7 +19,7 @@ module Ruspea::Language
 
     def dot(target, method, args = [])
       final_target =
-        if target.is_a?(String) || target.is_a?(Symbol) || target.is_a?(::Ruspea::Runtime::Sym)
+        if target.is_a?(::Ruspea::Runtime::Sym)
           constantize(target.to_s)
         else
           target

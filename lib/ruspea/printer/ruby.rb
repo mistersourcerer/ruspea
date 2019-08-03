@@ -12,6 +12,8 @@ module Ruspea::Printer
         printable_array @form
       when LIST
         printable_list @form
+      when nil
+        "nil"
       else
         "#{@form.inspect} /* ::#{@form.class} */"
       end
