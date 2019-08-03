@@ -3,10 +3,10 @@ module Ruspea::Runtime
     subject(:builder) { described_class }
 
     describe ".create" do
-      it "knows that el + list equals new list with el on the head" do
+      it "knows that el + list equals new list with (el, list)" do
         list = builder.create 1, builder.create(2, 3, 4)
 
-        expect(list).to eq builder.create 1, 2, 3, 4
+        expect(list).to eq builder.create 1, builder.create(2, 3, 4)
       end
     end
 
@@ -61,7 +61,7 @@ module Ruspea::Runtime
         it "doesn't go bananas when tail is a list" do
           list = builder.create Sym.new("quote"), builder.create(1)
 
-          expect(list.tail).to eq builder.create(1)
+          expect(list.tail).to eq builder.create(builder.create(1))
         end
       end
 
@@ -69,7 +69,7 @@ module Ruspea::Runtime
         it "knows the total size of a list" do
           expect(list.count).to eq 4
           expect(list.cons(0).count).to eq 5
-          expect(builder.create(0, list).count).to eq 5
+          expect(builder.create(0, list).count).to eq 2
         end
       end
 

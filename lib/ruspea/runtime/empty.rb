@@ -7,7 +7,7 @@ module Ruspea::Runtime
     attr_reader :head, :tail
 
     def cons(el)
-      List.create el, self
+      List.new el, self, count: 1
     end
 
     def car
