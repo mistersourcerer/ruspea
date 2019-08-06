@@ -3,7 +3,7 @@ module Ruspea::Runtime
     subject(:builder) { described_class }
 
     describe ".create" do
-      it "knows that el + list equals new list with (el, list)" do
+      it "treats creates a list with (obj, list) when receiving obj + list" do
         list = builder.create 1, builder.create(2, 3, 4)
 
         expect(list).to eq builder.create 1, builder.create(2, 3, 4)
@@ -20,7 +20,7 @@ module Ruspea::Runtime
       end
     end
 
-    context "inspecting Lists" do
+    context "inspecting" do
       subject(:list) { builder.create 1, 2, 3, 4 }
 
       describe "#empty?" do
