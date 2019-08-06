@@ -8,6 +8,10 @@ module Ruspea::Printer
       output.puts str
     end
 
+    def print(str, output: $stdout)
+      output.print str
+    end
+
     def printable(form)
       printer =
         if form.respond_to? :print
@@ -27,6 +31,10 @@ module Ruspea::Printer
         -> { form.inspect }
       when Numeric
         -> { form.inspect }
+      when TrueClass
+        -> { "yes" }
+      when FalseClass
+        -> { "no" }
       else
         Ruby.new(form)
       end
