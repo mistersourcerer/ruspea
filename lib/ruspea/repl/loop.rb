@@ -11,12 +11,15 @@ module Ruspea::Repl
     end
 
     def run(input: $stdin, evaler: nil, env: Ruspea::Language::User.new)
+      should_exit = false
+      env.define Ruspea::Runtime::Sym.new("bye"), ->(*args) {
+        should_exit = true
+      }
+
       evaler ||= @evaler
       @printer.print "#user=> "
       while(line = input.gets&.chomp)
-        begin
-          # TODO: replace special treatment by normal function eval
-          break if line == "(bye)"
+        break if should_exit
 
         begin
           @reader.call(line).each do |form|
