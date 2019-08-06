@@ -12,19 +12,23 @@ module Ruspea::Repl
 
     def run(input: $stdin, evaler: nil, env: Ruspea::Language::User.new)
       evaler ||= @evaler
+      @printer.print "#user=> "
       while(line = input.gets&.chomp)
         begin
           # TODO: replace special treatment by normal function eval
           break if line == "(bye)"
 
-          forms = @reader.call(line)
-          forms.each do |form|
+        begin
+          @reader.call(line).each do |form|
             @printer.call evaler.call(form, env: env)
           end
           @printer.puts ""
+          @printer.print "#user=> "
         rescue Ruspea::Error::Standard => e
           @printer.puts e.class
           @printer.puts e.message
+          @printer.puts ""
+          @printer.print "#user=> "
         end
       end
 

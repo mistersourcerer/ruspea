@@ -12,7 +12,7 @@ module Ruspea::Repl
       it "passes down the input to the reader" do
         expect {
           looop.run input: input("'hello", "(bye)")
-        }.to output("hello\nSee you soon.\n").to_stdout
+        }.to output("#user=> hello\n#user=> yes\n#user=> See you soon.\n").to_stdout
       end
 
       context "Handling errors" do
@@ -32,9 +32,9 @@ module Ruspea::Repl
           expect {
             looop.run input: input("1"), evaler: evaler
           }.to output([
-            "Ruspea::Error::Standard",
-            "omg",
-            "See you soon.\n",
+            "#user=> Ruspea::Error::Standard",
+            "omg\n",
+            "#user=> See you soon.\n",
           ].join("\n")).to_stdout
         end
       end
