@@ -38,6 +38,16 @@ module Ruspea::Repl
           ].join("\n")).to_stdout
         end
       end
+
+      context "Handling 'open' delimiters" do
+        it "changes the prompt to wait for the closing of an Array" do
+          pending
+          code = "[1 2"
+          expect {
+            looop.run intput: input(code)
+          }.to output("#user?>").to_stdout
+        end
+      end
     end
   end
 end
