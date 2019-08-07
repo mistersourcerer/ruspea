@@ -206,6 +206,41 @@ module Ruspea::Reader
         end
       end # functions
 
+      context "delimited forms" do
+        it "resumes reading an open form and completes it" do
+          open_string = {
+            type: String,
+            closed: false,
+            tokens: ["one pretty string"],
+          }
+          form = reader.call("\"", open: open_string)
+
+          expect(form).to eq ["one pretty string"]
+        end
+
+        it "knows when an open form was complete and keep reading" do
+          open_string = {
+            type: String,
+            closed: false,
+            tokens: ["one pretty string "],
+          }
+          forms = reader.call("isn't it?\" 1 2", open: open_string)
+
+          expect(forms).to eq ["one pretty string isn't it?", 1, 2]
+        end
+
+        it "knows to resume an open array" do
+          open = {
+            type: Array,
+            closed: false,
+            tokens: [1, 2, 3],
+          }
+          forms = reader.call("] 4 5", open: open)
+
+          expect(forms).to eq [[1, 2, 3], 4, 5]
+        end
+      end
+
     end # call
   end
 end

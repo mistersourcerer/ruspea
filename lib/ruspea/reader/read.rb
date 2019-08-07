@@ -3,10 +3,10 @@ module Ruspea::Reader
     include Ruspea::Runtime
     include Ruspea::Error
 
-    def call(source, forms = [])
+    def call(source, forms = [], open: nil)
       return forms if source.length == 0
 
-      new_forms, remaining_source = new_form_from(source)
+      new_forms, remaining_source = new_form_from(source, open: open)
 
       current_forms =
         if new_forms.nil?
@@ -28,8 +28,22 @@ module Ruspea::Reader
     TOKEN_LIMIT = Regexp.union(SEPARATOR, CLOSING_DELIMITER)
     KEYWORD = /:\z/
 
-    def new_form_from(source, token = "")
+    def new_form_from(source, token = "", open: nil)
       return [form_for(token), ""] if source.length == 0
+
+      if !open.nil?
+        tupple =
+          case
+          when open[:type] == String
+            read_string(source, open[:tokens].first)
+          when open[:type] == Array
+            read_array(source, open[:tokens])
+          when open[:type] == List
+            read_list(source, open[:tokens])
+          end
+
+        return tupple
+      end
 
       case source[0]
       when SEPARATOR
