@@ -32,6 +32,11 @@ module Ruspea::Printer
           printer.call "this is a ruby string"
         }.to output('"this is a ruby string"').to_stdout
       end
+
+      it "prints true and false as 'yes' and 'no'" do
+        expect { printer.call true }.to output("yes").to_stdout
+        expect { printer.call false }.to output("no").to_stdout
+      end
     end
 
     describe "#puts" do
