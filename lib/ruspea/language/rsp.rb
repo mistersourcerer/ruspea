@@ -9,7 +9,7 @@ module Ruspea::Language
       @reader = Ruspea::Reader::Read.new
 
       define Sym.new("."), interop
-      load_ruspea(Ruspea.root.join("ruspea", "language"))
+      load_ruspea(Ruspea.root.join("language"))
     end
 
     private
