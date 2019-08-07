@@ -12,7 +12,7 @@ module Ruspea::Repl
       it "passes down the input to the reader" do
         expect {
           looop.run input: input("'hello", "(bye)")
-        }.to output("#user=> hello\n#user=> yes\n#user=> See you soon.\n").to_stdout
+        }.to output("#user=> hello\n#user=> See you soon.\n").to_stdout
       end
 
       context "Handling errors" do
@@ -41,10 +41,9 @@ module Ruspea::Repl
 
       context "Handling 'open' delimiters" do
         it "changes the prompt to wait for the closing of an Array" do
-          pending
           code = "[1 2"
           expect {
-            looop.run intput: input(code)
+            looop.run input: input(code)
           }.to output("#user?>").to_stdout
         end
       end
