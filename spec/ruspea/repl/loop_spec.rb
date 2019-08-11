@@ -41,10 +41,18 @@ module Ruspea::Repl
 
       context "Handling 'open' delimiters" do
         it "changes the prompt to wait for the closing of an Array" do
-          code = "[1 2"
+          stream = double("InputStream")
+          allow(stream).to receive(:gets).and_return "[1\n", "2\n", "]", nil
+
           expect {
-            looop.run input: input(code)
-          }.to output("#user?>").to_stdout
+            looop.run input: stream
+          }.to output([
+            "#user=> ",
+            "#user?> ",
+            "#user?> ",
+            "[1 2]\n",
+            "#user=> See you soon.\n"
+          ].join("")).to_stdout
         end
       end
     end

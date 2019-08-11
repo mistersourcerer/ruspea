@@ -12,16 +12,45 @@ module Ruspea::Repl
     end
 
     def run(input: $stdin, evaler: nil, env: Ruspea::Language::User.new)
-      env.define Ruspea::Runtime::Sym.new("bye"), ->(*args) {
-        @should_exit = true
-      }
+      _exit = ->(*args) { @should_exit = true }
+      env.define Ruspea::Runtime::Sym.new("bye"), _exit
+      env.define Ruspea::Runtime::Sym.new("exit"), _exit
 
       evaler ||= @evaler
       @printer.print "#user=> "
 
-      while(line = input.gets&.chomp)
+      input_reader = -> { input.gets }
+      while(line = input_reader.call&.chomp)
         begin
-          evaluate line, evaler, env
+          @reader.call(line).each do |form|
+            expression = evaler.call(form, env: env)
+            expressions = [expression]
+
+            while waiting_delimiter?(expressions.first)
+              @printer.print "#user?> "
+              code = input_reader.call&.chomp
+              next if code.length == 0
+
+              new_forms = @reader.call code, open: expression
+              expressions = new_forms.map do |new_form|
+                evaler.call(new_form, env: env)
+              end
+
+              break if @should_exit
+
+              if waiting_delimiter? expressions.first
+                expression = expressions.first
+                next
+              end
+            end
+
+            break if @should_exit
+            expressions.each_with_index { |exp, idx|
+              @printer.print "\n" if idx > 0
+              @printer.call exp
+            }
+          end
+
           break if @should_exit
           prompt_back
         rescue Ruspea::Error::Standard => e
@@ -29,18 +58,10 @@ module Ruspea::Repl
         end
       end
 
-      @printer.puts "See you soon."
+      $stdout.puts "See you soon."
     end
 
     private
-
-    def evaluate(line, evaler, env)
-      @reader.call(line).each do |form|
-        expression = evaler.call(form, env: env)
-        break if @should_exit
-        @printer.call expression
-      end
-    end
 
     def prompt_back(ns: "#user")
       @printer.puts ""
@@ -51,6 +72,15 @@ module Ruspea::Repl
       @printer.puts e.class
       @printer.puts e.message
       prompt_back
+    end
+
+    def waiting_delimiter?(expression)
+      expression.is_a?(Hash) &&
+        expression.key?(:type) && expression[:closed] == false
+    end
+
+    def wait_for_delimiter(expression, ns: "#user")
+      @printer.puts "#{ns}?> "
     end
   end
 end
