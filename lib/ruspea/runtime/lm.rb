@@ -7,6 +7,10 @@ module Ruspea::Runtime
     end
 
     def call(*args, context: nil)
+      if body.respond_to? :call
+        return body.call environment_with(args, context), context, evaler
+      end
+
       body.reduce(nil) { |result, expression|
         result = evaler.call(
           expression,
