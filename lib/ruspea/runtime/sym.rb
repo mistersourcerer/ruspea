@@ -1,7 +1,7 @@
 module Ruspea::Runtime
   class Sym
     def initialize(id)
-      @id = String(id)
+      @id = String(id.to_s)
     end
 
     def print
