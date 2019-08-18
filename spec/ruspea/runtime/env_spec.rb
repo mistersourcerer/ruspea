@@ -42,5 +42,9 @@ module Ruspea::Runtime
         end
       end
     end
+
+    context "equality test" do
+      it "considers the internal table and the context"
+    end
   end
 end

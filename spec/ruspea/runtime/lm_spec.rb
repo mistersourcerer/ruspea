@@ -25,16 +25,19 @@ module Ruspea::Runtime
           params: [Sym.new("time"), Sym.new("over")],
           body: body,
           evaler: evaler)
-        cxt = Env.new.tap { |e| e.define Sym.new("external"), "context" }
+        ctx = Env.new.tap { |e| e.define Sym.new("external"), "context" }
 
-        fn.call(420, 9000, context: cxt)
+        fn.call(420, 9000, context: ctx)
 
-        expected_env = Env.new(cxt).tap { |e|
+        expected_env = Env.new(ctx).tap { |e|
           e.define Sym.new("time"), 420
           e.define Sym.new("over"), 9000
+          e.define Sym.new("%ctx"), ctx
         }
-        expect(body).to have_received(:call).with(expected_env, cxt, evaler)
+        expect(body).to have_received(:call).with(expected_env, ctx, evaler)
       end
+
+      it "makes context available in the body (%ctx)"
     end
 
     context "environment binding" do
@@ -47,7 +50,10 @@ module Ruspea::Runtime
 
         fn.call("Friedman")
 
-        env = Env.new.tap { |env| env.define Sym.new("name"), "Friedman" }
+        env = Env.new.tap { |env|
+          env.define Sym.new("name"), "Friedman"
+          env.define Sym.new("%ctx"), Env::Empty.instance
+        }
         expect(evaler).to have_received(:call).with(1, context: env)
       end
 
@@ -60,13 +66,21 @@ module Ruspea::Runtime
 
         env = Env.new(caller_context).tap { |env|
           env.define Sym.new("name"), "Friedman"
+          env.define Sym.new("%ctx"), caller_context
         }
         expect(evaler).to have_received(:call).with(1, context: env)
       end
     end
 
     context "arity handling" do
-      it "raises error when reciving wrong arity arguments"
+      it "raises error when reciving wrong arity arguments" do
+        fn = lm.new(params: [Sym.new("one"), Sym.new("two")])
+
+        expect { fn.call }.to raise_error(
+          Ruspea::Error::Arity, "Expected 2 args, but received 0")
+        expect { fn.call(1, 2, 3) }.to raise_error(
+          Ruspea::Error::Arity, "Expected 2 args, but received 3")
+      end
     end
   end
 end
