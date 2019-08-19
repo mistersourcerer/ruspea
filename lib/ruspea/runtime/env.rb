@@ -57,6 +57,12 @@ module Ruspea::Runtime
       @table.hash + @context.hash + :rsp_env.hash
     end
 
+    def inspect
+      @table.map { |k, v|
+        "#{k} => #{v}"
+      }
+    end
+
     protected
 
     attr_accessor :table, :context
