@@ -2,44 +2,57 @@ module Ruspea::Runtime
   class Lm
     attr_reader :arity
 
-    def initialize(params: [], body: [], evaler: ->(exp, *_) { exp })
+    def initialize(params: [], body: [])
       @params = params
       @arity = params.length
       @body = body
-      @evaler = evaler
     end
 
-    def call(*args, context: Env::Empty.instance)
-      environment = environment_with(args, context)
-      environment.define Sym.new("%ctx"), context
+    def call(*args, context: nil, evaler: nil)
+      context ||= Env::Empty.instance
+      evaler ||= ->(exp, *_) { exp }
 
-      if body.respond_to? :call
-        return body.call environment, context, evaler
-      end
+      env, callable = env_and_callable_body(args, context, evaler)
+      env.define Sym.new("%ctx"), context
 
-      evaluate_body args, environment
+      callable.call env, evaler, args
     end
 
     private
 
-    attr_reader :params, :body, :evaler
+    attr_reader :params, :body
 
-    def environment_with(args, context)
+    def env_and_callable_body(args, context, evaler)
+      if body.respond_to? :call
+        [
+          environment_with(args, context, evaler: ->(arg, _) { arg }),
+          ->(environment, evaler, _) { body.call environment, evaler }
+        ]
+      else
+        [
+          environment = environment_with(args, context, evaler: evaler),
+          ->(environment, evaler, args) { evaluate_body environment, evaler, args }
+        ]
+      end
+    end
+
+    def environment_with(args, context, evaler:)
       args.each_with_index.reduce(Env.new(context)) { |env, tuple|
         arg, idx = tuple
+
         env.tap { |e|
-          e.define params[idx], arg
+          e.define params[idx], evaler.call(arg, context: context)
         }
       }
     end
 
-    def evaluate_body(args, environment)
+    def evaluate_body(environment, evaler, args)
       if args.length != arity
         raise Ruspea::Error::Arity.new(arity, args.length)
       end
 
       body.reduce(nil) { |result, expression|
-        result = evaler.call(
+        evaler.call(
           expression,
           context: environment)
       }

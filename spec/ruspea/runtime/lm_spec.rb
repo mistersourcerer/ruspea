@@ -11,11 +11,11 @@ module Ruspea::Runtime
 
       it "delegates evaluation of body expressions to evaler" do
         evaler = spy("evaler")
-        fn = lm.new(body: [1], evaler: evaler)
+        fn = lm.new(body: [Sym.new("number")])
 
-        fn.call
+        fn.call(evaler: evaler)
 
-        expect(evaler).to have_received(:call).with(1, context: instance_of(Env))
+        expect(evaler).to have_received(:call).with(Sym.new("number"), context: instance_of(Env))
       end
 
       it "calls body with environment, context and evaler if body is a #call" do
@@ -23,52 +23,63 @@ module Ruspea::Runtime
         body = spy("body with #call")
         fn = lm.new(
           params: [Sym.new("time"), Sym.new("over")],
-          body: body,
-          evaler: evaler)
+          body: body,)
         ctx = Env.new.tap { |e| e.define Sym.new("external"), "context" }
 
-        fn.call(420, 9000, context: ctx)
+        fn.call(420, 9000, context: ctx, evaler: evaler)
 
         expected_env = Env.new(ctx).tap { |e|
           e.define Sym.new("time"), 420
           e.define Sym.new("over"), 9000
           e.define Sym.new("%ctx"), ctx
         }
-        expect(body).to have_received(:call).with(expected_env, ctx, evaler)
+        expect(body).to have_received(:call).with(expected_env, evaler)
       end
-
-      it "makes context available in the body (%ctx)"
     end
 
     context "environment binding" do
       it "creates an environment for the evaluator with correct symbol > val" do
-        evaler = spy("evaler")
+        evaler = instance_double(Ruspea::Evaler::Eval)
+
         fn = lm.new(
           params: [Sym.new("name")],
-          body: [1],
-          evaler: evaler)
+          body: [1],)
 
-        fn.call("Friedman")
+        # Evaluates argument in the caller context
+        allow(evaler).to receive(:call)
+          .with("Friedman", context: Env::Empty.instance)
+          .and_return("Friedman")
 
         env = Env.new.tap { |env|
           env.define Sym.new("name"), "Friedman"
           env.define Sym.new("%ctx"), Env::Empty.instance
         }
-        expect(evaler).to have_received(:call).with(1, context: env)
+
+        # Then evaluates the body with passing the correct context
+        expect(evaler).to receive(:call).with(1, context: env)
+
+        fn.call("Friedman", evaler: evaler)
       end
 
       it "keeps the caller context within it's environment" do
-        evaler = spy("Evaler")
-        fn = lm.new(params: [Sym.new("name")], body: [1], evaler: evaler)
+        evaler = instance_double(Ruspea::Evaler::Eval)
+        fn = lm.new(params: [Sym.new("name")], body: [1])
         caller_context = Env.new.tap { |e| e.define Sym.new("number"), 420 }
 
-        fn.call("Friedman", context: caller_context)
+        # Evaluates argument in the caller context
+        allow(evaler).to receive(:call)
+          .with("Friedman", context: caller_context)
+          .and_return("Friedman")
 
         env = Env.new(caller_context).tap { |env|
           env.define Sym.new("name"), "Friedman"
           env.define Sym.new("%ctx"), caller_context
         }
-        expect(evaler).to have_received(:call).with(1, context: env)
+
+        # Then evaluates the body with passing the correct context
+        expect(evaler).to receive(:call).with(1, context: env)
+
+        fn.call("Friedman", context: caller_context, evaler: evaler)
       end
     end
 
