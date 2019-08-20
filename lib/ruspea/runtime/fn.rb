@@ -2,6 +2,7 @@ module Ruspea::Runtime
   class Fn
     def initialize(*lambdas)
       @arities = {}
+
       lambdas.each { |lm| add lm }
     end
 
