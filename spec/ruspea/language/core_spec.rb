@@ -1,7 +1,7 @@
 module Ruspea::Language
   RSpec.describe Core do
     subject(:core) { described_class.new }
-    let(:evaler) { Ruspea::Evaler::Eval.new }
+    let(:evaler) { Ruspea::Interpreter::Evaler.new }
 
     context "quote" do
       it "allows quotation of expressions" do

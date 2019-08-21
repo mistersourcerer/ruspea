@@ -1,5 +1,5 @@
-module Ruspea::Evaler
-  class Eval
+module Ruspea::Interpreter
+  class Evaler
     include Ruspea::Runtime
     include Ruspea::Error
 

@@ -1,5 +1,5 @@
-module Ruspea::Evaler
-  RSpec.describe Eval do
+module Ruspea::Interpreter
+  RSpec.describe Evaler do
     subject(:evaler) { described_class.new }
 
     describe "#call" do

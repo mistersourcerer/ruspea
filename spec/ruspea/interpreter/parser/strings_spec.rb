@@ -1,17 +1,9 @@
-module Ruspea::Reader
-  RSpec.describe Read do
-    subject(:reader) { described_class.new }
-
-    it "ignores spaces and commas" do
-      expect(reader.call(", , ,")).to eq []
-    end
-
-    it "ignores blank lines" do
-      expect(reader.call("\n\n")).to eq []
-    end
+module Ruspea::Interpreter
+  RSpec.describe Parser, "Strings" do
+    subject(:parser) { described_class.new }
 
     it "recognizes delimited strings" do
-      expect(reader.call("\"hello world\"")).to eq [
+      expect(parser.call("\"hello world\"")).to eq [
         {
           type: String,
           content: "hello world",
@@ -21,7 +13,7 @@ module Ruspea::Reader
     end
 
     it "recognizes open string" do
-      expect(reader.call("\"hello world")).to eq [
+      expect(parser.call("\"hello world")).to eq [
         {
           type: String,
           content: "hello world",
@@ -33,7 +25,7 @@ module Ruspea::Reader
     it "treats spaces, commas and new lines as separators" do
       code = '"hello" "brave"' + "\n" + '"new","world"'
 
-      expect(reader.call(code)).to eq [
+      expect(parser.call(code)).to eq [
         {
           type: String,
           content: "hello",

@@ -39,7 +39,7 @@ module Ruspea::Runtime
 
     context "environment binding" do
       it "creates an environment for the evaluator with correct symbol > val" do
-        evaler = instance_double(Ruspea::Evaler::Eval)
+        evaler = instance_double(Ruspea::Interpreter::Evaler)
 
         fn = lm.new(
           params: [Sym.new("name")],
@@ -62,7 +62,7 @@ module Ruspea::Runtime
       end
 
       it "keeps the caller context within it's environment" do
-        evaler = instance_double(Ruspea::Evaler::Eval)
+        evaler = instance_double(Ruspea::Interpreter::Evaler)
         fn = lm.new(params: [Sym.new("name")], body: [1])
         caller_context = Env.new.tap { |e| e.define Sym.new("number"), 420 }
 
