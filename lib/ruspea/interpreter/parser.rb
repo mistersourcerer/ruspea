@@ -1,11 +1,13 @@
 module Ruspea::Interpreter
   class Parser
     def call(code, forms = [])
-      return forms if code.nil? || code.length == 0
+      return ["", forms] if code.nil? || code.length == 0
 
       char = code[0]
       remaining_code, new_forms =
         case char
+        when LIST_CLOSE
+          return [code, forms]
         when SEPARATOR
           # ignore separators
           [code[1..code.length], forms]
@@ -19,6 +21,11 @@ module Ruspea::Interpreter
             read_number(
               code[1..code.length], code[0])
           [remaining_code, forms + [new_form]]
+        when LIST_OPEN
+          remaining_code, new_form =
+            read_list(
+              code[1..code.length])
+          [remaining_code, forms + [new_form]]
         end
 
       call(remaining_code, new_forms)
@@ -30,6 +37,8 @@ module Ruspea::Interpreter
     QUOTE = /\A"/
     DIGIT = /\A[\d-]/
     NUMERIC = /\A[\d_]/
+    LIST_OPEN = /\A\(/
+    LIST_CLOSE = /\A\)/
 
     def read_string(code, current_string = "")
       if code[0] == "\""
@@ -62,6 +71,18 @@ module Ruspea::Interpreter
       end
 
       read_float(code[1..code.length], current_number + code[0])
+    end
+
+    def read_list(code)
+      read_collection(code, Ruspea::Runtime::List, LIST_CLOSE)
+    end
+
+    def read_collection(code, type, close_with)
+      remaining_code, forms = call(code)
+      closed =
+        remaining_code.length > 0 && remaining_code[0].match?(close_with)
+      tuple(
+        remaining_code[1..remaining_code.length], type, forms, closed)
     end
 
     def tuple(code, type, content, closed = true)

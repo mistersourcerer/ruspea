@@ -3,29 +3,29 @@ module Ruspea::Interpreter
     subject(:parser) { described_class.new }
 
     it "recognizes delimited strings" do
-      expect(parser.call("\"hello world\"")).to eq [
+      expect(parser.call("\"hello world\"")).to eq ["", [
         {
           type: String,
           content: "hello world",
           closed: true
         }
-      ]
+      ]]
     end
 
     it "recognizes open string" do
-      expect(parser.call("\"hello world")).to eq [
+      expect(parser.call("\"hello world")).to eq ["", [
         {
           type: String,
           content: "hello world",
           closed: false
         }
-      ]
+      ]]
     end
 
     it "treats spaces, commas and new lines as separators" do
       code = '"hello" "brave"' + "\n" + '"new","world"'
 
-      expect(parser.call(code)).to eq [
+      expect(parser.call(code)).to eq ["", [
         {
           type: String,
           content: "hello",
@@ -46,7 +46,7 @@ module Ruspea::Interpreter
           content: "world",
           closed: true
         }
-      ]
+      ]]
     end
   end
 end

@@ -3,7 +3,7 @@ module Ruspea::Interpreter
     subject(:parser) { described_class.new }
 
     it "recongnizes integers" do
-      expect(parser.call("1 420 -2 4_20")).to eq [
+      expect(parser.call("1 420 -2 4_20")).to eq ["", [
         {
           type: Integer,
           content: "1",
@@ -24,11 +24,11 @@ module Ruspea::Interpreter
           content: "4_20",
           closed: true
         },
-      ]
+      ]]
     end
 
     it "recognizes floats" do
-      expect(parser.call("1.0 4.20 -2.1 4_2.0")).to eq [
+      expect(parser.call("1.0 4.20 -2.1 4_2.0")).to eq ["", [
         {
           type: Float,
           content: "1.0",
@@ -49,7 +49,7 @@ module Ruspea::Interpreter
           content: "4_2.0",
           closed: true
         },
-      ]
+      ]]
     end
   end
 end
