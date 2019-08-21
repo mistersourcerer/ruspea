@@ -4,10 +4,6 @@ module Ruspea::Runtime
       @id = String(id.to_s)
     end
 
-    def print
-      @id
-    end
-
     def to_s
       @id
     end

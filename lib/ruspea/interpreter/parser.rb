@@ -1,5 +1,7 @@
 module Ruspea::Interpreter
   class Parser
+    include Ruspea::Runtime
+
     def call(code, forms = [])
       return ["", forms] if code.nil? || code.length == 0
 
@@ -25,6 +27,10 @@ module Ruspea::Interpreter
           remaining_code, new_form =
             read_list(
               code[1..code.length])
+          [remaining_code, forms + [new_form]]
+        else
+          remaining_code, new_form =
+            read_symbol(code)
           [remaining_code, forms + [new_form]]
         end
 
@@ -75,6 +81,13 @@ module Ruspea::Interpreter
 
     def read_list(code)
       read_collection(code, Ruspea::Runtime::List, LIST_CLOSE)
+
+    def read_symbol(code, current_symbol = "")
+      if code.length == 0 || code[0].match?(ENDER)
+        return tuple(code, Sym, current_symbol)
+      end
+
+      read_symbol(code[1..code.length], current_symbol + code[0])
     end
 
     def read_collection(code, type, close_with)

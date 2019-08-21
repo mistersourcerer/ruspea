@@ -1,8 +1,8 @@
 module Ruspea::Runtime
   RSpec.describe Sym do
-    describe "#print" do
+    describe "#to_s" do
       it "returns the symbol id" do
-        expect(Sym.new("much_symbolic").print).to eq "much_symbolic"
+        expect(Sym.new("much_symbolic").to_s).to eq "much_symbolic"
       end
     end
 

@@ -2,6 +2,7 @@ module Ruspea::Interpreter
   RSpec.describe Parser, "Lists" do
     subject(:parser) { described_class.new }
     subject(:list_type) { Ruspea::Runtime::List }
+    subject(:sym_type) { Ruspea::Runtime::Sym }
 
     it "recongizes a list" do
       expect(parser.call("(1 \"2\", 3\n4.20)")).to eq ["", [
@@ -68,6 +69,20 @@ module Ruspea::Interpreter
                 {closed: true, type: Integer, content: "2"},
               ]
             }
+          ]
+        }
+      ]]
+    end
+
+    it "recognizes lists with symbols at the end" do
+      expect(parser.call("(def lol bbq)")).to eq ["", [
+        {
+          closed: true,
+          type: list_type,
+          content: [
+            {type: sym_type, content: "def", closed: true},
+            {type: sym_type, content: "lol", closed: true},
+            {type: sym_type, content: "bbq", closed: true},
           ]
         }
       ]]

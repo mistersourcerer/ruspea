@@ -2,6 +2,7 @@ module Ruspea::Interpreter
   RSpec.describe Reader do
     subject(:reader) { described_class.new }
     let(:list) { Ruspea::Runtime::List }
+    let(:sym) { Ruspea::Runtime::Sym }
 
     it "reads strings" do
       expect(reader.call('"hello" "world"')).to eq ["hello", "world"]
@@ -30,6 +31,13 @@ module Ruspea::Interpreter
             list.create("5", list.create(6))
           )
         ),
+      ]
+    end
+
+    it "reads symbols" do
+      expect(reader.call("lol")).to eq [sym.new("lol")]
+      expect(reader.call('"omg" lol bbq')).to eq [
+        "omg", sym.new("lol"), sym.new("bbq")
       ]
     end
   end

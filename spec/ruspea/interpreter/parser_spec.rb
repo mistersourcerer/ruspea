@@ -9,5 +9,11 @@ module Ruspea::Interpreter
     it "ignores blank lines" do
       expect(parser.call("\n\n")).to eq ["", []]
     end
+
+    it "parses symbols" do
+      expect(parser.call("lol")).to eq ["", [
+        {type: Ruspea::Runtime::Sym, content: "lol", closed: true}
+      ]]
+    end
   end
 end
