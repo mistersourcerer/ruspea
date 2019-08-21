@@ -26,6 +26,14 @@ module Ruspea::Runtime
       tail
     end
 
+    def take(amount, from = self)
+      return Nill.instance if amount == 0 || from.empty?
+
+      from
+        .take(amount - 1, from.tail)
+        .cons(from.head)
+    end
+
     def empty?
       false
     end

@@ -73,15 +73,23 @@ module Ruspea::Runtime
         end
       end
 
-      describe "#to_a" do
-        it "turns the list into a (Ruby) array" do
-          expect(list.to_a).to eq [1, 2, 3, 4]
-        end
-
-        it "returns empty array if list is empty" do
-          expect(builder.create.to_a).to eq []
+      describe "#take" do
+        it "returns N elements from the 'top' of the list" do
+          expect(list.take(3)).to eq List.create(1, 2, 3)
         end
       end
     end # inspecting Lists
+
+    describe "#to_a" do
+      subject(:list) { builder.create 1, 2, 3, 4 }
+
+      it "turns the list into a (Ruby) array" do
+        expect(list.to_a).to eq [1, 2, 3, 4]
+      end
+
+      it "returns empty array if list is empty" do
+        expect(builder.create.to_a).to eq []
+      end
+    end
   end
 end
