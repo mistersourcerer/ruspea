@@ -12,6 +12,8 @@ module Ruspea
         value.to_s
       when List
         print_list(value)
+      when Lm
+        print_fn(value)
       else
         value.inspect
       end
@@ -33,6 +35,18 @@ module Ruspea
       else
         "(#{printed})"
       end
+    end
+
+    def print_fn(fn)
+      params = fn.params.map { |param| call(param) }.join(" ")
+      body =
+        if fn.body.respond_to?(:call)
+          "#- internal -#\n  #{fn.body.inspect}"
+        else
+          body = fn.body.map { |exp| call(exp) }.join("\n  ")
+        end
+
+      "(fn [#{params}]\n  #{body})"
     end
   end
 end

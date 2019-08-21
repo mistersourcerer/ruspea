@@ -1,6 +1,6 @@
 module Ruspea::Runtime
   class Lm
-    attr_reader :arity
+    attr_reader :arity, :params, :body
 
     def initialize(params: [], body: [])
       @params = params
@@ -19,8 +19,6 @@ module Ruspea::Runtime
     end
 
     private
-
-    attr_reader :params, :body
 
     def env_and_callable_body(args, context, evaler)
       if body.respond_to? :call

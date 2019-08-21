@@ -1,6 +1,9 @@
 module Ruspea
   RSpec.describe Printer do
     subject(:printer) { described_class.new }
+    let(:list) { Ruspea::Runtime::List }
+    let(:sym) { Ruspea::Runtime::Sym }
+    let(:lm) { Ruspea::Runtime::Lm }
 
     it "prints strings" do
       expect(printer.call("lol")).to eq("\"lol\"")
@@ -12,12 +15,10 @@ module Ruspea
     end
 
     it "prints symbols" do
-      expect(printer.call(Ruspea::Runtime::Sym.new("lol"))).to eq("lol")
+      expect(printer.call(sym.new("lol"))).to eq("lol")
     end
 
     context "lists" do
-      let(:list) { Ruspea::Runtime::List }
-      let(:sym) { Ruspea::Runtime::Sym }
 
       it "prints the internal contents of a list" do
         value = list.create(sym.new("lol"), "omg", 1, 4.2)
@@ -40,7 +41,42 @@ module Ruspea
       it "uses elipses if list has more than 10 elements" do
         value = list.create(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 420)
 
-        expect(printer.call(value)).to eq ("(1 2 3 4 5 6 7 8 9 10 ...) # count: 14")
+        expect(printer.call(value))
+          .to eq "(1 2 3 4 5 6 7 8 9 10 ...) # count: 14"
+      end
+    end # lists
+
+    context "Functions" do
+      it "prints function params and body" do
+        fun = lm.new(
+          params: [sym.new("lol"), sym.new("bbq")],
+          body: [
+            list.create(sym.new("puts"), sym.new("lol")),
+            list.create(sym.new("puts"), sym.new("bbq")),
+            4.2
+          ]
+        )
+
+        expect(printer.call(fun)).to eq(
+          "(fn [lol bbq]\n" +
+          "  (puts lol)\n" +
+          "  (puts bbq)\n" +
+          "  4.2)"
+        )
+      end
+
+      it "if body is a ruby proc, says the function is 'internal'" do
+        noop = -> {}
+        fun = lm.new(
+          params: [sym.new("lol"), sym.new("bbq")],
+          body: noop
+        )
+
+        expect(printer.call(fun)).to eq(
+          "(fn [lol bbq]\n" +
+          "  #- internal -#\n" +
+          "  #{noop.inspect})"
+        )
       end
     end
   end
