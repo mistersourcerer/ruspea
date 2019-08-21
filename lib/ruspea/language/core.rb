@@ -25,9 +25,11 @@ module Ruspea::Language
         params: [Sym.new("sym"), Sym.new("val")],
         body: ->(env, evaler) {
           caller_context = env.call(Sym.new("%ctx"))
-          caller_context.call(
-            env.call(Sym.new("sym")),
-            env.call(Sym.new("val")))
+          sym = env.call(Sym.new("sym"))
+          expression = env.call(Sym.new("val"))
+          value = evaler.call(expression, context: env)
+
+          caller_context.call(sym, value)
         }
       )
     end

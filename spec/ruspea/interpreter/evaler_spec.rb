@@ -1,5 +1,7 @@
 module Ruspea::Interpreter
   RSpec.describe Evaler do
+    include Ruspea::Runtime
+
     subject(:evaler) { described_class.new }
 
     describe "#call" do
@@ -42,17 +44,44 @@ module Ruspea::Interpreter
         it "raises if list.head ! respond_to? :call"
 
         it "evaluates the parameters before calling the function" do
-          # (def number 420)
-          # (defn fn [number_arg] number_arg)
-          # (fn number) => 420
-          # (fn 13) => 13
+          list = Ruspea::Runtime::List
+          sym = Ruspea::Runtime::Sym
+          env = Ruspea::Runtime::Env.new(Ruspea::Language::Core.new)
 
+          # (def number 420)
+          attribution = list.create(
+            sym.new("def"),
+            sym.new("number"),
+            420
+          )
+          expect(
+            evaler.call(
+              attribution, context: env)).to eq 420
+          expect(
+            env.call(
+              sym.new("number"))).to eq 420
+
+          # (def new_number number)
+          new_attribution = list.create(
+            sym.new("def"),
+            sym.new("new_number"),
+            sym.new("number")
+          )
+          expect(
+            evaler.call(
+              new_attribution, context: env)).to eq 420
+        end
+
+        it "evaluates parameters before calling user functions" do
+          # (defn fn [number_arg] number_arg)
           fn_name = Ruspea::Runtime::Sym.new("fn")
           number = Ruspea::Runtime::Sym.new("number")
+
           fn = Ruspea::Runtime::Lm.new(
             params: [Ruspea::Runtime::Sym.new("number_arg")],
             body: [Ruspea::Runtime::Sym.new("number_arg")],
           )
+
           ctx = Ruspea::Runtime::Env.new.tap { |env|
             env.define fn_name, fn
             env.define number, 420
@@ -62,9 +91,12 @@ module Ruspea::Interpreter
             fn_name,
             Ruspea::Runtime::Sym.new("number")
           )
-          list_with_13 = Ruspea::Runtime::List.create(fn_name, 13)
 
+          # (fn number) => 420
           expect(evaler.call(list, context: ctx)).to eq 420
+
+          # (fn 13) => 13
+          list_with_13 = Ruspea::Runtime::List.create(fn_name, 13)
           expect(evaler.call(list_with_13, context: ctx)).to eq 13
         end
       end
