@@ -2,7 +2,7 @@ module Ruspea::Interpreter
   class Parser
     include Ruspea::Runtime
 
-    def call(code, forms = [])
+    def call(code, forms = [], return_next: false)
       return ["", forms] if code.nil? || code.length == 0
 
       remaining_code, new_form =
@@ -12,7 +12,7 @@ module Ruspea::Interpreter
         when SEPARATOR
           # ignore separators
           [code[1..code.length], nil]
-        when QUOTE
+        when STRING
           read_string(code[1..code.length])
         when DIGIT
           read_number(code[1..code.length], code[0])
@@ -20,9 +20,15 @@ module Ruspea::Interpreter
           read_list(code[1..code.length])
         when ARRAY_OPEN
           read_array(code[1..code.length])
+        when QUOTE
+          # remove the ' sign
+          read_quote(code[1..code.length])
         else
           read_symbol(code)
         end
+
+      # return only the "next" form
+      return [remaining_code, new_form] if return_next
 
       new_forms = new_form.nil? ? forms : forms + [new_form]
       call(remaining_code, new_forms)
@@ -31,9 +37,10 @@ module Ruspea::Interpreter
     private
 
     SEPARATOR = /\A[,\s]/
-    QUOTE = /\A"/
+    STRING = /\A"/
     DIGIT = /\A[\d-]/
     NUMERIC = /\A[\d_]/
+    QUOTE = /\A'/
     LIST_OPEN = /\A\(/
     LIST_CLOSE = /\A\)/
     ARRAY_OPEN = /\A\[/
@@ -90,6 +97,13 @@ module Ruspea::Interpreter
       read_symbol(code[1..code.length], current_symbol + code[0])
     end
 
+    def read_quote(code)
+      remaining_code, content = call(code, return_next: true)
+
+      quote = build_form(Sym, "quote")
+      tuple(remaining_code, List, [quote, content])
+    end
+
     def read_collection(code, type, close_with)
       remaining_code, forms = call(code)
       closed =
@@ -105,7 +119,7 @@ module Ruspea::Interpreter
       ]
     end
 
-    def build_form(type, content, closed)
+    def build_form(type, content, closed = true)
       {
         type: type,
         content: content,

@@ -13,7 +13,7 @@ module Ruspea::Interpreter
         context.lookup expression
       when List
         fn = fn_from_invocation(expression, context)
-        arguments = args_from_invocation(expression, context)
+        arguments = expression.tail.to_a
         # TODO: raise if ! respond_to?(:call)
         fn.call(*arguments, context: context, evaler: self)
       when Array
@@ -33,12 +33,6 @@ module Ruspea::Interpreter
         .tap { |fn|
           raise Resolution.new(expression.head) if fn.nil?
         }
-    end
-
-    def args_from_invocation(expression, context)
-      expression
-        .tail
-        .to_a
     end
   end
 end

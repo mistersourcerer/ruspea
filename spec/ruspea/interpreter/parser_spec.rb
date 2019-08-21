@@ -29,5 +29,32 @@ module Ruspea::Interpreter
         }
       ]]
     end
+
+    it "parses quoting (') as a function invocation" do
+      expect(parser.call("'(1 lol (bbq))")).to eq ["", [
+        {
+          type: Ruspea::Runtime::List,
+          closed: true,
+          content: [
+            {type: Ruspea::Runtime::Sym, content: "quote", closed: true},
+            {
+              type: Ruspea::Runtime::List,
+              closed: true,
+              content: [
+                {type: Integer, content: "1", closed: true},
+                {type: Ruspea::Runtime::Sym, content: "lol", closed: true},
+                {
+                  type: Ruspea::Runtime::List,
+                  closed: true,
+                  content: [
+                    {type: Ruspea::Runtime::Sym, content: "bbq", closed: true},
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]]
+    end
   end
 end
