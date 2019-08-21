@@ -3,18 +3,23 @@ require "singleton"
 module Ruspea::Runtime
   class Env
     class Empty
+      include Ruspea::Error
       include Singleton
 
       def define(_, _)
         nil
       end
 
-      def lookup(_)
-        nil
+      def lookup(sym)
+        raise(Resolution.new(sym))
       end
 
       def eql?(other)
         self == other
+      end
+
+      def around(env)
+        env
       end
 
       def ==(other)
@@ -25,8 +30,8 @@ module Ruspea::Runtime
 
     include Ruspea::Error
 
-    def initialize(context = nil)
-      @table = {}
+    def initialize(context = nil, table = {})
+      @table = table.dup
       @context = context || Empty.instance
 
       @fn = Fn.new(fn_define, fn_fetch)
@@ -37,11 +42,19 @@ module Ruspea::Runtime
     end
 
     def lookup(sym)
-      @table.fetch(sym) { @context.lookup(sym) || raise(Resolution.new(sym)) }
+      @table.fetch(sym) { @context.lookup(sym) }
     end
 
     def call(*args)
       @fn.call(*args)
+    end
+
+    def around(env)
+      new_context = env
+        .context
+        .around(self)
+
+      self.class.new(new_context, env.table)
     end
 
     def eql?(other)

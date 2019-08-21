@@ -2,10 +2,11 @@ module Ruspea::Runtime
   class Lm
     attr_reader :arity, :params, :body
 
-    def initialize(params: [], body: [])
+    def initialize(params: [], body: [], closure: Env::Empty.instance)
       @params = params
       @arity = params.length
       @body = body
+      @closure = closure
     end
 
     def call(*args, context: nil, evaler: nil)
@@ -15,10 +16,12 @@ module Ruspea::Runtime
       env, callable = env_and_callable_body(args, context, evaler)
       env.define Sym.new("%ctx"), context
 
-      callable.call env, evaler, args
+      callable.call closure.around(env), evaler, args
     end
 
     private
+
+    attr_reader :closure
 
     def env_and_callable_body(args, context, evaler)
       if body.respond_to? :call
@@ -35,7 +38,8 @@ module Ruspea::Runtime
     end
 
     def environment_with(args, context, evaler:)
-      args.each_with_index.reduce(Env.new(context)) { |env, tuple|
+      env = Env.new(context)
+      args.each_with_index.reduce(env) { |env, tuple|
         arg, idx = tuple
 
         env.tap { |e|
@@ -50,9 +54,7 @@ module Ruspea::Runtime
       end
 
       body.reduce(nil) { |result, expression|
-        evaler.call(
-          expression,
-          context: environment)
+        evaler.call(expression, context: environment)
       }
     end
   end

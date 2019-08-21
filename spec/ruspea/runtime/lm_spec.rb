@@ -93,5 +93,64 @@ module Ruspea::Runtime
           Ruspea::Error::Arity, "Expected 2 args, but received 3")
       end
     end
+
+    context "closures" do
+      it "remembers symbols from when the functions was created" do
+        # This means that the caller context for the fn creation
+        # is the fallback for the function environment.
+        closured_env = Env.new.tap { |env|
+          # this symbol will be called in te body,
+          # but is overriden by the parameter in the call
+          env.define Sym.new("overriden_by_param"), 100
+
+          # this will be used in the body as it is
+          env.define Sym.new("dragged_into_closure"), 418
+        }
+
+        fn = lm.new(
+          params: [Sym.new("overriden_by_param")],
+          body: ->(env, evaler) {
+            1 +
+            env.lookup(Sym.new("overriden_by_param")) +
+            env.lookup(Sym.new("dragged_into_closure"))
+          },
+          closure: closured_env
+        )
+
+        expect(fn.call(1)).to eq 420
+      end
+
+      it "remembers symbols from when the functions was created in a evaluated body" do
+        closured_env = Env.new.tap { |env|
+          env.define Sym.new("dragged_into_closure"), 420
+        }
+
+        fn = lm.new(
+          body: [
+            Sym.new("dragged_into_closure")
+          ],
+          closure: closured_env
+        )
+
+        expect(fn.call(evaler: Ruspea::Interpreter::Evaler.new)).to eq 420
+      end
+
+      it "overrides closures with parameters" do
+        closured_env = Env.new.tap { |env|
+          env.define Sym.new("overriden"), 420
+        }
+
+        fn = lm.new(
+          params: [Sym.new("overriden")],
+          body: [
+            Sym.new("overriden")
+          ],
+          closure: closured_env
+        )
+
+        evaler = Ruspea::Interpreter::Evaler.new
+        expect(fn.call("not yet", evaler: evaler)).to eq "not yet"
+      end
+    end
   end
 end

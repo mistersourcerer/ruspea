@@ -60,5 +60,43 @@ module Ruspea::Runtime
     context "equality test" do
       it "considers the internal table and the context"
     end
+
+    context "wrapping environments, context, etc." do
+      describe "#around" do
+        it "creates a new environment where the caller is the context for the parameter" do
+          env.define Sym.new("time"), 420
+          new_env = Env.new.tap { |env| env.define Sym.new("inner"), "lol" }
+          wrapped_env = env.around(new_env)
+
+          expect(wrapped_env.lookup(Sym.new("inner"))).to eq "lol"
+          expect(wrapped_env.lookup(Sym.new("time"))).to eq 420
+        end
+
+        it "do not lose the old (current) context when wrapping an env" do
+          env.define Sym.new("time"), 420
+          new_env = Env.new(env)
+            .tap { |env| env.define Sym.new("inner"), "lol" }
+          closure = Env.new.tap { |env| env.define Sym.new("omg"), "420" }
+
+          final_env = closure.around(new_env)
+
+          expect(final_env.lookup(Sym.new("inner"))).to eq "lol"
+          expect(final_env.lookup(Sym.new("omg"))).to eq "420"
+          expect(final_env.lookup(Sym.new("time"))).to eq 420
+        end
+
+        it "overrides the definitions of a previous context" do
+          env.define Sym.new("time"), 420
+          new_env = Env.new(env)
+            .tap { |env| env.define Sym.new("inner"), "lol" }
+          closure = Env.new.tap { |env| env.define Sym.new("time"), "not yet" }
+
+          final_env = closure.around(new_env)
+
+          expect(final_env.lookup(Sym.new("inner"))).to eq "lol"
+          expect(final_env.lookup(Sym.new("time"))).to eq "not yet"
+        end
+      end
+    end
   end
 end
