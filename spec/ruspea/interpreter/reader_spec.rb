@@ -40,5 +40,12 @@ module Ruspea::Interpreter
         "omg", sym.new("lol"), sym.new("bbq")
       ]
     end
+
+    it "reads arrays" do
+      code = '[1 [2, "3" [four 5]], (6 7)]'
+      expect(reader.call(code)).to eq [
+        [1, [2, "3", [sym.new("four"), 5]], list.create(6, 7)]
+      ]
+    end
   end
 end

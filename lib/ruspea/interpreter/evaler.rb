@@ -16,8 +16,12 @@ module Ruspea::Interpreter
         arguments = args_from_invocation(expression, context)
         # TODO: raise if ! respond_to?(:call)
         fn.call(*arguments, context: context, evaler: self)
+      when Array
+        expression.map { |exp|
+          call(exp, context: context)
+        }
       else
-        raise
+        raise "Unrecognized expression"
       end
     end
 

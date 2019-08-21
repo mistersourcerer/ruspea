@@ -21,6 +21,7 @@ module Ruspea::Interpreter
     FLOAT = TokenTyper.new(Float)
     LIST = TokenTyper.new(List)
     SYM = TokenTyper.new(Sym)
+    ARRAY = TokenTyper.new(Array)
 
     def initialize
       @parser = Parser.new
@@ -36,22 +37,28 @@ module Ruspea::Interpreter
 
     private
 
-    def read(token)
-      case token
+    def read(form)
+      case form
       when INTEGER
-        Integer(token[:content])
+        Integer(form[:content])
       when FLOAT
-        Float(token[:content])
+        Float(form[:content])
       when STRING
-        token[:content]
+        form[:content]
       when SYM
-        Sym.new(token[:content])
+        Sym.new(form[:content])
       when LIST
-        contents = token[:content].map { |form|
-          read(form)
-        }
-        List.create(*contents)
+        List.create(
+          *eval_collection(form))
+      when ARRAY
+        eval_collection(form)
       end
+    end
+
+    def eval_collection(form)
+      form[:content].map { |form|
+        read(form)
+      }
     end
   end
 end

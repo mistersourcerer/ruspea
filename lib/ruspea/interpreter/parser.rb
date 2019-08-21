@@ -5,35 +5,26 @@ module Ruspea::Interpreter
     def call(code, forms = [])
       return ["", forms] if code.nil? || code.length == 0
 
-      char = code[0]
-      remaining_code, new_forms =
-        case char
-        when LIST_CLOSE
+      remaining_code, new_form =
+        case code[0]
+        when DELIMITERS
           return [code, forms]
         when SEPARATOR
           # ignore separators
-          [code[1..code.length], forms]
+          [code[1..code.length], nil]
         when QUOTE
-          remaining_code, new_form =
-            read_string(
-              code[1..code.length])
-          [remaining_code, forms + [new_form]]
+          read_string(code[1..code.length])
         when DIGIT
-          remaining_code, new_form =
-            read_number(
-              code[1..code.length], code[0])
-          [remaining_code, forms + [new_form]]
+          read_number(code[1..code.length], code[0])
         when LIST_OPEN
-          remaining_code, new_form =
-            read_list(
-              code[1..code.length])
-          [remaining_code, forms + [new_form]]
+          read_list(code[1..code.length])
+        when ARRAY_OPEN
+          read_array(code[1..code.length])
         else
-          remaining_code, new_form =
-            read_symbol(code)
-          [remaining_code, forms + [new_form]]
+          read_symbol(code)
         end
 
+      new_forms = new_form.nil? ? forms : forms + [new_form]
       call(remaining_code, new_forms)
     end
 
@@ -45,6 +36,10 @@ module Ruspea::Interpreter
     NUMERIC = /\A[\d_]/
     LIST_OPEN = /\A\(/
     LIST_CLOSE = /\A\)/
+    ARRAY_OPEN = /\A\[/
+    ARRAY_CLOSE = /\A\]/
+    DELIMITERS = Regexp.union(LIST_CLOSE, ARRAY_CLOSE)
+    ENDER = Regexp.union(SEPARATOR, DELIMITERS)
 
     def read_string(code, current_string = "")
       if code[0] == "\""
@@ -80,7 +75,12 @@ module Ruspea::Interpreter
     end
 
     def read_list(code)
-      read_collection(code, Ruspea::Runtime::List, LIST_CLOSE)
+      read_collection(code, List, LIST_CLOSE)
+    end
+
+    def read_array(code)
+      read_collection(code, Array, ARRAY_CLOSE)
+    end
 
     def read_symbol(code, current_symbol = "")
       if code.length == 0 || code[0].match?(ENDER)
