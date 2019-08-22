@@ -6,7 +6,10 @@ module Ruspea::Runtime
       include Ruspea::Error
       include Singleton
 
-      def define(_, _)
+      def initialize(*_)
+      end
+
+      def define(*_)
         nil
       end
 
@@ -30,8 +33,13 @@ module Ruspea::Runtime
 
     include Ruspea::Error
 
-    def initialize(context = nil, table = {})
-      @table = table.dup
+    def initialize(context = nil, table = nil)
+      @table =
+        if table.nil?
+          {}
+        else
+          table.dup
+        end
       @context = context || Empty.instance
 
       @fn = Fn.new(fn_define, fn_fetch)

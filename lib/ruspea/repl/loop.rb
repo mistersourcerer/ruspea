@@ -1,7 +1,7 @@
 module Ruspea::Repl
   class ReplEnv < Ruspea::Runtime::Env
-    def initialize
-      super(Ruspea::Language::Core.new)
+    def initialize(context = Ruspea::Language::Core.new, *args)
+      super(context, args[1..args.length])
       @should_exit = false
     end
 

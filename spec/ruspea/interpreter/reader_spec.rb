@@ -47,5 +47,47 @@ module Ruspea::Interpreter
         [1, [2, "3", [sym.new("four"), 5]], list.create(6, 7)]
       ]
     end
+
+    context "function declarations" do
+      it "reads function declaration" do
+        code = '(fn [omg lol] (print omg) (puts lol) "4.20")'
+        expect(reader.call(code)).to eq [
+          list.create(
+            sym.new("fn"),
+            [sym.new("omg"), sym.new("lol")],
+            [
+              list.create(sym.new("print"), sym.new("omg")),
+              list.create(sym.new("puts"), sym.new("lol")),
+              "4.20"
+            ]
+          )
+        ]
+      end
+
+      it "recognizes declaration without params" do
+        code = '(fn [] (print omg) (puts lol) "4.20")'
+        expect(reader.call(code)).to eq [
+          list.create(
+            sym.new("fn"),
+            [],
+            [
+              list.create(sym.new("print"), sym.new("omg")),
+              list.create(sym.new("puts"), sym.new("lol")),
+              "4.20"
+            ]
+          )
+        ]
+      end
+
+      it "raises syntax error if no params given" do
+        message = <<~m
+          fn first parameter should be an Array
+          for a zero arity function, use (fn [] ...)
+        m
+        code = '(fn (print omg) (puts lol) "4.20")'
+        expect { reader.call(code) }
+          .to raise_error(Ruspea::Error::Syntax, message)
+      end
+    end
   end
 end

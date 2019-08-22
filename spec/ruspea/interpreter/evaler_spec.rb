@@ -48,6 +48,37 @@ module Ruspea::Interpreter
           expect(env.call(Ruspea::Runtime::Sym.new("omg"))).to eq "lol"
         end
       end
+
+      context "Function delcarations" do
+        let(:list) { Ruspea::Runtime::List }
+        let(:sym) { Ruspea::Runtime::Sym }
+
+        it "creates a function and stores it in the caller context" do
+          # (def omg (fn [lol] lol))
+          declaration = list.create(
+            sym.new("def"),
+            sym.new("omg"),
+            list.create(
+              sym.new("fn"),
+              [sym.new("lol")],
+              [sym.new("lol")]
+            )
+          )
+
+          # (omg 1) # => 1
+          invocation = list.create(
+            sym.new("omg"),
+            1
+          )
+
+          env = Ruspea::Runtime::Env.new(Ruspea::Language::Core.new)
+          evaler.call(declaration, context: env)
+          omg = env.lookup(sym.new("omg"))
+
+          expect(omg).to be_a(Ruspea::Runtime::Lm)
+          expect(evaler.call(invocation, context: env)).to eq 1
+        end
+      end
     end
   end
 end

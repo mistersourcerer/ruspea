@@ -2,11 +2,12 @@ module Ruspea::Language
   class Core < Ruspea::Runtime::Env
     include Ruspea::Runtime
 
-    def initialize
-      super
+    def initialize(*args)
+      super(*args)
 
       define Sym.new("quote"), fn_quote
       define Sym.new("def"), fn_def
+      define Sym.new("fn"), fn_fn
     end
 
     private
@@ -30,6 +31,23 @@ module Ruspea::Language
           value = evaler.call(expression, context: env)
 
           caller_context.call(sym, value)
+        }
+      )
+    end
+
+    def fn_fn
+      Lm.new(
+        params: [Sym.new("params"), Sym.new("body")],
+        body: ->(env, evaler) {
+          params = env.call(Sym.new("params"))
+          body = env.call(Sym.new("body"))
+          caller_context = env.call(Sym.new("%ctx"))
+
+          Lm.new(
+            params: params,
+            body: body.to_a,
+            closure: caller_context
+          )
         }
       )
     end
