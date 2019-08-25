@@ -18,17 +18,18 @@ module Ruspea::Interpreter
     private
 
     class TokenTyper
-      def initialize(type)
-        @type = type
+      def initialize(*types)
+        @types = types
       end
 
       def ===(token)
-        type == token[:type]
+        return true if types.find { |type| type == token[:type] }
+        false
       end
 
       private
 
-      attr_reader :type
+      attr_reader :types
     end
 
     STRING = TokenTyper.new(String)
@@ -37,6 +38,7 @@ module Ruspea::Interpreter
     LIST = TokenTyper.new(List)
     SYM = TokenTyper.new(Sym)
     ARRAY = TokenTyper.new(Array)
+    BOOLEAN = TokenTyper.new(TrueClass, FalseClass)
 
     def read(form)
       case form
@@ -52,6 +54,8 @@ module Ruspea::Interpreter
         read_list(form)
       when ARRAY
         eval_collection(form)
+      when BOOLEAN
+        form[:content] == "true"
       end
     end
 

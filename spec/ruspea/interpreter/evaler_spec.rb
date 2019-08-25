@@ -49,6 +49,16 @@ module Ruspea::Interpreter
         end
       end
 
+      context "Booleans" do
+        it "evaluates true" do
+          expect(evaler.call(true)).to eq true
+        end
+
+        it "evaluates false" do
+          expect(evaler.call(false)).to eq false
+        end
+      end
+
       context "Function delcarations" do
         let(:list) { Ruspea::Runtime::List }
         let(:sym) { Ruspea::Runtime::Sym }

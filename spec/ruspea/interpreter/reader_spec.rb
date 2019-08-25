@@ -48,6 +48,11 @@ module Ruspea::Interpreter
       ]
     end
 
+    it "reads booleans" do
+      expect(reader.call("true")).to eq [true]
+      expect(reader.call("false")).to eq [false]
+    end
+
     context "function declarations" do
       it "reads function declaration" do
         code = '(fn [omg lol] (print omg) (puts lol) "4.20")'

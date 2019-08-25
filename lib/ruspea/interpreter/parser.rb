@@ -24,7 +24,7 @@ module Ruspea::Interpreter
           # remove the ' sign
           read_quote(code[1..code.length])
         else
-          read_symbol(code)
+          read_token(code)
         end
 
       # return only the "next" form
@@ -89,12 +89,20 @@ module Ruspea::Interpreter
       read_collection(code, Array, ARRAY_CLOSE)
     end
 
-    def read_symbol(code, current_symbol = "")
+    def read_token(code, current_token = "")
       if code.length == 0 || code[0].match?(ENDER)
-        return tuple(code, Sym, current_symbol)
+        return process_token(code, current_token)
       end
 
-      read_symbol(code[1..code.length], current_symbol + code[0])
+      read_token(code[1..code.length], current_token + code[0])
+    end
+
+    def process_token(code, token)
+      if token == "true" || token == "false"
+        tuple(code, token == "true" ? TrueClass : FalseClass, token)
+      else
+        tuple(code, Sym, token)
+      end
     end
 
     def read_quote(code)

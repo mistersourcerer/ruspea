@@ -56,5 +56,19 @@ module Ruspea::Interpreter
         }
       ]]
     end
+
+    it "parses booleans" do
+      expect(parser.call("true")).to eq(["", [{
+        type: TrueClass,
+        closed: true,
+        content: "true",
+      }]])
+
+      expect(parser.call("false")).to eq(["", [{
+        type: FalseClass,
+        closed: true,
+        content: "false",
+      }]])
+    end
   end
 end

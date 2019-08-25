@@ -20,6 +20,10 @@ module Ruspea::Interpreter
         expression.map { |exp|
           call(exp, context: context)
         }
+      when TrueClass
+        true
+      when FalseClass
+        false
       else
         raise "Unrecognized expression"
       end
