@@ -14,6 +14,12 @@ module Ruspea::Interpreter
       ]
     end
 
+    it "reads nil" do
+      expect(reader.call("nil")).to eq [
+        nil
+      ]
+    end
+
     it "reads lists" do
       expect(reader.call('(1 "2") (3.0, -4)')).to eq [
         list.create(1, "2"),

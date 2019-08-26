@@ -39,6 +39,7 @@ module Ruspea::Interpreter
     SYM = TokenTyper.new(Sym)
     ARRAY = TokenTyper.new(Array)
     BOOLEAN = TokenTyper.new(TrueClass, FalseClass)
+    NILL = TokenTyper.new(NilClass)
 
     def read(form)
       case form
@@ -48,6 +49,8 @@ module Ruspea::Interpreter
         Float(form[:content])
       when STRING
         form[:content]
+      when NILL
+        nil
       when SYM
         Sym.new(form[:content])
       when LIST

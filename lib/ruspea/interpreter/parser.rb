@@ -100,6 +100,8 @@ module Ruspea::Interpreter
     def process_token(code, token)
       if token == "true" || token == "false"
         tuple(code, token == "true" ? TrueClass : FalseClass, token)
+      elsif token == "nil"
+        tuple(code, NilClass, token)
       else
         tuple(code, Sym, token)
       end

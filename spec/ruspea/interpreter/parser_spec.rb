@@ -16,6 +16,12 @@ module Ruspea::Interpreter
       ]]
     end
 
+    it "parses nil" do
+      expect(parser.call("nil")).to eq ["", [
+        {type: NilClass, content: "nil", closed: true}
+      ]]
+    end
+
     it "parses arrays" do
       expect(parser.call('[1 "omg" lol]')).to eq ["", [
         {
