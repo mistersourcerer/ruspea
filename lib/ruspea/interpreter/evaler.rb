@@ -24,6 +24,8 @@ module Ruspea::Interpreter
         true
       when FalseClass
         false
+      when NilClass
+        nil
       else
         raise "Unrecognized expression"
       end

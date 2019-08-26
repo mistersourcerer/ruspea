@@ -2,6 +2,9 @@ module Ruspea::Language
   RSpec.describe Core do
     subject(:core) { described_class.new }
     let(:evaler) { Ruspea::Interpreter::Evaler.new }
+    let(:list) { Ruspea::Runtime::List }
+    let(:sym) { Ruspea::Runtime::Sym }
+    let(:user_env) { Ruspea::Runtime::Env.new(core) }
 
     context "quote" do
       it "allows quotation of expressions" do
@@ -32,6 +35,40 @@ module Ruspea::Language
         expect {
           core.lookup(Ruspea::Runtime::Sym.new("lol"))
         }.to raise_error Ruspea::Error::Resolution
+      end
+    end
+
+    context "cond" do
+      it "returns evaluates the expression for the first 'true' tuple" do
+        user_env.define sym.new("lol"), 420
+
+        invocation = list.create(
+          sym.new("cond"),
+          [
+            [false, 1],
+            [false, 2],
+            [false, 3],
+            [true, sym.new("lol")],
+            [true, 5],
+          ]
+        )
+
+        expect(evaler.call(invocation, context: user_env)).to eq 420
+      end
+
+      it "returns nil if no test is 'true'" do
+        invocation = list.create(
+          sym.new("cond"),
+          [
+            [false, 1],
+            [false, 2],
+            [false, 3],
+            [false, 4],
+            [false, 5],
+          ]
+        )
+
+        expect(evaler.call(invocation, context: user_env)).to eq nil
       end
     end
   end

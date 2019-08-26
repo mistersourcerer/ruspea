@@ -90,6 +90,37 @@ module Ruspea::Interpreter
           for a zero arity function, use (fn [] ...)
         m
         code = '(fn (print omg) (puts lol) "4.20")'
+
+        expect { reader.call(code) }
+          .to raise_error(Ruspea::Error::Syntax, message)
+      end
+    end
+
+    context "cond" do
+      it "recognizes a call to cond" do
+        code = "(cond\nfalse (lol 1)\ntrue (bbq 2))"
+
+        expect(reader.call(code)).to eq([
+          list.create(
+            sym.new("cond"),
+            [
+              [false, list.create(sym.new("lol"), 1)],
+              [true, list.create(sym.new("bbq"), 2)],
+            ]
+          )
+        ])
+      end
+
+      it "raises if body is not formed only by tuples" do
+        message = <<~m
+          cond expects a series of [test tuples].
+          eg.:
+            (cond
+              (it_is_true?) (then_do_something)
+              true 1)
+        m
+        code = "(cond\ntrue)"
+
         expect { reader.call(code) }
           .to raise_error(Ruspea::Error::Syntax, message)
       end

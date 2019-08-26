@@ -8,6 +8,7 @@ module Ruspea::Language
       define Sym.new("quote"), fn_quote
       define Sym.new("def"), fn_def
       define Sym.new("fn"), fn_fn
+      define Sym.new("cond"), fn_cond
     end
 
     private
@@ -48,6 +49,19 @@ module Ruspea::Language
             body: body.to_a,
             closure: caller_context
           )
+        }
+      )
+    end
+
+    def fn_cond
+      Lm.new(
+        params: [Sym.new("tuples")],
+        body: ->(env, evaler) {
+          tuples = env.lookup(Sym.new("tuples"))
+          tuple = tuples.find(->{ [nil, nil] }) { |test, _|
+            evaler.call(test, context: env)
+          }
+          evaler.call(tuple[1], context: env)
         }
       )
     end

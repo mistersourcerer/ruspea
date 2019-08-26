@@ -21,6 +21,10 @@ module Ruspea::Interpreter
         expect(evaler.call("hello world")).to eq "hello world"
       end
 
+      it "evaluates nil to nil" do
+        expect(evaler.call(nil)).to eq nil
+      end
+
       context "Arrays" do
         it "evaluates Arrays to themselves" do
           expect(evaler.call([1, 2])).to eq [1, 2]

@@ -70,6 +70,8 @@ module Ruspea::Interpreter
 
       if content.first == Sym.new("fn")
         read_fn(content)
+      elsif content.first == Sym.new("cond")
+        read_cond(content)
       else
         List.create(*content)
       end
@@ -92,6 +94,26 @@ module Ruspea::Interpreter
         end
 
       List.create(declaration[0], declaration[1], body)
+    end
+
+    def read_cond(invocation)
+      content = invocation[1..invocation.length]
+      no_tuples = <<~m
+        cond expects a series of [test tuples].
+        eg.:
+          (cond
+            (it_is_true?) (then_do_something)
+            true 1)
+      m
+      raise Syntax.new(no_tuples) if (content.count % 2) != 0
+
+      body = content
+        .each_slice(2)
+        .reduce([]) { |tuples, tuple|
+          tuples << [tuple[0], tuple[1]]
+        }
+
+      List.create(invocation.first, body)
     end
   end
 end
