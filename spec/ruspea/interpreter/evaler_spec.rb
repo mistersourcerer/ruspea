@@ -1,96 +1,95 @@
 module Ruspea::Interpreter
   RSpec.describe Evaler do
-    include Ruspea::Runtime
-
     subject(:evaler) { described_class.new }
+    let(:sym) { Ruspea::Runtime::Sym }
+    let(:env) { Ruspea::Runtime::Env }
+    let(:list) { Ruspea::Runtime::List }
 
     describe "#call" do
       it "evaluates symbol to it's value in the context" do
-        number = Ruspea::Runtime::Sym.new("number")
-        cxt = Ruspea::Runtime::Env.new.tap { |env| env.define number, 420 }
+        number = sym.new("number")
+        cxt = env.new.tap { |e| e.define number, 420 }
 
-        result = evaler.call number, context: cxt
+        result = evaler.call Form.new(number), context: cxt
         expect(result).to eq 420
       end
 
       it "evaluates Numerics to themselves" do
-        expect(evaler.call(420)).to eq 420
+        expect(evaler.call(Form.new(420))).to eq 420
       end
 
       it "evaluates Strings to themselves" do
-        expect(evaler.call("hello world")).to eq "hello world"
+        expect(evaler.call(Form.new("hello world"))).to eq "hello world"
       end
 
       it "evaluates nil to nil" do
-        expect(evaler.call(nil)).to eq nil
+        expect(evaler.call(Form.new(nil))).to eq nil
       end
 
       context "Arrays" do
         it "evaluates Arrays to themselves" do
-          expect(evaler.call([1, 2])).to eq [1, 2]
+          array = Form.new([Form.new(1), Form.new(2)])
+          expect(evaler.call(array)).to eq [1, 2]
         end
 
         it "evaluates each member of the array too" do
           core = Ruspea::Language::Core.new
-          env = Ruspea::Runtime::Env.new(core).tap { |env|
-            env.define Ruspea::Runtime::Sym.new("number"), 420
+          new_env = env.new(core).tap { |e|
+            e.define sym.new("number"), 420
           }
 
           # [1 number (def omg "lol")]
-          expression = [
-            1,
-            Ruspea::Runtime::Sym.new("number"),
-            Ruspea::Runtime::List.create(
-              Ruspea::Runtime::Sym.new("def"),
-              Ruspea::Runtime::Sym.new("omg"),
-              "lol"
-            )
-          ]
-          result = evaler.call(expression, context: env)
+          aform = Form.new([
+            Form.new(1),
+            Form.new(sym.new("number")),
+            Form.new(list.create(
+              Form.new(sym.new("def")),
+              Form.new(sym.new("omg")),
+              Form.new("lol")
+            ))
+          ])
+          result = evaler.call(aform, context: new_env)
 
           expect(result).to eq [1, 420, "lol"]
-          expect(env.call(Ruspea::Runtime::Sym.new("omg"))).to eq "lol"
+          expect(new_env.call(sym.new("omg"))).to eq "lol"
         end
       end
 
       context "Booleans" do
         it "evaluates true" do
-          expect(evaler.call(true)).to eq true
+          expect(evaler.call(Form.new(true))).to eq true
         end
 
         it "evaluates false" do
-          expect(evaler.call(false)).to eq false
+          expect(evaler.call(Form.new(false))).to eq false
         end
       end
 
       context "Function delcarations" do
-        let(:list) { Ruspea::Runtime::List }
-        let(:sym) { Ruspea::Runtime::Sym }
-
         it "creates a function and stores it in the caller context" do
           # (def omg (fn [lol] lol))
-          declaration = list.create(
-            sym.new("def"),
-            sym.new("omg"),
-            list.create(
-              sym.new("fn"),
-              [sym.new("lol")],
-              [sym.new("lol")]
-            )
-          )
+          declaration = Form.new(list.create(
+            Form.new(sym.new("def")),
+            Form.new(sym.new("omg")),
+            Form.new(list.create(
+              Form.new(sym.new("fn")),
+              Form.new([sym.new("lol")]),
+              Form.new(sym.new("lol"))
+            ))
+          ))
 
           # (omg 1) # => 1
-          invocation = list.create(
-            sym.new("omg"),
-            1
-          )
+          invocation = Form.new(list.create(
+            Form.new(sym.new("omg")),
+            Form.new(1)
+          ))
 
-          env = Ruspea::Runtime::Env.new(Ruspea::Language::Core.new)
-          evaler.call(declaration, context: env)
-          omg = env.lookup(sym.new("omg"))
+          new_env = env.new(Ruspea::Language::Core.new)
+          evaler.call(declaration, context: new_env)
+          omg = new_env.lookup(sym.new("omg"))
 
           expect(omg).to be_a(Ruspea::Runtime::Lm)
-          expect(evaler.call(invocation, context: env)).to eq 1
+          expect(evaler.call(invocation, context: new_env)).to eq 1
         end
       end
     end

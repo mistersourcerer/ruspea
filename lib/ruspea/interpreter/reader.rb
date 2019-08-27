@@ -7,116 +7,118 @@ module Ruspea::Interpreter
       @parser = Parser.new
     end
 
-    def call(code)
-      _, forms = @parser.call(code)
-      # TODO: if remaining_code.length > 0 || forms.last[:closed] == false raise
-      forms.map { |form|
-        read(form)
-      }
+    def call(source, forms = [])
+      return [source, forms] if source.empty?
+
+      code = to_list(source)
+
+      rest, new_form =
+        case code.head
+        when DELIMITERS
+          # Closing lists, arrays, etc...
+          return [code, forms]
+        when SEPARATOR
+          # ignore separators
+          [code.tail, nil]
+        when STRING
+          stringfy(code.tail)
+        when DIGIT
+          numberify(code.tail, code.head)
+        when LIST_OPEN
+          listify(code.tail)
+        when ARRAY_OPEN
+          arraify(code.tail)
+        when QUOTE
+          quotify(code.tail)
+        else
+          symbolize(code)
+        end
+
+      new_forms = new_form.nil? ? forms : forms + [new_form]
+      call(rest, new_forms)
     end
 
     private
 
-    class TokenTyper
-      def initialize(*types)
-        @types = types
-      end
+    SEPARATOR = /\A[,\s]/
+    STRING = /\A"/
+    DIGIT = /\A[\d-]/
+    NUMERIC = /\A[\d_]/
+    QUOTE = /\A'/
+    LIST_OPEN = /\A\(/
+    LIST_CLOSE = /\A\)/
+    ARRAY_OPEN = /\A\[/
+    ARRAY_CLOSE = /\A\]/
+    DELIMITERS = Regexp.union(LIST_CLOSE, ARRAY_CLOSE)
+    ENDER = Regexp.union(SEPARATOR, DELIMITERS)
 
-      def ===(token)
-        return true if types.find { |type| type == token[:type] }
-        false
-      end
+    def to_list(source)
+      return source if source.is_a?(Ruspea::Runtime::List)
 
-      private
-
-      attr_reader :types
+      Ruspea::Runtime::List.create(*source.chars)
     end
 
-    STRING = TokenTyper.new(String)
-    INTEGER = TokenTyper.new(Integer)
-    FLOAT = TokenTyper.new(Float)
-    LIST = TokenTyper.new(List)
-    SYM = TokenTyper.new(Sym)
-    ARRAY = TokenTyper.new(Array)
-    BOOLEAN = TokenTyper.new(TrueClass, FalseClass)
-    NILL = TokenTyper.new(NilClass)
+    def stringfy(code, string = "")
+      finished = code.head == "\"" || code.empty?
+      return [code.tail, Form.new(string, closed: !code.empty?)] if finished
 
-    def read(form)
-      case form
-      when INTEGER
-        Integer(form[:content])
-      when FLOAT
-        Float(form[:content])
-      when STRING
-        form[:content]
-      when NILL
-        nil
-      when SYM
-        Sym.new(form[:content])
-      when LIST
-        read_list(form)
-      when ARRAY
-        eval_collection(form)
-      when BOOLEAN
-        form[:content] == "true"
-      end
+      stringfy(code.tail, string + code.head)
     end
 
-    def eval_collection(form)
-      form[:content].map { |form|
-        read(form)
-      }
+    def numberify(code, number = "")
+      return floatfy(code.tail, number + code.head) if code.head == "."
+
+      finished = code.empty? || !NUMERIC.match?(code.head)
+      return [code, Form.new(Integer(number))] if finished
+
+      numberify(code.tail, number + code.head)
     end
 
-    def read_list(form)
-      content = eval_collection(form)
+    def floatfy(code, number)
+      finished = code.empty? || !NUMERIC.match?(code.head)
+      return [code.tail, Form.new(Float(number))] if finished
 
-      if content.first == Sym.new("fn")
-        read_fn(content)
-      elsif content.first == Sym.new("cond")
-        read_cond(content)
-      else
-        List.create(*content)
-      end
+      floatfy(code.tail, number + code.head)
     end
 
-    def read_fn(declaration)
-      raise Syntax.new if declaration.length < 2
+    def listify(code)
+      more_code, forms = call(code)
+      closed = LIST_CLOSE.match?(more_code.head)
+      form = Form.new(List.create(*forms), closed: closed)
 
-      no_params_message = <<~m
-        fn first parameter should be an Array
-        for a zero arity function, use (fn [] ...)
-      m
-      raise Syntax.new(no_params_message) if !declaration[1].is_a?(Array)
-
-      body =
-        if declaration.length > 2
-          declaration[2..declaration.length]
-        else
-          []
-        end
-
-      List.create(declaration[0], declaration[1], body)
+      [more_code.tail, form]
     end
 
-    def read_cond(invocation)
-      content = invocation[1..invocation.length]
-      no_tuples = <<~m
-        cond expects a series of [test tuples].
-        eg.:
-          (cond
-            (it_is_true?) (then_do_something)
-            true 1)
-      m
-      raise Syntax.new(no_tuples) if (content.count % 2) != 0
+    def arraify(code)
+      more_code, forms = call(code)
+      form = Form.new(forms, closed: ARRAY_CLOSE.match?(more_code.head))
 
-      body = content
-        .each_slice(2)
-        .reduce([]) { |tuples, tuple|
-          tuples << [tuple[0], tuple[1]]
-        }
+      [more_code.tail, form]
+    end
 
-      List.create(invocation.first, body)
+    def quotify(code)
+      more_code, content = call(code)
+
+      invocation = List.create(
+        Form.new(Sym.new("quote")),
+        *content
+      )
+
+      [more_code, Form.new(invocation)]
+    end
+
+    def symbolize(code, word = "")
+      finished = code.empty? || ENDER.match?(code.head)
+      return [code, Form.new(read_word(word))] if finished
+
+      symbolize(code.tail, word + code.head)
+    end
+
+    def read_word(word)
+      return word == "true" if word == "true" || word == "false"
+      return nil if word == "nil"
+
+      Sym.new(word)
     end
   end
 end

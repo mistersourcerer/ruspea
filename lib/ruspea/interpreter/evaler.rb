@@ -3,29 +3,29 @@ module Ruspea::Interpreter
     include Ruspea::Runtime
     include Ruspea::Error
 
-    def call(expression, context: Env::Empty.instance)
-      case expression
-      when Numeric
-        expression
-      when String
-        expression
+    def call(form, context: Env::Empty.instance)
+      case value = form.value
       when Sym
-        context.lookup expression
-      when List
-        fn = fn_from_invocation(expression, context)
-        arguments = expression.tail.to_a
-        # TODO: raise if ! respond_to?(:call)
-        fn.call(*arguments, context: context, evaler: self)
-      when Array
-        expression.map { |exp|
-          call(exp, context: context)
-        }
+        context.lookup value
+      when Numeric
+        value
+      when String
+        value
+      when NilClass
+        nil
       when TrueClass
         true
       when FalseClass
         false
-      when NilClass
-        nil
+      when Array
+        value.map { |f|
+          call(f, context: context)
+        }
+      when List
+        fn = fn_from_invocation(value, context)
+        arguments = value.tail.to_a
+        # TODO: raise if ! respond_to?(:call)
+        fn.call(*arguments, context: context, evaler: self)
       else
         raise "Unrecognized expression"
       end
@@ -33,11 +33,12 @@ module Ruspea::Interpreter
 
     private
 
-    def fn_from_invocation(expression, context)
+    def fn_from_invocation(form, context)
+      name = form.head.value
       context
-        .lookup(expression.head)
+        .lookup(name)
         .tap { |fn|
-          raise Resolution.new(expression.head) if fn.nil?
+          raise Resolution.new(name) if fn.nil?
         }
     end
   end
