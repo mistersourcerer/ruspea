@@ -1,21 +1,14 @@
 module Ruspea::Runtime
   RSpec.describe Lm do
     subject(:lm) { described_class }
+    let(:form) { Ruspea::Interpreter::Form }
 
     context "body execution" do
       it "returns the value of the last expression in the body" do
-        fn = lm.new body: ["hello", "world"]
+        fn = lm.new(
+          body: List.create(form.new("hello"), form.new("world")))
 
         expect(fn.call).to eq "world"
-      end
-
-      it "delegates evaluation of body expressions to evaler" do
-        evaler = spy("evaler")
-        fn = lm.new(body: [Sym.new("number")])
-
-        fn.call(evaler: evaler)
-
-        expect(evaler).to have_received(:call).with(Sym.new("number"), context: instance_of(Env))
       end
 
       it "calls body with environment, context and evaler if body is a #call" do
@@ -43,7 +36,7 @@ module Ruspea::Runtime
 
         fn = lm.new(
           params: [Sym.new("name")],
-          body: [1],)
+          body: List.create(1))
 
         # Evaluates argument in the caller context
         allow(evaler).to receive(:call)
@@ -63,7 +56,7 @@ module Ruspea::Runtime
 
       it "keeps the caller context within it's environment" do
         evaler = instance_double(Ruspea::Interpreter::Evaler)
-        fn = lm.new(params: [Sym.new("name")], body: [1])
+        fn = lm.new(params: [Sym.new("name")], body: List.create(1))
         caller_context = Env.new.tap { |e| e.define Sym.new("number"), 420 }
 
         # Evaluates argument in the caller context
@@ -126,13 +119,13 @@ module Ruspea::Runtime
         }
 
         fn = lm.new(
-          body: [
-            Sym.new("dragged_into_closure")
-          ],
+          body: List.create(
+            form.new(Sym.new("dragged_into_closure"))
+          ),
           closure: closured_env
         )
 
-        expect(fn.call(evaler: Ruspea::Interpreter::Evaler.new)).to eq 420
+        expect(fn.call).to eq 420
       end
 
       it "overrides closures with parameters" do
@@ -142,14 +135,13 @@ module Ruspea::Runtime
 
         fn = lm.new(
           params: [Sym.new("overriden")],
-          body: [
-            Sym.new("overriden")
-          ],
+          body: List.create(
+            form.new(Sym.new("overriden"))
+          ),
           closure: closured_env
         )
 
-        evaler = Ruspea::Interpreter::Evaler.new
-        expect(fn.call("not yet", evaler: evaler)).to eq "not yet"
+        expect(fn.call(form.new("not yet"))).to eq "not yet"
       end
     end
   end

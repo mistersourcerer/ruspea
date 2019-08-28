@@ -21,7 +21,7 @@ module Ruspea::Interpreter
     end
 
     def inspect
-      "Form(#{value.inspect})"
+      "Form< #{value.inspect} >"
     end
   end
 end

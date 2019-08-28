@@ -17,7 +17,7 @@ module Ruspea::Language
       Lm.new(
         params: [Sym.new("expression")],
         body: ->(env, _) {
-          env.call Sym.new("expression")
+          env.call(Sym.new("expression")).value
         }
       )
     end
@@ -27,9 +27,9 @@ module Ruspea::Language
         params: [Sym.new("sym"), Sym.new("val")],
         body: ->(env, evaler) {
           caller_context = env.call(Sym.new("%ctx"))
-          sym = env.call(Sym.new("sym"))
-          expression = env.call(Sym.new("val"))
-          value = evaler.call(expression, context: env)
+          sym = env.call(Sym.new("sym")).value
+          value_form = env.call(Sym.new("val"))
+          value = evaler.call(value_form, context: env)
 
           caller_context.call(sym, value)
         }
@@ -38,15 +38,14 @@ module Ruspea::Language
 
     def fn_fn
       Lm.new(
-        params: [Sym.new("params"), Sym.new("body")],
+        params: [Sym.new("declaration")],
         body: ->(env, evaler) {
-          params = env.call(Sym.new("params"))
-          body = env.call(Sym.new("body"))
+          declaration = env.call(Sym.new("declaration"))
           caller_context = env.call(Sym.new("%ctx"))
 
           Lm.new(
-            params: params,
-            body: body.to_a,
+            params: declaration.head.value,
+            body: declaration.tail,
             closure: caller_context
           )
         }
@@ -57,13 +56,20 @@ module Ruspea::Language
       Lm.new(
         params: [Sym.new("tuples")],
         body: ->(env, evaler) {
-          tuples = env.lookup(Sym.new("tuples"))
-          tuple = tuples.find(->{ [nil, nil] }) { |test, _|
-            evaler.call(test, context: env)
-          }
-          evaler.call(tuple[1], context: env)
+          conditions = env.lookup(Sym.new("tuples"))
+          raise "NOPE" if conditions.count % 2 != 0
+
+          find_true(conditions, evaler, env)
         }
       )
+    end
+
+    def find_true(conditions, evaler, context)
+      return nil if conditions.empty?
+      found = evaler.call(conditions.head, context: context) == true
+      return evaler.call(conditions.tail.head, context: context) if found
+
+      find_true(conditions.tail.tail, evaler, context)
     end
   end
 end

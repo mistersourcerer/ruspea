@@ -6,10 +6,10 @@ module Ruspea::Interpreter
 
     it "treats Lists as function invocation" do
       fn_name = Ruspea::Runtime::Sym.new("fn")
-      fn = Ruspea::Runtime::Lm.new body: [420]
+      fn = Ruspea::Runtime::Lm.new body: Ruspea::Runtime::List.new(Form.new(420))
       cxt = Ruspea::Runtime::Env.new.tap { |env| env.define fn_name, fn }
 
-      list = Ruspea::Runtime::List.create fn_name
+      list = Form.new(Ruspea::Runtime::List.create(Form.new(fn_name)))
 
       result = evaler.call list, context: cxt
       expect(result).to eq 420

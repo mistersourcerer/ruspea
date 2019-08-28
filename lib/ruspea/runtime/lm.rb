@@ -2,7 +2,7 @@ module Ruspea::Runtime
   class Lm
     attr_reader :arity, :params, :body
 
-    def initialize(params: [], body: [], closure: Env::Empty.instance)
+    def initialize(params: [], body: Nill.instance, closure: Env::Empty.instance)
       @params = params
       @arity = params.length
       @body = body
@@ -10,8 +10,9 @@ module Ruspea::Runtime
     end
 
     def call(*args, context: nil, evaler: nil)
+
       context ||= Env::Empty.instance
-      evaler ||= ->(exp, *_) { exp }
+      evaler ||= Ruspea::Interpreter::Evaler.new
 
       env, callable = env_and_callable_body(args, context, evaler)
       env.define Sym.new("%ctx"), context
@@ -30,9 +31,15 @@ module Ruspea::Runtime
           ->(environment, evaler, _) { body.call environment, evaler }
         ]
       else
+        if args.length != arity
+          raise Ruspea::Error::Arity.new(arity, args.length)
+        end
+
         [
           environment = environment_with(args, context, evaler: evaler),
-          ->(environment, evaler, args) { evaluate_body environment, evaler, args }
+          ->(environment, evaler, args) {
+            evaluate(body, context: environment, evaler: evaler)
+          }
         ]
       end
     end
@@ -43,19 +50,20 @@ module Ruspea::Runtime
         arg, idx = tuple
 
         env.tap { |e|
-          e.define params[idx], evaler.call(arg, context: context)
+          e.define(
+            params[idx], evaler.call(arg, context: context))
         }
       }
     end
 
-    def evaluate_body(environment, evaler, args)
-      if args.length != arity
-        raise Ruspea::Error::Arity.new(arity, args.length)
-      end
+    def evaluate(forms, result = nil, evaler:, context:)
+      return result if forms.empty?
 
-      body.reduce(nil) { |result, expression|
-        evaler.call(expression, context: environment)
-      }
+      evaluate(
+        forms.tail,
+        evaler.call(forms.head, context: context),
+        evaler: evaler,
+        context: context)
     end
   end
 end

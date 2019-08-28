@@ -23,8 +23,15 @@ module Ruspea::Interpreter
         }
       when List
         fn = fn_from_invocation(value, context)
-        arguments = value.tail.to_a
         # TODO: raise if ! respond_to?(:call)
+
+        arguments =
+          if fn.arity == 1 && value.tail.count > 1
+            [value.tail]
+          else
+            value.tail.to_a
+          end
+
         fn.call(*arguments, context: context, evaler: self)
       else
         raise "Unrecognized expression"

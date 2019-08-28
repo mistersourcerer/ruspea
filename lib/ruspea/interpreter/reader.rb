@@ -3,10 +3,6 @@ module Ruspea::Interpreter
     include Ruspea::Runtime
     include Ruspea::Error
 
-    def initialize
-      @parser = Parser.new
-    end
-
     def call(source, forms = [])
       return [source, forms] if source.empty?
 
