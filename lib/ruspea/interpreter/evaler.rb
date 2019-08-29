@@ -3,8 +3,10 @@ module Ruspea::Interpreter
     include Ruspea::Runtime
     include Ruspea::Error
 
-    def call(form, context: Env::Empty.instance)
-      case value = form.value
+    def call(value, context: Env::Empty.instance)
+      return call(value.value, context: context) if value.is_a?(Form)
+
+      case value
       when Sym
         context.lookup value
       when Numeric
@@ -41,7 +43,12 @@ module Ruspea::Interpreter
     private
 
     def fn_from_invocation(form, context)
-      name = form.head.value
+      name =
+        if form.head.is_a?(Ruspea::Interpreter::Form)
+          form.head.value
+        else
+          form.head
+        end
       context
         .lookup(name)
         .tap { |fn|

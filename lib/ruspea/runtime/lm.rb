@@ -48,10 +48,16 @@ module Ruspea::Runtime
       env = Env.new(context)
       args.each_with_index.reduce(env) { |env, tuple|
         arg, idx = tuple
+        sym =
+          if arg.is_a?(Ruspea::Interpreter::Form)
+            arg.value
+          else
+            arg
+          end
 
         env.tap { |e|
           e.define(
-            params[idx], evaler.call(arg, context: context))
+            params[idx], evaler.call(sym, context: context))
         }
       }
     end

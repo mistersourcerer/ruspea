@@ -25,7 +25,8 @@ module Ruspea::Repl
       while(line = input.gets.chomp)
         begin
           break if env.respond_to?(:should_exit?) && env.should_exit?
-          @reader.call(line).each do |expression|
+          _, forms = @reader.call(line)
+          forms.each do |expression|
             result = @evaler.call(expression, context: env)
             print @printer.call(result)
           end

@@ -4,6 +4,8 @@ module Ruspea
 
     def call(value)
       case value
+      when Ruspea::Interpreter::Form
+        call(value.value)
       when String
         value.inspect
       when Numeric
@@ -43,7 +45,7 @@ module Ruspea
         if fn.body.respond_to?(:call)
           "#- internal -#\n  #{fn.body.inspect}"
         else
-          body = fn.body.map { |exp| call(exp) }.join("\n  ")
+          body = fn.body.to_a.map { |exp| call(exp) }.join("\n  ")
         end
 
       "(fn [#{params}]\n  #{body})"

@@ -17,7 +17,7 @@ module Ruspea::Language
       Lm.new(
         params: [Sym.new("expression")],
         body: ->(env, _) {
-          env.call(Sym.new("expression")).value
+          env.call(Sym.new("expression"))
         }
       )
     end
@@ -27,7 +27,7 @@ module Ruspea::Language
         params: [Sym.new("sym"), Sym.new("val")],
         body: ->(env, evaler) {
           caller_context = env.call(Sym.new("%ctx"))
-          sym = env.call(Sym.new("sym")).value
+          sym = env.call(Sym.new("sym"))
           value_form = env.call(Sym.new("val"))
           value = evaler.call(value_form, context: env)
 
@@ -43,8 +43,9 @@ module Ruspea::Language
           declaration = env.call(Sym.new("declaration"))
           caller_context = env.call(Sym.new("%ctx"))
 
+          params = declaration.head.value.map { |arg| arg.value }
           Lm.new(
-            params: declaration.head.value,
+            params: params,
             body: declaration.tail,
             closure: caller_context
           )

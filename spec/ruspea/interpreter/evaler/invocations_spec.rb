@@ -1,8 +1,8 @@
 module Ruspea::Interpreter
   RSpec.describe Evaler, "Invocations" do
-    include Ruspea::Runtime
-
     subject(:evaler) { described_class.new }
+    let(:reader) { Reader.new }
+    let(:sym) { Ruspea::Runtime::Sym }
 
     it "treats Lists as function invocation" do
       fn_name = Ruspea::Runtime::Sym.new("fn")
@@ -55,31 +55,21 @@ module Ruspea::Interpreter
     end
 
     it "evaluates parameters before calling user functions" do
-      # (defn fn [number_arg] number_arg)
-      fn_name = Ruspea::Runtime::Sym.new("fn")
-      number = Ruspea::Runtime::Sym.new("number")
-
-      fn = Ruspea::Runtime::Lm.new(
-        params: [Ruspea::Runtime::Sym.new("number_arg")],
-        body: [Ruspea::Runtime::Sym.new("number_arg")],
-      )
-
-      ctx = Ruspea::Runtime::Env.new.tap { |env|
-        env.define fn_name, fn
-        env.define number, 420
+      ctx = Ruspea::Runtime::Env.new(Ruspea::Language::Core.new).tap { |env|
+        env.define sym.new("number"), 420
       }
 
-      list = Ruspea::Runtime::List.create(
-        fn_name,
-        Ruspea::Runtime::Sym.new("number")
-      )
+      declaration = "(def fun (fn [number_arg] number_arg))"
+      _, forms = reader.call(declaration)
+      evaler.call(forms.first, context: ctx)
 
-      # (fn number) => 420
-      expect(evaler.call(list, context: ctx)).to eq 420
+      invocation = "(fun number)"
+      _, forms = reader.call(invocation)
+      expect(evaler.call(forms.first, context: ctx)).to eq 420
 
-      # (fn 13) => 13
-      list_with_13 = Ruspea::Runtime::List.create(fn_name, 13)
-      expect(evaler.call(list_with_13, context: ctx)).to eq 13
+      invocation = "(fun 13)"
+      _, forms = reader.call(invocation)
+      expect(evaler.call(forms.first, context: ctx)).to eq 13
     end
   end
 end
