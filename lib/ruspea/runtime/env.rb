@@ -53,8 +53,13 @@ module Ruspea::Runtime
       @table.fetch(sym) { @context.lookup(sym) }
     end
 
-    def call(*args)
-      @fn.call(*args)
+    def call(*args, context: nil, evaler: nil)
+      # evaler will always send an array
+      # to a #call that is not a #arity
+      if args.is_a?(Array) && args.length == 1
+        args = args.first
+      end
+      @fn.call(*args, context: context, evaler: evaler)
     end
 
     def around(env)

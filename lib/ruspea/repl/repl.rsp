@@ -1,0 +1,2 @@
+(def exit (fn [] (%ctx %repl_should_exit? true)))
+(def bye exit)

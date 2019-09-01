@@ -28,10 +28,14 @@ module Ruspea::Interpreter
         # TODO: raise if ! respond_to?(:call)
 
         arguments =
-          if fn.arity == 1 && value.tail.count > 1
-            [value.tail]
+          if fn.respond_to?(:arity)
+            if fn.arity == 1 && value.tail.count > 1
+              [value.tail]
+            else
+              value.tail.to_a
+            end
           else
-            value.tail.to_a
+            [value.tail.to_a]
           end
 
         fn.call(*arguments, context: context, evaler: self)

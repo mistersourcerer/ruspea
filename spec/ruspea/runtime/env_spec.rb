@@ -45,7 +45,7 @@ module Ruspea::Runtime
 
     describe "#call, allow Env to be treated as a normal function" do
       before do
-        env.call(Sym.new("bbq"), 4.20)
+        env.call([Sym.new("bbq"), 4.20])
       end
 
       it "defines a new symbol when arity is 2" do
@@ -53,7 +53,7 @@ module Ruspea::Runtime
       end
 
       it "returns the value associated with the sym when arity is 1" do
-        expect(env.call(Sym.new("bbq"))).to eq 4.20
+        expect(env.call([Sym.new("bbq")])).to eq 4.20
       end
     end
 
