@@ -1,15 +1,4 @@
 module Ruspea::Repl
-  class ReplEnv < Ruspea::Runtime::Env
-    def initialize(context = Ruspea::Language::Core.new, *args)
-      super(context, args[1..args.length])
-      @should_exit = false
-    end
-
-    def should_exit?
-      @should_exit
-    end
-  end
-
   class Loop
     include Ruspea::Interpreter
 
@@ -17,6 +6,7 @@ module Ruspea::Repl
       @reader = Reader.new
       @evaler = Evaler.new
       @printer = Ruspea::Printer.new
+      @env = Ruspea::Runtime::Env.new(Ruspea::Language::Core.new)
     end
 
     def run(input: STDIN, env: ReplEnv.new)

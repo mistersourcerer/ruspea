@@ -10,7 +10,6 @@ module Ruspea::Runtime
     end
 
     def call(*args, context: nil, evaler: nil)
-
       context ||= Env::Empty.instance
       evaler ||= Ruspea::Interpreter::Evaler.new
 
