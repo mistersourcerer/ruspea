@@ -3,6 +3,26 @@
     (.
       (:: Kernel) puts str)))
 
+(def cons
+  (fn [el list]
+    (. list cons el)))
+
+(def head
+  (fn [list]
+    (. list head)))
+
+(def tail
+  (fn [list]
+    (. list tail)))
+
+(def empty?
+  (fn [list]
+    (. list empty?)))
+
+(def take
+  (fn [num list]
+    (. list take num)))
+
 (def =
   (fn [lhs rhs]
     (cond
