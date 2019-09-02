@@ -5,13 +5,34 @@ module Ruspea::Language
     def initialize(*args)
       super(*args)
 
+      @ruby = Ruby.new
+
       define Sym.new("quote"), fn_quote
       define Sym.new("def"), fn_def
       define Sym.new("fn"), fn_fn
       define Sym.new("cond"), fn_cond
+
+      define Sym.new("::"), fn_constantize
+      define Sym.new("."), fn_dot
+
+      load_standard
     end
 
     private
+
+    attr_reader :ruby
+
+    def load_standard
+      reader = Ruspea::Interpreter::Reader.new
+      evaler = Ruspea::Interpreter::Evaler.new
+      Dir.glob(
+        Ruspea.root.join("language/*.rsp").to_s
+      ).each do |file|
+        _, forms = reader.call(
+          File.read(file))
+        evaler.call(forms, context: self)
+      end
+    end
 
     def fn_quote
       Lm.new(
@@ -57,6 +78,7 @@ module Ruspea::Language
       Lm.new(
         params: [Sym.new("tuples")],
         body: ->(env, evaler) {
+          require "pry-byebug"
           conditions = env.lookup(Sym.new("tuples"))
           raise "NOPE" if conditions.count % 2 != 0
 
@@ -71,6 +93,51 @@ module Ruspea::Language
       return evaler.call(conditions.tail.head, context: context) if found
 
       find_true(conditions.tail.tail, evaler, context)
+    end
+
+    def fn_dot
+      Lm.new(
+        params: [Sym.new("path")],
+        body: ->(env, evaler) {
+          path = env.lookup(Sym.new("path"))
+
+          target =
+            begin
+              evaler.call(path.head, context: env)
+            rescue Ruspea::Error::Resolution
+              # if form is a symbol not solvable in the current context,
+              # then we use it as the name of the "contantizable" thing.
+              path.head.value.to_s
+            end
+
+          method = path.tail.head.value.to_s
+
+          has_args = !path.tail.tail.empty?
+          if has_args
+            args = path.tail.tail
+              .to_a
+              .map { |form|
+                evaler.call(form, context: env) }
+            target.send(method, *args)
+          else
+            target.send(method)
+          end
+        }
+      )
+    end
+
+    def fn_constantize
+      Lm.new(
+        params: [Sym.new("path")],
+        body: ->(env, evaler) {
+          path = env.lookup(Sym.new("path"))
+          Array(path)
+            .map { |target| target.to_s }
+            .reduce(nil) { |value, component|
+              value = ruby.constantize(component)
+            }
+        }
+      )
     end
   end
 end

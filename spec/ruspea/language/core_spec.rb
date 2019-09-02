@@ -1,6 +1,7 @@
 module Ruspea::Language
   RSpec.describe Core do
     subject(:core) { described_class.new }
+    let(:reader) { Ruspea::Interpreter::Reader.new }
     let(:evaler) { Ruspea::Interpreter::Evaler.new }
     let(:list) { Ruspea::Runtime::List }
     let(:sym) { Ruspea::Runtime::Sym }
@@ -85,6 +86,63 @@ module Ruspea::Language
         ))
 
         expect(evaler.call(invocation, context: user_env)).to eq nil
+      end
+    end
+
+    context "::" do
+      it "constanize single elements" do
+        _, forms = reader.call("(:: Kernel)")
+
+        expect(evaler.call(forms.first, context: user_env)).to eq Kernel
+      end
+
+      it "constanize namespaced elements" do
+        _, forms = reader.call("(:: Ruspea::Runtime::List)")
+
+        expect(evaler.call(forms.first, context: user_env)).to eq list
+      end
+    end
+
+    context "." do
+      it "sends a method to any object" do
+        _, forms = reader.call('(. "lol" upcase)')
+
+        expect(evaler.call(forms.first, context: user_env)).to eq "LOL"
+      end
+
+      it "sends parameters to a object" do
+        code = [
+          '(def str "bbq")',
+          '(. "lol" << str)',
+          "(. 1 + 1)",
+          "(. [] << 'bbq)"
+        ].join("\n")
+        _, forms = reader.call(code)
+
+        expect(evaler.call(forms, context: user_env)).to eq [
+          "bbq", "lolbbq", 2, [sym.new("bbq")]]
+      end
+
+      it "sends parameters to objects" do
+        code = [
+          '(def str "bbq")',
+          '(. (:: String) new "lol")',
+          '(. (. (:: Array) new) << (. 1 + 2))',
+          '(. (:: Kernel) print str)'
+        ].join("\n")
+        _, forms = reader.call(code)
+
+        result = nil
+        expect {
+          result = evaler.call(forms, context: user_env)
+        }.to output("bbq").to_stdout
+        expect(result).to eq ["bbq", "lol", [3], nil]
+      end
+    end
+
+    context "rsp core" do
+      it "loads rsp core" do
+        expect { user_env.lookup(sym.new("puts")) }.to_not raise_error
       end
     end
   end
