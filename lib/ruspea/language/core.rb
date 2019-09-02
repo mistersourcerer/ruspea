@@ -78,7 +78,6 @@ module Ruspea::Language
       Lm.new(
         params: [Sym.new("tuples")],
         body: ->(env, evaler) {
-          require "pry-byebug"
           conditions = env.lookup(Sym.new("tuples"))
           raise "NOPE" if conditions.count % 2 != 0
 

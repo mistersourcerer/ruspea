@@ -72,7 +72,11 @@ module Ruspea::Repl
     def interprete(line, env)
       _, forms = @reader.call(line)
       forms.each do |expression|
+        # puts "read: "
+        # pp expression
         result = @evaler.call(expression, context: env)
+        # puts "evaled: "
+        # pp result
         Process.kill("SIGINT", Process.pid) if should_exit?(env)
         print @printer.call(result)
       end
