@@ -35,7 +35,11 @@ module Ruspea::Interpreter
               value.tail.to_a
             end
           else
-            [value.tail.to_a]
+            if fn.is_a? Fn
+              value.tail.to_a
+            else
+              [value.tail.to_a]
+            end
           end
 
         fn.call(*arguments, context: context, evaler: self)
