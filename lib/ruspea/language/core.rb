@@ -14,6 +14,7 @@ module Ruspea::Language
 
       define Sym.new("::"), fn_constantize
       define Sym.new("."), fn_dot
+      define Sym.new("eval"), fn_eval
 
       load_standard
     end
@@ -79,8 +80,6 @@ module Ruspea::Language
         params: [Sym.new("tuples")],
         body: ->(env, evaler) {
           conditions = env.lookup(Sym.new("tuples"))
-          raise "NOPE" if conditions.count % 2 != 0
-
           find_true(conditions, evaler, env)
         }
       )
@@ -137,6 +136,42 @@ module Ruspea::Language
             }
         }
       )
+    end
+
+    def fn_eval
+      fn = Fn.new
+
+      fn.add(
+        Lm.new(
+          params: [Sym.new("forms")],
+          body: ->(env, evaler) {
+            forms = evaler.call(
+              env.lookup(Sym.new("forms")), context: env)
+            forms.reduce(nil) { |_, form|
+              evaler.call(form, context: env)
+            }
+          }
+        )
+      )
+
+      fn.add(
+        Lm.new(
+          params: [Sym.new("forms"), Sym.new("context")],
+          body: ->(env, evaler) {
+            context = evaler.call(
+                env.lookup(Sym.new("context")), context: env)
+
+            forms = evaler.call(
+              env.lookup(Sym.new("forms")), context: env)
+
+            forms.reduce(nil) { |_, form|
+              evaler.call(form, context: context)
+            }
+          }
+        )
+      )
+
+      fn
     end
   end
 end
