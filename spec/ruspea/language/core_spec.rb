@@ -56,36 +56,29 @@ module Ruspea::Language
 
     context "cond" do
       it "returns evaluates the expression for the first 'true' tuple" do
-        # (cond
-        #   false 1
-        #   false 2
-        #   false 3
-        #   true lol
-        #   true 5)
-        user_env.define sym.new("lol"), 420
+        code = <<~code
+          (cond
+            (false 1)
+            (false 2)
+            (false 3)
+            (true (def lol 420) lol)
+            (true 5))
+        code
+        _, forms = reader.call(code)
 
-        invocation = form.new(list.create(
-          form.new(sym.new("cond")),
-          form.new(false), form.new(1),
-          form.new(false), form.new(2),
-          form.new(false), form.new(3),
-          form.new(true), form.new(sym.new("lol")),
-          form.new(false), form.new(5),
-        ))
-
-        expect(evaler.call(invocation, context: user_env)).to eq 420
+        expect(evaler.call(forms.last, context: user_env)).to eq 420
       end
 
       it "returns nil if no test is 'true'" do
-        invocation = form.new(list.create(
-          form.new(sym.new("cond")),
-          form.new(false), form.new(1),
-          form.new(false), form.new(2),
-          form.new(false), form.new(3),
-          form.new(false), form.new(5),
-        ))
+        code = <<~code
+          (cond
+            (false 1)
+            (false 2)
+            (false 3))
+        code
+        _, forms = reader.call(code)
 
-        expect(evaler.call(invocation, context: user_env)).to eq nil
+        expect(evaler.call(forms.last, context: user_env)).to eq nil
       end
     end
 

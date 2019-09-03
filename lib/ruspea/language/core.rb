@@ -87,10 +87,17 @@ module Ruspea::Language
 
     def find_true(conditions, evaler, context)
       return nil if conditions.empty?
-      found = evaler.call(conditions.head, context: context) == true
-      return evaler.call(conditions.tail.head, context: context) if found
+      tuple = conditions.head.value
 
-      find_true(conditions.tail.tail, evaler, context)
+      raise "NOPE: what is the expression?" if tuple.tail.empty?
+
+      if evaler.call(tuple.head, context: context) == true
+        tuple.tail.to_a.reduce(nil) { |result, form|
+          evaler.call(form, context: context)
+        }
+      else
+        find_true(conditions.tail, evaler, context)
+      end
     end
 
     def fn_dot
