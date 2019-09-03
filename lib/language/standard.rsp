@@ -26,39 +26,52 @@
 (def =
   (fn [lhs rhs]
     (cond
-      (. lhs == rhs) true
-      true false)))
+      ((. lhs == rhs) true)
+      (true false))))
 
 (def !=
   (fn [lhs rhs]
     (cond
-      (. lhs != rhs) true
-      true false)))
+      ((. lhs != rhs) true)
+      (true false))))
 
 (def >
   (fn [lhs rhs]
     (cond
-      (. lhs > rhs) true
-      true false)))
+      ((. lhs > rhs) true)
+      (true false))))
 
 (def <
   (fn [lhs rhs]
     (cond
-      (. lhs > rhs) true
-      true false)))
-
-(def -
-  (fn [lhs rhs]
-    (. lhs - rhs))
+      ((. lhs > rhs) true)
+      (true false))))
 
 (def +
   (fn [lhs rhs]
-    (. lhs + rhs))
+    (. lhs + rhs)))
+
+(def -
+  (fn [lhs rhs]
+    (. lhs - rhs)))
 
 (def /
   (fn [lhs rhs]
-    (. lhs / rhs))
+    (. lhs / rhs)))
 
 (def *
   (fn [lhs rhs]
-    (. lhs * rhs))
+    (. lhs * rhs)))
+
+(def read
+  (fn [code]
+    (def reader (. (:: Ruspea::Interpreter::Reader) new))
+    (def code_and_forms (. reader call code))
+    (. code_and_forms "[]" 1)))
+
+(def load
+  (fn [path]
+    (puts (. "reading from " << path))
+    (eval
+      (read (. (:: File) read path))
+      (%ctx %ctx))))
