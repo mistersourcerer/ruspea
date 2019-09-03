@@ -10,6 +10,12 @@ module Ruspea::Interpreter
 
       rest, new_form =
         case code.head
+        when HIFEN
+          if DIGIT.match?(code.tail.head)
+            numberify(code.tail, code.head)
+          else
+            symbolize(code)
+          end
         when DELIMITERS
           # Closing lists, arrays, etc...
           return [code, forms]
@@ -36,9 +42,10 @@ module Ruspea::Interpreter
 
     private
 
+    HIFEN = /\A-/
     SEPARATOR = /\A[,\s]/
     STRING = /\A"/
-    DIGIT = /\A[\d-]/
+    DIGIT = /\A\d/
     NUMERIC = /\A[\d_]/
     QUOTE = /\A'/
     LIST_OPEN = /\A\(/

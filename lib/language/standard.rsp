@@ -46,3 +46,19 @@
     (cond
       (. lhs > rhs) true
       true false)))
+
+(def -
+  (fn [lhs rhs]
+    (. lhs - rhs))
+
+(def +
+  (fn [lhs rhs]
+    (. lhs + rhs))
+
+(def /
+  (fn [lhs rhs]
+    (. lhs / rhs))
+
+(def *
+  (fn [lhs rhs]
+    (. lhs * rhs))
