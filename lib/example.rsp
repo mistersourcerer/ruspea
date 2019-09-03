@@ -1,0 +1,23 @@
+(def %zerify
+  (fn [n]
+    (cond
+      ((= n 0)
+        (puts "-- end --"))
+      (true
+        (puts n)
+        (puts "--")
+        (cond
+          ((> n 10) (puts "not yet..."))
+          (true (puts "almost there"))
+        )
+        (%zerify (- n 1))))))
+
+(def %fib
+  (fn [n]
+    (cond
+      ((= n 0) n)
+      ((= n 1) n)
+      (true
+        (+
+          (%fib (- n 1))
+          (%fib (- n 2)))))))
