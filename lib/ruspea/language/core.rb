@@ -97,11 +97,12 @@ module Ruspea::Language
       Lm.new(
         params: [Sym.new("path")],
         body: ->(env, evaler) {
+          context = env.lookup(Sym.new("%ctx"))
           path = env.lookup(Sym.new("path"))
 
           target =
             begin
-              evaler.call(path.head, context: env)
+              evaler.call(path.head, context: context)
             rescue Ruspea::Error::Resolution
               # if form is a symbol not solvable in the current context,
               # then we use it as the name of the "contantizable" thing.
@@ -115,7 +116,7 @@ module Ruspea::Language
             args = path.tail.tail
               .to_a
               .map { |form|
-                evaler.call(form, context: env) }
+                evaler.call(form, context: context) }
             target.send(method, *args)
           else
             target.send(method)
