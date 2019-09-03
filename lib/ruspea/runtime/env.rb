@@ -67,7 +67,7 @@ module Ruspea::Runtime
         .context
         .around(self)
 
-      self.class.new(new_context, env.table)
+      Env.new(new_context, env.table)
     end
 
     def eql?(other)
