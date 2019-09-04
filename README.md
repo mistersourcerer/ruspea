@@ -25,6 +25,31 @@ Then you can sneak in code like this in your project
           (%fib (- n 2)))))))
 ```
 
+## Humm... but what about the Ruby stuff? The gems?! HUH!?
+
+Ruspea has Ruby interoperabillity built-in
+so you can "just use" Ruby:
+
+```lisp
+(def puts
+  (fn [str]
+    (.
+      (:: Kernel) puts str)))
+```
+
+In fact very minimal standard library is almost all
+built on top of the interop.
+Also right now, this is the best source to look for usage/syntax/etc:
+(`lib/language/standard.rsp`)[https://github.com/mistersourcerer/ruspea/blob/master/lib/language/standard.rsp]
+
+### OH! I see, is that inspired by Clojure then!?
+
+100%
+
+### OH! I see, is that as good as Clojure!?
+
+![LOL](https://i.imgflip.com/1joc8h.jpg)
+
 ## Why would I do that, though?
 
 This is the actual question, isn't it?
