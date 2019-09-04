@@ -70,7 +70,7 @@ nil
 #user=> ^CSee you soon.
 ```
 
-## Humm... but what about the Ruby stuff? The gems?! HUH!?
+## Humm... but what about the Ruby stuff? And the gems?! HUH!?
 
 Ruspea has Ruby interoperabillity built-in
 so you can "just use" Ruby:
@@ -87,7 +87,7 @@ built on top of this interop capability.
 It is also the best source to look for usage/syntax/etc right now:
 [`lib/language/standard.rsp`](https://github.com/mistersourcerer/ruspea/blob/master/lib/language/standard.rsp)
 
-### OH! I see! This was inspired by Clojure?
+### OH! I see! Was this inspired by Clojure?
 
 100%!
 
