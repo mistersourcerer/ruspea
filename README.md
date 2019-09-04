@@ -34,7 +34,7 @@ Ruspea::Code.new.load("my/awesome/ruspea/script.rsp")
 You can also bypass the file loading:
 
 ```ruby
-require "ruspea"
+require "ruspea-lang"
 
 code = <<~c
 (def plus1
@@ -49,6 +49,26 @@ puts eleven # => 11
 ## Is this a functional language? Is it interpreted?
 
 Yes.
+
+## Does it have a REPL?
+
+YES! After install it as a gem (`gem install ruspea_lang`),
+just go ahead and:
+
+```bash
+➜ ruspea
+loading repl: repl.rsp
+repl loaded.
+
+#user=> (def lol 1)
+1
+#user=> lol
+1
+#user=> (puts "hello world")
+hello world
+nil
+#user=> ^CSee you soon.
+```
 
 ## Humm... but what about the Ruby stuff? The gems?! HUH!?
 
@@ -127,7 +147,7 @@ Those are enhancements that are not here... just yet 😬.
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'ruspea'
+gem "ruspea_lang"
 ```
 
 And then execute:
@@ -136,8 +156,17 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install ruspea
+    $ gem install ruspea_lang
 
+
+### Why not just ruspea? Do we really need a `_lang` suffix?!
+
+Yes, we do:
+
+```
+Pushing gem to https://rubygems.org...
+There was a problem saving your gem: Name 'ruspea' is too close to typo-protected gem: rspec
+```
 
 ## Development
 

@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "ruspea/version"
 
 Gem::Specification.new do |spec|
-  spec.name          = "ruspea"
+  spec.name          = "ruspea_lang"
   spec.version       = Ruspea::VERSION
   spec.authors       = ["Ricardo Valeriano"]
   spec.email         = ["mister.sourcerer@gmail.com"]

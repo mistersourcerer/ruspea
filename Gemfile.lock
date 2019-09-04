@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    ruspea (0.1.1)
+    ruspea_lang (0.1.1)
       zeitwerk
 
 GEM
@@ -41,7 +41,7 @@ DEPENDENCIES
   pry-byebug
   rake (~> 10.0)
   rspec (~> 3.0)
-  ruspea!
+  ruspea_lang!
 
 BUNDLED WITH
    2.0.2
