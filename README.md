@@ -25,6 +25,31 @@ Then you can sneak in code like this in your project
           (%fib (- n 2)))))))
 ```
 
+And execute it from Ruby like:
+
+```ruby
+Ruspea::Code.new.load("my/awesome/ruspea/script.rsp")
+```
+
+You can also bypass the file loading:
+
+```ruby
+require "ruspea"
+
+code = <<~c
+(def plus1
+  (fn [num] (+ num 1)))
+(plus1 10)
+c
+
+eleven = Ruspea::Code.new.run(code).last
+puts eleven # => 11
+```
+
+## Is this a functional language? Is it interpreted?
+
+Yes.
+
 ## Humm... but what about the Ruby stuff? The gems?! HUH!?
 
 Ruspea has Ruby interoperabillity built-in
@@ -37,36 +62,32 @@ so you can "just use" Ruby:
       (:: Kernel) puts str)))
 ```
 
-In fact very minimal standard library is almost all
-built on top of the interop.
-Also right now, this is the best source to look for usage/syntax/etc:
-(`lib/language/standard.rsp`)[https://github.com/mistersourcerer/ruspea/blob/master/lib/language/standard.rsp]
+In fact, the very minimal standard library is
+built on top of this interop capability.
+It is also the best source to look for usage/syntax/etc right now:
+[`lib/language/standard.rsp`](https://github.com/mistersourcerer/ruspea/blob/master/lib/language/standard.rsp)
 
-### OH! I see, is that inspired by Clojure then!?
+### OH! I see! This was inspired by Clojure?
 
-100%
+100%!
 
-### OH! I see, is that as good as Clojure!?
+### OH! I see! Is this as good as Clojure!?
 
 ![LOL](https://i.imgflip.com/1joc8h.jpg)
 
-## Why would I do that, though?
+## Why would I use that, though? All those parenthesis...
 
 This is the actual question, isn't it?
 Sadly this is way out of the scope of this README.
 
 You will need to convince yourself here. 😬
 
-## Is it functional? Interpreted?
-
-Yes.
-
 ## Is this ready for production usage?
 
 Nope.
 And it will probably never be.
 
-This was just an exercise.
+This was just an exercise:
 
   - Ruby is really fun.
   - Lisp too.

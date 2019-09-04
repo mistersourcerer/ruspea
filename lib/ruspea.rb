@@ -1,4 +1,4 @@
-require "ruspea/version"
+require "ruspea"
 require "pathname"
 require "zeitwerk"
 Zeitwerk::Loader.for_gem.setup
