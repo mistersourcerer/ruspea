@@ -1,8 +1,80 @@
 # Ruspea
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/ruspea`. To experiment with that code, run `bin/console` for an interactive prompt.
+A Lisp dialect written in Ruby (and on itself)
+meant to be used as a standard Ruby gem.
 
-TODO: Delete this and the text above, and describe your gem
+So if anyone asks:
+
+> What is this Ruspea thing on the Gemfile?
+
+You can go:
+
+> Nah. Just a gem.
+
+Then you can sneak in code like this in your project
+
+```lisp
+(def %fib
+  (fn [n]
+    (cond
+      ((= n 0) n)
+      ((= n 1) n)
+      (true
+        (+
+          (%fib (- n 1))
+          (%fib (- n 2)))))))
+```
+
+## Why would I do that, though?
+
+This is the actual question, isn't it?
+Sadly this is way out of the scope of this README.
+
+You will need to convince yourself here. 😬
+
+## Is it functional? Interpreted?
+
+Yes.
+
+## Is this ready for production usage?
+
+Nope.
+And it will probably never be.
+
+This was just an exercise.
+
+  - Ruby is really fun.
+  - Lisp too.
+  - I am really (I mean REALLY) enjoying Clojure.
+  - And I really wanted to learn how to implemente a programming language.
+  - Lists are a great way to organize thoughts.
+
+If you put all this together you have this project.
+
+## Shortcomings
+
+Actually, I would prefer to avoid the term ~~shortcomings~~.
+
+The current social norm forces impossible standards
+on everyone and everything!
+
+I want to list the things I know are not perfect
+about this pretty little thing called Ruspea
+and I don't want to hurt it's feelings.
+
+Let's call those rough edges... *features*.
+Those are enhancements that are not here... just yet 😬.
+
+![Ironic](https://media.giphy.com/media/9MJ6xrgVR9aEwF8zCJ/source.gif)
+
+### Features
+
+  - No performance! Seriously. There is no optmization whatsoever to see here.
+  - No TCO. Goes hand to hand with the previous one.
+  - No standard library.
+  - No multi-arity functions.
+    They are in the Runtime though. Just to lazy to build the syntax reader for each right now.
+  - No examples. Besides the "standard library" ones ([`lib/language`](https://github.com/mistersourcerer/ruspea/blob/master/lib/language/standard.rsp))
 
 ## Installation
 
@@ -20,9 +92,6 @@ Or install it yourself as:
 
     $ gem install ruspea
 
-## Usage
-
-TODO: Write usage instructions here
 
 ## Development
 
