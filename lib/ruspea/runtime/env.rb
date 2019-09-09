@@ -21,10 +21,6 @@ module Ruspea::Runtime
         self == other
       end
 
-      def around(env)
-        env
-      end
-
       def ==(other)
         return true if other.is_a? Empty
         false
@@ -33,16 +29,15 @@ module Ruspea::Runtime
 
     include Ruspea::Error
 
-    def initialize(context = nil, table = nil)
+    def initialize(fallback = nil, table: nil)
       @table =
         if table.nil?
           {}
         else
           table.dup
         end
-      @context = context || Empty.instance
 
-      @fn = Fn.new(fn_define, fn_fetch)
+      @fallback = fallback || Empty.instance
     end
 
     def define(sym, value)
@@ -50,24 +45,7 @@ module Ruspea::Runtime
     end
 
     def lookup(sym)
-      @table.fetch(sym) { @context.lookup(sym) }
-    end
-
-    def call(*args, context: nil, evaler: nil)
-      # evaler will always send an array
-      # to a #call that is not a #arity
-      if args.is_a?(Array) && args.length == 1
-        args = args.first
-      end
-      @fn.call(*args, context: context, evaler: evaler)
-    end
-
-    def around(env)
-      new_context = env
-        .context
-        .around(self)
-
-      Env.new(new_context, env.table)
+      @table.fetch(sym) { @fallback.lookup(sym) }
     end
 
     def eql?(other)
@@ -76,11 +54,12 @@ module Ruspea::Runtime
 
     def ==(other)
       return false if self.class != other.class
-      @table == other.table && @context == other.context
+
+      @table == other.table && @fallback == other.fallback
     end
 
     def hash
-      @table.hash + @context.hash + :rsp_env.hash
+      @table.hash + @fallback.hash + :rsp_env.hash
     end
 
     def inspect
@@ -91,29 +70,6 @@ module Ruspea::Runtime
 
     protected
 
-    attr_accessor :table, :context
-
-    private
-
-    def fn_define
-      @fn_define ||= Lm.new(
-        params: [Sym.new("sym"), Sym.new("val")],
-        body: ->(env, _) {
-          define(
-            env.lookup(Sym.new("sym")),
-            env.lookup(Sym.new("val"))
-          )
-        }
-      )
-    end
-
-    def fn_fetch
-      @fn_fetch ||= Lm.new(
-        params: [Sym.new("sym")],
-        body: ->(env, _) {
-          lookup env.lookup(Sym.new("sym"))
-        }
-      )
-    end
+    attr_accessor :table, :fallback
   end
 end

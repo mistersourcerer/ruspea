@@ -18,6 +18,6 @@
       ((= n 0) n)
       ((= n 1) n)
       (true
-        (+
-          (%fib (- n 1))
-          (%fib (- n 2)))))))
+          (def fib1 (%fib (- n 1)))
+          (def fib2 (%fib (- n 2)))
+          (+ fib1 fib2)))))
