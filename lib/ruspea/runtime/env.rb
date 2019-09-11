@@ -29,7 +29,7 @@ module Ruspea::Runtime
 
     include Ruspea::Error
 
-    def initialize(fallback = nil, table: nil)
+    def initialize(context = nil, table: nil)
       @table =
         if table.nil?
           {}
@@ -37,7 +37,7 @@ module Ruspea::Runtime
           table.dup
         end
 
-      @fallback = fallback || Empty.instance
+      @context = context || Empty.instance
     end
 
     def define(sym, value)
@@ -45,7 +45,7 @@ module Ruspea::Runtime
     end
 
     def lookup(sym)
-      @table.fetch(sym) { @fallback.lookup(sym) }
+      @table.fetch(sym) { @context.lookup(sym) }
     end
 
     def eql?(other)
@@ -55,11 +55,11 @@ module Ruspea::Runtime
     def ==(other)
       return false if self.class != other.class
 
-      @table == other.table && @fallback == other.fallback
+      @table == other.table && @context == other.context
     end
 
     def hash
-      @table.hash + @fallback.hash + :rsp_env.hash
+      @table.hash + @context.hash + :rsp_env.hash
     end
 
     def inspect
@@ -70,6 +70,6 @@ module Ruspea::Runtime
 
     protected
 
-    attr_accessor :table, :fallback
+    attr_accessor :table, :context
   end
 end
