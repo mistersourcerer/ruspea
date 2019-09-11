@@ -2,27 +2,31 @@ module Ruspea::Runtime
   RSpec.describe Env do
     subject(:env) { described_class.new }
 
-    describe "#define" do
+    describe "#define, #[]=" do
       it "returns the value of a definition" do
         expect(env.define(Sym.new("lol"), 1)).to eq 1
+        expect(env[Sym.new("lol")] = 1).to eq 1
       end
     end
 
-    describe "#lookup" do
+    describe "#lookup, #[]" do
       it "returns the value associated with a Sym" do
         env.define Sym.new("lol"), 1
 
         expect(env.lookup(Sym.new("lol"))).to eq 1
+        expect(env[Sym.new("lol")]).to eq 1
       end
 
       it "raises if no association is found" do
         expect {
           env.lookup(Sym.new("omg"))
-        }.to raise_error(Ruspea::Error::Resolution)
+        }.to raise_error(
+          Ruspea::Error::Resolution,
+          "Unable to resolve: omg in the current context")
 
         expect {
-          env.lookup(Sym.new("omg"))
-        }.to raise_error("Unable to resolve: omg in the current context")
+          env[Sym.new("omg")]
+        }.to raise_error(Ruspea::Error::Resolution)
       end
 
       context "Finding symbols on an external context" do

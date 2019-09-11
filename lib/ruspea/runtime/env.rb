@@ -44,8 +44,16 @@ module Ruspea::Runtime
       @table[sym] = value
     end
 
+    def []=(sym, value)
+      define(sym, value)
+    end
+
     def lookup(sym)
       @table.fetch(sym) { @context.lookup(sym) }
+    end
+
+    def [](sym)
+      lookup(sym)
     end
 
     def eql?(other)
