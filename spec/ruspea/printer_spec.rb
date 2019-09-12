@@ -3,7 +3,7 @@ module Ruspea
     subject(:printer) { described_class.new }
     let(:list) { Ruspea::Runtime::List }
     let(:sym) { Ruspea::Runtime::Sym }
-    let(:lm) { Ruspea::Runtime::Lm }
+    let(:lmbd) { Ruspea::Runtime::Lmbd }
 
     it "prints strings" do
       expect(printer.call("lol")).to eq("\"lol\"")
@@ -48,7 +48,9 @@ module Ruspea
 
     context "Functions" do
       it "prints function params and body" do
-        fun = lm.new(
+        raise "Not yet!"
+
+        fun = lmbd.new(
           params: [sym.new("lol"), sym.new("bbq")],
           body: [
             list.create(sym.new("puts"), sym.new("lol")),
@@ -66,8 +68,8 @@ module Ruspea
       end
 
       it "if body is a ruby proc, says the function is 'internal'" do
-        noop = -> {}
-        fun = lm.new(
+        noop = ->(_) {}
+        fun = lmbd.new(
           params: [sym.new("lol"), sym.new("bbq")],
           body: noop
         )

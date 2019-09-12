@@ -70,7 +70,7 @@ module Ruspea::Interpreter
           evaler.call(declaration.first, context: new_env)
           omg = new_env.lookup(sym.new("omg"))
 
-          expect(omg).to be_a(Ruspea::Runtime::Lm)
+          expect(omg).to be_a(Ruspea::Runtime::Fn)
           expect(evaler.call(invocation.first, context: new_env)).to eq 1
         end
       end

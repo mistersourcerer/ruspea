@@ -1,4 +1,5 @@
 module Ruspea
+
   class Printer
     include Ruspea::Runtime
 
@@ -14,7 +15,7 @@ module Ruspea
         value.to_s
       when List
         print_list(value)
-      when Lm
+      when Fn
         print_fn(value)
       else
         value.inspect
@@ -40,6 +41,7 @@ module Ruspea
     end
 
     def print_fn(fn)
+      raise "not yet!"
       params = fn.params.map { |param| call(param) }.join(" ")
       body =
         if fn.body.respond_to?(:call)

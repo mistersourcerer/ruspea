@@ -8,12 +8,13 @@ module Ruspea::Runtime
 
     def add(lm)
       arities[lm.arity] = lm
+      self
     end
 
-    def call(*args, context: nil, evaler: nil)
+    def call(*args)
       arities
         .fetch(args.length)
-        .call(*args, context: context, evaler: evaler)
+        .call(*args)
     end
 
     private

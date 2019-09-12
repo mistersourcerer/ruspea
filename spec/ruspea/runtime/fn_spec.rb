@@ -3,19 +3,23 @@ module Ruspea::Runtime
     subject(:fn) { described_class.new }
     let(:form) { Ruspea::Interpreter::Form }
 
-    it "routes call to the right internal lambda given the arity" do
+    it "routes calls to the right internal lambda given the arity" do
       fn.add(
-        Lm.new(
+        Lmbd.new(
           params: [Sym.new("one")],
-          body: List.create(form.new(1))))
+          body: ->(_){ 1 }))
 
       fn.add(
-        Lm.new(
+        Lmbd.new(
           params: [Sym.new("one"), Sym.new("two")],
-          body: List.create(form.new(2))))
+          body: ->(_) { 2 }))
 
       expect(fn.call(form.new("one"))).to eq 1
       expect(fn.call(form.new("one"), form.new("two"))).to eq 2
     end
+
+    it "raises when the argument number doesn't match any arity in the fn"
+    # Should respond_to? :arities, so we can build the message:
+    # Error::ArityMismatch: available arities are fn/1, fn/2, fn/4
   end
 end
