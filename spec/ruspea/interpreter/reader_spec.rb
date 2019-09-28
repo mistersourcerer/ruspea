@@ -62,7 +62,7 @@ module Ruspea::Interpreter
     end
 
     it "reads arrays" do
-      code = '[1 [2, "3" [four 5]], (6 7)]'
+      code = '[1 [2, "3" [four 5]], [6 7]]'
       expect(reader.call(code)).to eq [nill, [
         form.new([
           form.new(1),
@@ -70,7 +70,7 @@ module Ruspea::Interpreter
             form.new(2),
             form.new("3"),
             form.new([form.new(sym.new("four")), form.new(5)])
-          ]), form.new(list.create(form.new(6), form.new(7)))
+          ]), form.new([form.new(6), form.new(7)])
         ])
       ]]
     end
