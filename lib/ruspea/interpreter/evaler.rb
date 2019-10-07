@@ -3,22 +3,23 @@ module Ruspea::Interpreter
     include Ruspea::Runtime
     include Ruspea::Error
 
-    def call(value, context: Env::Empty.instance)
-      return call(value.value, context: context) if value.is_a?(Form)
+    EVALERS = [
+      Evalers::Sym.new,
+      Evalers::Num.new,
+      Evalers::Str.new,
+      Evalers::Nill.new,
+      Evalers::Bool.new,
+    ]
+
+    def call(form, context: Env::Empty.instance)
+      # return call(value.value, context: context) if value.is_a?(Form)
+      if evaler = EVALERS.find { |evaler| evaler.match?(form) }
+        return evaler.call(form, context)
+      end
+
+      value = form.value
 
       case value
-      when Sym
-        context.lookup value
-      when Numeric
-        value
-      when String
-        value
-      when NilClass
-        nil
-      when TrueClass
-        true
-      when FalseClass
-        false
       when Array
         value.map { |f|
           call(f, context: context)

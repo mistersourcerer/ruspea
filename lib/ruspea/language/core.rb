@@ -59,22 +59,23 @@ module Ruspea::Language
     end
 
     def fn_fn
-      raise "Nope! Not yet."
-      # Lmbd.new(
-      #   params: [Sym.new("declaration")],
-      #   body: ->(env) {
-      #     declaration = env[Sym.new("declaration")]
-      #     caller_context = env[Sym.new("%ctx")]
+      Lmbd.new(
+        params: [Sym.new("declaration")],
+        body: ->(env) {
+          raise "something"
 
-      #     params = declaration.head.value.map { |arg| arg.value }
+          # declaration = env[Sym.new("declaration")]
+          # caller_context = env[Sym.new("%ctx")]
 
-      #     Lm.new(
-      #       params: params,
-      #       body: declaration.tail,
-      #       closure: caller_context
-      #     )
-      #   }
-      # )
+          # params = declaration.head.value.map { |arg| arg.value }
+
+          #Lm.new(
+          #  params: params,
+          #  body: declaration.tail,
+          #  closure: caller_context
+          #)
+        }
+      )
     end
 
     def fn_cond

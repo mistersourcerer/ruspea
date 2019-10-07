@@ -1,10 +1,11 @@
 module Ruspea::Interpreter
   RSpec.describe Evaler, "Invocations" do
     subject(:evaler) { described_class.new }
+
     let(:env) { Ruspea::Runtime::Env.new(Ruspea::Language::Core.new) }
     let(:reader) { Reader.new }
     let(:sym) { Ruspea::Runtime::Sym }
-    let(:lm) { Ruspea::Runtime::Lm }
+    let(:lm) { Ruspea::Runtime::Lmdb }
     let(:list) { Ruspea::Runtime::List }
 
     it "treats Lists as function invocation" do
