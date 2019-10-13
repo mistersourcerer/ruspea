@@ -11,11 +11,11 @@ module Ruspea::Interpreter::Forms
       HIFEN.match? char
     end
 
-    def call(code)
+    def read(code)
       if @digit.match?(code.tail.head)
-        @digit.call(code.tail, "-")
+        @digit.read(code.tail, "-")
       else
-        @symbol.call(code)
+        @symbol.read(code)
       end
     end
   end

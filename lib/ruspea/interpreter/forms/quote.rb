@@ -10,7 +10,7 @@ module Ruspea::Interpreter::Forms
       QUOTE.match? char
     end
 
-    def call(code)
+    def read(code)
       more_code, content = @reader.call(code.tail)
       invocation = Ruspea::Runtime::List.create(quote_symbol, *content)
       [more_code, Ruspea::Interpreter::Form.new(invocation)]

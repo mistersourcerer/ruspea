@@ -9,7 +9,7 @@ module Ruspea::Interpreter
     include Ruspea::Error
     include Ruspea::Interpreter::Forms
 
-    MATCHERS = [
+    FORMS = [
       Hifen.new,
       Separator.new,
       String.new,
@@ -32,16 +32,14 @@ module Ruspea::Interpreter
     def next_form(code)
       if_not_found = -> { raise "unrecognizable" }
 
-      matcher = MATCHERS.find(if_not_found) { |matcher|
+      matcher = FORMS.find(if_not_found) { |matcher|
         matcher.match?(code.head)
       }
 
-      matcher.call(code)
+      matcher.read(code)
     end
 
     private
-
-    DELIMITERS = Regexp.union(List::LIST_CLOSE, Array::ARRAY_CLOSE)
 
     def to_list(source)
       return source if source.is_a?(Ruspea::Runtime::List)

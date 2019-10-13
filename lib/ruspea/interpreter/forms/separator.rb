@@ -6,10 +6,10 @@ module Ruspea::Interpreter::Forms
       SEPARATOR.match? char
     end
 
-    def call(code)
+    def read(code)
       return [code, nil] if finished?(code)
 
-      call(code.tail)
+      read(code.tail)
     end
 
     private

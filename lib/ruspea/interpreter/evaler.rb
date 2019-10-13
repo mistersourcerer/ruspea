@@ -4,49 +4,48 @@ module Ruspea::Interpreter
     include Ruspea::Error
 
     EVALERS = [
-      Evalers::Sym.new,
-      Evalers::Num.new,
-      Evalers::Str.new,
-      Evalers::Nill.new,
-      Evalers::Bool.new,
+      Evalers::List.new,
     ]
 
-    def call(form, context: Env::Empty.instance)
-      # return call(value.value, context: context) if value.is_a?(Form)
-      if evaler = EVALERS.find { |evaler| evaler.match?(form) }
-        return evaler.call(form, context)
-      end
-
-      value = form.value
-
-      case value
-      when Array
-        value.map { |f|
-          call(f, context: context)
-        }
-      when List
-        fn = fn_from_invocation(value, context)
-        # TODO: raise if ! respond_to?(:call)
-
-        arguments =
-          if fn.respond_to?(:arity)
-            if fn.arity == 1 && value.tail.count > 1
-              [value.tail]
-            else
-              value.tail.to_a
-            end
+    def call(forms, context: Env::Empty.instance)
+      Array(forms).reduce(nil) { |result, form|
+        if form.respond_to?(:evaler) && !form.evaler.nil?
+          form.eval(context, self)
+        else
+          if evaler = EVALERS.find { |evaler| evaler.match?(form) }
+            evaler.call(form, context, self)
           else
-            if fn.is_a? Fn
-              value.tail.to_a
-            else
-              [value.tail.to_a]
-            end
+            raise "not implemented"
           end
+        end
+      }
 
-        fn.call(*arguments, context: context, evaler: self)
-      else
-        raise "Unrecognized expression"
-      end
+      # value = form.value
+
+      # case value
+      # when List
+      #   fn = fn_from_invocation(value, context)
+      #   # TODO: raise if ! respond_to?(:call)
+
+      #   arguments =
+      #     if fn.respond_to?(:arity)
+      #       if fn.arity == 1 && value.tail.count > 1
+      #         [value.tail]
+      #       else
+      #         value.tail.to_a
+      #       end
+      #     else
+      #       if fn.is_a? Fn
+      #         value.tail.to_a
+      #       else
+      #         [value.tail.to_a]
+      #       end
+      #     end
+
+      #   fn.call(*arguments, context: context, evaler: self)
+      # else
+      #   raise "Unrecognized expression"
+      # end
     end
 
     private

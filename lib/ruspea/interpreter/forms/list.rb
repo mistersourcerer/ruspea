@@ -11,7 +11,7 @@ module Ruspea::Interpreter::Forms
       LIST_OPEN.match? char
     end
 
-    def call(code)
+    def read(code)
       rest = code.tail
       forms = []
       meta = {closed: false}

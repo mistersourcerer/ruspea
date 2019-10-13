@@ -16,12 +16,13 @@ module Ruspea::Runtime
       @arity ||= @params.length
     end
 
-    def call(*args)
+    def call(*args, context: nil)
       if args.length != arity
         raise Ruspea::Error::Arity.new(arity, args.length)
       end
 
-      env = Env.new
+      env = Env.new(context)
+      env[Sym.new("%ctx")] = context if !context.nil?
       @params.each_with_index { |param, idx|
         env[param] = args[idx]
       }

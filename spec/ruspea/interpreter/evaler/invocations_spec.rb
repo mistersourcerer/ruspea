@@ -22,8 +22,6 @@ module Ruspea::Interpreter
       }.to raise_error Ruspea::Error::Resolution
     end
 
-    it "raises if list.head ! respond_to? :call"
-
     it "evaluates the parameters before calling the function" do
       _, forms = reader.call("(def number 420)")
 

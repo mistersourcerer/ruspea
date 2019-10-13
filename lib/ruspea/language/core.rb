@@ -45,14 +45,17 @@ module Ruspea::Language
     end
 
     def fn_def
-      Lmbd.new(
-        params: [Sym.new("sym"), Sym.new("val")],
-        body: ->(env) {
-          caller_context = env[Sym.new("%ctx")]
-          sym = env[Sym.new("sym")]
-          value_form = env[Sym.new("val")]
-          value = @evaler.call(value_form, context: env)
+      @sym_sym ||= Sym.new("sym")
+      @val_sym ||= Sym.new("val")
+      @ctx_sym ||= Sym.new("%ctx")
 
+      Lmbd.new(
+        params: [@sym_sym, @val_sym],
+        body: ->(env) {
+          caller_context = env[@ctx_sym]
+          sym = env[@sym_sym].value
+          value_form = env[@val_sym]
+          value = @evaler.call(value_form, context: env)
           caller_context.call(sym, value)
         }
       )
@@ -104,7 +107,16 @@ module Ruspea::Language
     end
 
     def fn_dot
-      raise "not yet! let's simplify this one"
+      @path_sym ||= Sym.new("path")
+      @ctx_sym ||= Sym.new("%ctx")
+
+      Lmbd.new(
+        params: [@path_sym],
+        body: ->(env) {
+          context = env.lookup(@ctx_sym)
+          path = env.lookup(@path_sym)
+        }
+      )
       # Lm.new(
       #   params: [Sym.new("path")],
       #   body: ->(env, evaler) {

@@ -12,11 +12,15 @@ module Ruspea::Interpreter::Forms
       DIGIT.match? char
     end
 
-    def call(code, number = "")
+    def read(code, number = "")
       return float(code.tail, number + code.head) if code.head == "."
-      return [code, Ruspea::Interpreter::Form.new(Integer(number))] if finished?(code)
+      if finished?(code)
+        return [
+          code,
+          Ruspea::Interpreter::Form.new(Integer(number), evaler: method(:eval))]
+      end
 
-      call(code.tail, number + code.head)
+      read(code.tail, number + code.head)
     end
 
     private
@@ -33,6 +37,10 @@ module Ruspea::Interpreter::Forms
       else
         float(code.tail, number + code.head)
       end
+    end
+
+    def eval(num, _, _)
+      num
     end
   end
 end

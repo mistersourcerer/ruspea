@@ -13,8 +13,16 @@ module Ruspea::Runtime
         nil
       end
 
+      def []=(sym, value)
+        define(sym, value)
+      end
+
       def lookup(sym)
         raise(Resolution.new(sym))
+      end
+
+      def [](sym)
+        lookup(sym)
       end
 
       def eql?(other)

@@ -1,10 +1,15 @@
 module Ruspea::Interpreter
   class Form
-    attr_reader :value, :meta
+    attr_reader :value, :meta, :evaler
 
-    def initialize(value, meta = {closed: true})
+    def initialize(value, evaler: nil, closed: true)
       @value = value
       @meta = meta
+      @evaler = evaler
+    end
+
+    def eval(context, main_evaler)
+      @evaler.call(self.value, context, main_evaler)
     end
 
     def eq?(other)

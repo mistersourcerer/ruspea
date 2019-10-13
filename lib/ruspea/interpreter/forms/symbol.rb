@@ -6,29 +6,48 @@ module Ruspea::Interpreter::Forms
     DELIMITERS = Regexp.union(LIST_CLOSE, ARRAY_CLOSE)
     ENDER = Regexp.union(SEPARATOR, DELIMITERS)
 
-    def match?(*_)
+    def match?(_)
       true
     end
 
-    def call(code, word = "")
+    def read(code, word = "")
       if finished?(code)
-        [code, Ruspea::Interpreter::Form.new(read_word(word))]
+        value, evaler = read_word(word)
+        [
+          code,
+          Ruspea::Interpreter::Form.new(value, evaler: evaler)]
       else
-        call(code.tail, word + code.head)
+        read(code.tail, word + code.head)
       end
     end
 
     private
+
+    def eval_symbol(symbol, context, _)
+      context[symbol]
+    end
+
+    def eval_nil(_, _, _)
+      nil
+    end
+
+    def eval_bool(bool, _, _)
+      bool
+    end
 
     def finished?(code)
       code.empty? || ENDER.match?(code.head)
     end
 
     def read_word(word)
-      return word == "true" if word == "true" || word == "false"
-      return nil if word == "nil"
-
-      Ruspea::Runtime::Sym.new(word)
+      case
+      when word == "true" || word == "false"
+        [word == "true", method(:eval_bool)]
+      when word == "nil"
+        [nil, method(:eval_nil)]
+      else
+        [Ruspea::Runtime::Sym.new(word), method(:eval_symbol)]
+      end
     end
   end
 end

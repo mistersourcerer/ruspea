@@ -11,16 +11,16 @@ module Ruspea::Interpreter::Forms
       ARRAY_OPEN.match? char
     end
 
-    def call(code)
+    def read(code)
       rest = code.tail
       forms = []
-      meta = {closed: false}
+      closed = false
 
       if match?(code.head)
         while(!rest.empty?)
           if finished?(rest)
             rest = rest.tail
-            meta = {closed: true}
+            closed = true
             break
           end
 
@@ -29,13 +29,22 @@ module Ruspea::Interpreter::Forms
         end
       end
 
-      [rest, Ruspea::Interpreter::Form.new(forms, meta)]
+      evaler = method(:eval)
+      [
+        rest,
+        Ruspea::Interpreter::Form.new(forms, closed: closed, evaler: evaler)]
     end
 
     private
 
     def finished?(code)
       ARRAY_CLOSE.match?(code.head)
+    end
+
+    def eval(array, context, evaler)
+      array.map { |f|
+        evaler.call f, context: context
+      }
     end
   end
 end
