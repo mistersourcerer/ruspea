@@ -23,18 +23,6 @@ module Ruspea::Interpreter::Forms
 
     private
 
-    def eval_symbol(symbol, context, _)
-      context[symbol]
-    end
-
-    def eval_nil(_, _, _)
-      nil
-    end
-
-    def eval_bool(bool, _, _)
-      bool
-    end
-
     def finished?(code)
       code.empty? || ENDER.match?(code.head)
     end
@@ -42,12 +30,16 @@ module Ruspea::Interpreter::Forms
     def read_word(word)
       case
       when word == "true" || word == "false"
-        [word == "true", method(:eval_bool)]
+        [word == "true", ->(bool, _, _) { bool }]
       when word == "nil"
-        [nil, method(:eval_nil)]
+        [nil, ->(_, _, _) { nil }]
       else
         [Ruspea::Runtime::Sym.new(word), method(:eval_symbol)]
       end
+    end
+
+    def eval_symbol(symbol, context, _)
+      context[symbol]
     end
   end
 end

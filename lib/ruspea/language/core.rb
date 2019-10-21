@@ -39,9 +39,20 @@ module Ruspea::Language
       Lmbd.new(
         params: [Sym.new("expression")],
         body: ->(env) {
-          env[Sym.new("expression")]
+          quote(env[Sym.new("expression")])
         }
       )
+    end
+
+    def quote(form)
+      case
+      when form.value.is_a?(Array)
+        form.value
+      when form.value.is_a?(List)
+        form.value
+      else
+        form
+      end
     end
 
     def fn_def
@@ -56,28 +67,30 @@ module Ruspea::Language
           sym = env[@sym_sym].value
           value_form = env[@val_sym]
           value = @evaler.call(value_form, context: env)
-          caller_context.call(sym, value)
+          caller_context[sym] = value
         }
       )
     end
 
     def fn_fn
-      Lmbd.new(
-        params: [Sym.new("declaration")],
-        body: ->(env) {
-          raise "something"
+      @params_sym ||= Sym.new("params")
+      @body_sym ||= Sym.new("body")
+      @ctx_sym ||= Sym.new("%ctx")
 
-          # declaration = env[Sym.new("declaration")]
-          # caller_context = env[Sym.new("%ctx")]
+      fn = Fn.new
+      fn.add(
+        Lmbd.new(
+          params: [@params_sym, @body_sym],
+          body: ->(env) {
+            params = quote(env[@params_sym])
+            body = quote(env[@body_sym])
+            closure = env[@ctx_sym]
 
-          # params = declaration.head.value.map { |arg| arg.value }
-
-          #Lm.new(
-          #  params: params,
-          #  body: declaration.tail,
-          #  closure: caller_context
-          #)
-        }
+            Lmbd.new(params: params, body: ->(fn_env) {
+              @evaler.call(body, context: fn_env.fallback(closure))
+            })
+          }
+        )
       )
     end
 

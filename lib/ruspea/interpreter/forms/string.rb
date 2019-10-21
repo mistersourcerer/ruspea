@@ -14,7 +14,9 @@ module Ruspea::Interpreter::Forms
         [
           code.tail,
           Ruspea::Interpreter::Form.new(
-            string, closed: !code.empty?, evaler: method(:eval))]
+            string,
+              closed: !code.empty?,
+              evaler: ->(string, _, _){ string })]
       else
         read(code.tail, string + code.head)
       end
@@ -24,10 +26,6 @@ module Ruspea::Interpreter::Forms
 
     def finished?(code)
       code.empty? || match?(code.head)
-    end
-
-    def eval(string, _, _)
-      string
     end
   end
 end

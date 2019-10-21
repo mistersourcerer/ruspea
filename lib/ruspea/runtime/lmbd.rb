@@ -16,18 +16,21 @@ module Ruspea::Runtime
       @arity ||= @params.length
     end
 
-    def call(*args, context: nil)
-      if args.length != arity
-        raise Ruspea::Error::Arity.new(arity, args.length)
+    def call(args_list, context: nil)
+      if args_list.count != arity
+        raise Ruspea::Error::Arity.new(arity, args_list.count)
       end
 
       env = Env.new(context)
       env[Sym.new("%ctx")] = context if !context.nil?
-      @params.each_with_index { |param, idx|
-        env[param] = args[idx]
-      }
+      @body.call bind_arguments(env, args_list)
+    end
 
-      @body.call env
+    def bind_arguments(env, args, pos = 0)
+      return env if args.empty?
+
+      env[@params[pos]] = args.head
+      bind_arguments(env, args.tail, pos + 1)
     end
   end
 end

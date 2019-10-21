@@ -14,7 +14,7 @@ module Ruspea::Interpreter::Forms
     def read(code)
       rest = code.tail
       forms = []
-      meta = {closed: false}
+      closed = false
 
       if match?(code.head)
         while(!rest.empty?)
@@ -23,20 +23,28 @@ module Ruspea::Interpreter::Forms
 
           if finished?(rest)
             rest = rest.tail
-            meta = {closed: true}
+            closed = true
             break
           end
         end
       end
 
       list = Ruspea::Runtime::List.create(*forms)
-      [rest, Ruspea::Interpreter::Form.new(list, meta)]
+      [
+        rest,
+        Ruspea::Interpreter::Form.new(
+          list, closed: closed, evaler: method(:eval_list))]
     end
 
     private
 
     def finished?(code)
       LIST_CLOSE.match?(code.head)
+    end
+
+    def eval_list(list, context, evaler)
+      function = evaler.call(list.head, context: context)
+      function.call(list.tail, context: context)
     end
   end
 end
