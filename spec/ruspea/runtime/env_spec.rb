@@ -47,10 +47,25 @@ module Ruspea::Runtime
       end
     end
 
+    describe "#fallback" do
+      it "allow to create a chain of env for lookup to search on" do
+        env[Sym.new("lol")] = 4.20
+        new_env = described_class.new(env)
+
+        other_env = described_class.new(env)
+        other_env[Sym.new("bbq")] = 13
+
+        new_env.fallback(other_env)
+
+        expect(new_env[Sym.new("lol")]).to eq 4.20
+        expect(new_env[Sym.new("bbq")]).to eq 13
+      end
+    end
+
     describe "#call, allow Env to be treated as a normal function" do
       before do
         pending
-        env.call([Sym.new("bbq"), 4.20])
+        env.call(Sym.new("bbq"), 4.20)
       end
 
       it "defines a new symbol when arity is 2" do

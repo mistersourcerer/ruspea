@@ -57,7 +57,20 @@ module Ruspea::Runtime
     end
 
     def lookup(sym)
-      @table.fetch(sym) { @context.lookup(sym) }
+      @table.fetch(sym) { @context[sym] }
+    end
+
+    def fallback(env)
+      _current_context = @context
+      # TODO: the "correct" implementation of this specific piece
+      # would be to "cascade" the current context, meaning:
+      #   if env has already a context,
+      #   then env.context.context = _current_context.
+      # BUT if env.context.context already exists... then
+      #   env.context.context.context = _current_context
+      # Until we find the "root" context.
+      env.context = _current_context
+      @context = env
     end
 
     def [](sym)
