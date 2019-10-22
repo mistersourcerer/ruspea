@@ -55,5 +55,30 @@ module Ruspea::Runtime
           Ruspea::Error::Arity)
       end
     end
+
+    context "arity" do
+      it "accepts varargs (star prefix)" do
+        just_return_omg = ->(env) { env[sym.new("omg")] }
+        body = Lmbd.new(params: [sym.new("*omg")], body: just_return_omg)
+
+        expect(body.call(1)).to eq [1]
+        expect(body.call(1, 2)).to eq [1, 2]
+        expect(body.call(1, 2, "lol")).to eq [1, 2, "lol"]
+      end
+
+      it "accepts varargs in the middle of the arguments list" do
+        just_return_omg = ->(env) { env[sym.new("omg")] }
+        body = Lmbd.new(
+          params: [sym.new("lol"), sym.new("*omg"), sym.new("bbq")],
+          body: just_return_omg)
+
+        expect { body.call(1) }.to raise_error(
+          "Expected 3 (or more) args, but received 1")
+        expect { body.call(1, 2) }.to raise_error(
+          "Expected 3 (or more) args, but received 2")
+        expect(body.call(1, 2, "lol")).to eq [2]
+        expect(body.call(1, 2, "4.20", 13, "lol")).to eq [2, "4.20", 13]
+      end
+    end
   end
 end

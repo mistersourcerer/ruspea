@@ -34,6 +34,16 @@ module Ruspea::Runtime
         .cons(from.head)
     end
 
+    def take_and_rest(amount, from = self, current: Nill.instance)
+      return [current, from] if amount == 0 || from.empty?
+
+      from
+        .take_and_rest(
+          amount - 1,
+          from.tail,
+          current: current.cons(from.head))
+    end
+
     def empty?
       false
     end
