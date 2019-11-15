@@ -6,5 +6,5 @@ code = <<~c
 (plus1 10)
 c
 
-eleven = Ruspea::Code.new.run(code).last
-puts eleven
+# eleven = Ruspea::Code.new.run(code).last
+# puts eleven

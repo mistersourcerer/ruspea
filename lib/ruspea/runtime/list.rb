@@ -34,6 +34,20 @@ module Ruspea::Runtime
         .cons(from.head)
     end
 
+    def map(fun = nil, list: self, &callable)
+      return Nill.instance if list.empty?
+
+      mapper =
+        if !callable.nil?
+          callable
+        else
+          fun || ->(item) { item }
+        end
+
+      list.tail.map(mapper
+      mapper.call(list.head)
+    end
+
     def empty?
       false
     end

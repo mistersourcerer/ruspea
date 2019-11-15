@@ -1,14 +1,28 @@
 module Ruspea::Interpreter
-  class Form
-    attr_reader :value, :meta
+  module Form
+    attr_reader :value, :position
 
-    def initialize(value, meta = {closed: true})
-      @value = value
-      @meta = meta
+    def self.included(target)
+      def target.match?(_)
+        raise "missing .match? on #{self}"
+      end
+
+      def target.read(_, _)
+        raise "missing .read on #{self}"
+      end
     end
 
-    def eq?(other)
-      self == other
+    def initialize(value, position = Position::INITIAL)
+      @value = cast(value)
+      @position = position
+    end
+
+    def cast(string)
+      string
+    end
+
+    def inspect
+      "(%_form #{self.value} #{self.position.inspect} \"#{self.class.name}\")"
     end
 
     def eql?(other)
@@ -16,12 +30,14 @@ module Ruspea::Interpreter
     end
 
     def ==(other)
-      return false if self.class != other.class
-      value == other.value && meta == other.meta
-    end
+      if other.is_a?(self.class) &&
+          other.value == self.value &&
+          other.position == self.position
 
-    def inspect
-      "Form< #{value.inspect} >"
+        return true
+      end
+
+      false
     end
   end
 end

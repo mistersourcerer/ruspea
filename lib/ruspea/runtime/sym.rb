@@ -21,6 +21,10 @@ module Ruspea::Runtime
       @id.hash + :rsp_sym.hash
     end
 
+    def match?(regexp)
+      @id.match?(regexp)
+    end
+
     protected
 
     attr_reader :id
