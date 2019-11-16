@@ -27,6 +27,10 @@ module Ruspea::Interpreter
       "{column: #{self.column}, line: #{self.line}}"
     end
 
+    def to_s
+      inspect
+    end
+
     def eql?(other)
       self == other
     end

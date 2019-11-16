@@ -14,6 +14,7 @@ module Ruspea::Interpreter
 
     FORMS = [
       Numeric,
+      String,
     ]
 
     def code_to_forms(string)

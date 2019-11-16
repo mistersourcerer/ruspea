@@ -7,7 +7,7 @@ module Ruspea::Interpreter::Forms
         code[0] == "-" && DIGIT.match?(code[1]) || DIGIT.match?(code[0])
       end
 
-      def read(code, position = Position::Initial, number = "")
+      def read(code, position = Position::INITIAL, number = "")
         number, rest = read_digit(code, number)
 
         float = rest[0] == "." && match?(rest[1..rest.length])
