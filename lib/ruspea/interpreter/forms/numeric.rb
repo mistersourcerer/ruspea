@@ -19,7 +19,7 @@ module Ruspea::Interpreter::Forms
           end
 
         type = float ? Float : Integer
-        [type.new(value, position), remaining]
+        [type.new(value, position), remaining, position + value.length]
       end
 
       private
@@ -29,11 +29,11 @@ module Ruspea::Interpreter::Forms
       SEPARATOR = /\A[,\s]/
 
       def read_digit(code, number = "")
-        negative = number.length == 0 &&
+        negative =
+          number.length == 0 &&
           code[0] == "-" &&
           Numeric.match?(code[1])
         return read_digit(code[1..code.length], "-") if negative
-
         return [number, code] if !Numeric.match?(code)
 
         char = code[0]

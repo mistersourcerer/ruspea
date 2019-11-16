@@ -38,6 +38,13 @@ module Ruspea::Interpreter
         form = tuple.first
         expect(form).to eq Forms::Float.new(-420.1, Position.new(0, 1))
       end
+
+      it "returns the remaining code and the new position" do
+        result = reader.next("42 13")
+
+        expect(result[1]).to eq " 13"
+        expect(result[2]).to eq Position.new(2, 1)
+      end
     end
   end
 end
