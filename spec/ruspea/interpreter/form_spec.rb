@@ -1,10 +1,11 @@
 module Ruspea::Interpreter
   RSpec.describe Form do
-    subject(:form) {
+    let(:fake_form) {
       Class.new {
         self.include(Form)
-      }.new("lol")
+      }
     }
+    subject(:form) { fake_form.new("lol") }
 
     describe ".new" do
       it "stores the first param as the value" do
@@ -13,6 +14,16 @@ module Ruspea::Interpreter
 
       it "creates a form in the initial (1, 1) position" do
         expect(form.position).to eq Position.new(1, 1)
+      end
+    end
+
+    describe "#cast" do
+      before do
+        fake_form.define_method(:cast) { |string| 1 }
+      end
+
+      it "converts the value when initializing the form" do
+        expect(form.value).to eq 1
       end
     end
   end
