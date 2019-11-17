@@ -6,7 +6,7 @@ module Ruspea::Interpreter
       @column = column
       @line = line
     end
-    INITIAL = Position.new(0, 1)
+    INITIAL = Position.new(1, 1)
 
     def +(new_position)
       if new_position.is_a?(Integer)
@@ -17,7 +17,7 @@ module Ruspea::Interpreter
         !new_position.length == 2 ||
         new_position.any? { |pos| !pos.is_a?(Integer) }
       if invalid
-        raise "Invalid new position #{new_position}, use Numeric or [0, 0]"
+        raise "Invalid new position #{new_position}, use Numeric or [int, int]"
       end
 
       self.class.new(column + new_position[0], line + new_position[1])
