@@ -16,6 +16,7 @@ module Ruspea::Interpreter
       Numeric,
       String,
       Separator,
+      Symbol,
     ]
 
     def code_to_forms(string)
