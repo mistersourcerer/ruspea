@@ -4,4 +4,7 @@ require "bundler/setup"
 require "ruspea"
 
 require "pry"
+
+include Ruspea::Interpreter::Forms
+
 Pry.start
