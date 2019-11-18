@@ -18,6 +18,7 @@ module Ruspea::Interpreter
       Array,
       Map,
       List,
+      Line,
       Separator,
       Symbol,
     ]

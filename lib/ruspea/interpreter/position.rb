@@ -23,6 +23,10 @@ module Ruspea::Interpreter
       self.class.new(column + new_position[0], line + new_position[1])
     end
 
+    def <<(lines)
+      self.class.new(1, line + lines)
+    end
+
     def inspect
       "{column: #{self.column}, line: #{self.line}}"
     end
