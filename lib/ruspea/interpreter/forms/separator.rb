@@ -4,7 +4,7 @@ module Ruspea::Interpreter::Forms
 
     class << self
       def match?(code)
-        SEPARATOR.match?(code[0])
+        code && SEPARATOR.match?(code[0])
       end
 
       def read(code, position = Position::INITIAL, separators = "")

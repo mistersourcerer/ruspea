@@ -4,7 +4,14 @@ module Ruspea::Interpreter::Forms
 
     class << self
       def match?(code)
-        !Separator.match?(code)
+        return false if code.nil?
+
+        char = code[0]
+        !Separator.match?(code) &&
+          char != "[" &&
+          char != "]" &&
+          char != "{" &&
+          char != "}"
       end
 
       def read(code, position = Position::INITIAL, current = "")
