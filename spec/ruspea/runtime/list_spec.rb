@@ -10,6 +10,14 @@ module Ruspea::Runtime
       end
     end
 
+    describe ".cons" do
+      it "prepend the first arg on the second (list) arg" do
+        list = builder.create(2, 3)
+
+        expect(builder.cons(1, list)).to eq builder.create(1, 2, 3)
+      end
+    end
+
     context "building Lists" do
       subject(:list) { builder.create 2, 0 }
 

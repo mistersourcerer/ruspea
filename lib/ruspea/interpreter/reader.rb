@@ -17,6 +17,7 @@ module Ruspea::Interpreter
       String,
       Array,
       Map,
+      List,
       Separator,
       Symbol,
     ]

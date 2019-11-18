@@ -8,6 +8,11 @@ module Ruspea::Runtime
       new items[0], create(*items[1..items.length]), count: items.length
     end
 
+    def self.cons(el, list)
+      raise "Can't consing #{el} int not a list: #{list}" if !list.respond_to?(:cons)
+      list.cons(el)
+    end
+
     def initialize(head, tail = Nill.instance, count: 0)
       @head = head
       @tail = tail
@@ -35,6 +40,7 @@ module Ruspea::Runtime
     end
 
     def map(fun = nil, list: self, &callable)
+      raise "not ready!"
       return Nill.instance if list.empty?
 
       mapper =
@@ -43,9 +49,6 @@ module Ruspea::Runtime
         else
           fun || ->(item) { item }
         end
-
-      list.tail.map(mapper
-      mapper.call(list.head)
     end
 
     def empty?
