@@ -2,6 +2,18 @@ module Ruspea::Interpreter::Forms
   class Map
     include Ruspea::Interpreter::Form
 
+    class WrongFormat < StandardError
+      def initialize(position)
+        msg = <<~s
+          Wrong number of forms #{position}.
+
+          Maps are formed by keywords: followed by values.
+        s
+
+        super(msg)
+      end
+    end
+
     class << self
       def match?(code)
         code[0] == "{"
@@ -10,9 +22,19 @@ module Ruspea::Interpreter::Forms
       def read(code, position = Position::INITIAL)
         elements, remaining, new_position =
           read_collection(code, position, close_delimiter = "}")
-        without_separator = elements.reject { |form| form.is_a?(Separator) }
-        hsh = Hash[without_separator.each_slice(2).to_a]
-        [new(hsh, position), remaining[1..remaining.length], new_position + 1]
+
+        tuples = elements
+          .reject { |form| form.is_a?(Separator) }
+          .each_slice(2)
+          .to_a
+
+        wrong_format = (tuples.any? { |tuple| tuple.length % 2 != 0 })
+        raise WrongFormat.new(position) if wrong_format
+
+        [
+          new(Hash[tuples], position),
+          remaining[1..remaining.length],
+          new_position + 1]
       end
     end
 
