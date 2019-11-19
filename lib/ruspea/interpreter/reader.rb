@@ -20,6 +20,7 @@ module Ruspea::Interpreter
       List,
       Line,
       Separator,
+      Comment,
       Symbol,
     ]
 
@@ -28,7 +29,7 @@ module Ruspea::Interpreter
     end
 
     def no_form_found
-      raise "nope"
+      raise "No form was recognized."
     end
   end
 end
