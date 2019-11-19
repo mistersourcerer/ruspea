@@ -6,36 +6,31 @@ module Ruspea::Interpreter::Forms
       def match?(code)
         return false if code.nil?
 
-        char = code[0]
-        !Separator.match?(code) &&
-          char != "[" &&
-          char != "]" &&
-          char != "{" &&
-          char != "}"
+        !Separator.match?(code) && !DELIMITERS.match?(code[0])
       end
 
       def read(code, position = Position::INITIAL, current = "")
-        char = code[0]
-        remaining = code[1..code.length]
+        finished = code.length == 0 || !match?(code)
+        return final_form(code, current, position) if finished
 
-        if !match?(remaining)
-          string = current + char
-          form =
-            if match = KEYWORD.match(string)
-              Keyword.new(match[:keyword], position)
-            else
-              new(string, position)
-            end
-
-          return [form, remaining, position + string.length]
-        end
-
-        read(remaining, position, current + char)
+        read(code[1..code.length], position, current + code[0])
       end
 
       private
 
+      def final_form(code, current, position)
+        form =
+          if match = KEYWORD.match(current)
+            Keyword.new(match[:keyword], position)
+          else
+            new(current, position)
+          end
+
+        [form, code, position + current.length]
+      end
+
       KEYWORD = /\A:(?<keyword>.*)|(?<keyword>.*):\z/
+      DELIMITERS = /\A(\[|\]|\{|\}|\(|\))/
     end
   end
 end

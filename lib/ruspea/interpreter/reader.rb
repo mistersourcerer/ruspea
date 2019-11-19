@@ -18,6 +18,7 @@ module Ruspea::Interpreter
       Array,
       Map,
       List,
+      Quote,
       Line,
       Separator,
       Comment,
