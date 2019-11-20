@@ -3,7 +3,7 @@ module Ruspea::Interpreter
     include Ruspea::Interpreter::Forms
 
     def next(code, position = Position::INITIAL)
-      type = FORMS.find(method(:no_form_found)) { |t|
+      type = MATCHERS.find(method(:no_form_found)) { |t|
         t.match?(code)
       }
 
@@ -12,16 +12,16 @@ module Ruspea::Interpreter
 
     private
 
-    FORMS = [
-      Numeric,
+    MATCHERS = [
+      Ruspea::Interpreter::Matchers::Numeric.new,
       String,
-      Array,
+      Ruspea::Interpreter::Matchers::Array.new,
       Map,
       List,
       Quote,
-      Line,
+      Ruspea::Interpreter::Matchers::Line.new,
       Separator,
-      Comment,
+      Ruspea::Interpreter::Matchers::Comment.new,
       Symbol,
     ]
 
