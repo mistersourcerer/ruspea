@@ -1,5 +1,5 @@
 module Ruspea::Interpreter::Forms
-  RSpec.describe Comment do
+  RSpec.describe Ruspea::Interpreter::Matchers::Comment do
     subject(:reader) { Ruspea::Interpreter::Reader.new }
     let(:pos) { Ruspea::Interpreter::Position }
 

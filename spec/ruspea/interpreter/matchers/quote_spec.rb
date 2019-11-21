@@ -1,5 +1,5 @@
 module Ruspea::Interpreter::Forms
-  RSpec.describe Quote do
+  RSpec.describe Ruspea::Interpreter::Matchers::Quote do
     subject(:reader) { Ruspea::Interpreter::Reader.new }
     let(:pos) { Ruspea::Interpreter::Position }
     let(:list) { Ruspea::Runtime::List }

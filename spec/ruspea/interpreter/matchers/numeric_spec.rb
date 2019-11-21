@@ -1,5 +1,5 @@
 module Ruspea::Interpreter::Forms
-  RSpec.describe Numeric, "(Reader)" do
+  RSpec.describe Ruspea::Interpreter::Matchers::Numeric do
     subject(:reader) { Ruspea::Interpreter::Reader.new }
 
     it "recognizes integers" do

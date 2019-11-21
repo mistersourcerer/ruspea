@@ -1,5 +1,5 @@
 module Ruspea::Interpreter::Forms
-  RSpec.describe Map do
+  RSpec.describe Ruspea::Interpreter::Matchers::Map do
     subject(:reader) { Ruspea::Interpreter::Reader.new }
     let(:pos) { Ruspea::Interpreter::Position }
 
@@ -19,7 +19,7 @@ module Ruspea::Interpreter::Forms
     it "raise specific error when wrong amount of stuff is given" do
       expect {
         reader.next("{one: 1 two:}")
-      }.to raise_error(Ruspea::Interpreter::Forms::Map::WrongFormat)
+      }.to raise_error(Ruspea::Interpreter::Matchers::Map::WrongFormat)
     end
 
     it "handle nested maps" do

@@ -1,5 +1,5 @@
 module Ruspea::Interpreter::Forms
-  RSpec.describe Array do
+  RSpec.describe Ruspea::Interpreter::Matchers::Array do
     subject(:reader) { Ruspea::Interpreter::Reader.new }
     let(:pos) { Ruspea::Interpreter::Position }
 

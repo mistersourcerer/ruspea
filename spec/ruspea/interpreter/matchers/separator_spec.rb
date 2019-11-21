@@ -1,5 +1,5 @@
 module Ruspea::Interpreter::Forms
-  RSpec.describe Separator, "(Reader)" do
+  RSpec.describe Ruspea::Interpreter::Matchers::Separator do
     subject(:reader) { Ruspea::Interpreter::Reader.new }
 
     it "recognizes space separators" do

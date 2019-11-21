@@ -1,5 +1,5 @@
 module Ruspea::Interpreter::Forms
-  RSpec.describe String, "(Reader)" do
+  RSpec.describe Ruspea::Interpreter::Matchers::String do
     subject(:reader) { Ruspea::Interpreter::Reader.new }
 
     it "recognizes strings" do
