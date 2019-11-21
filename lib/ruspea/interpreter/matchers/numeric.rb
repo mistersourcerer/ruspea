@@ -7,19 +7,13 @@ module Ruspea::Interpreter::Matchers
     def read(code, position = Position::INITIAL, number = "")
       number, rest = read_digit(code, number)
 
-      float = rest[0] == "." && match?(rest[1..rest.length])
-      value, remaining =
-        if float
-          read_digit(rest[1..rest.length], number + ".")
+      value, remaining, type =
+        if float?(rest)
+          read_digit(rest[1..rest.length], number + ".") + [
+            Ruspea::Interpreter::Forms::Float
+          ]
         else
-          [number, rest]
-        end
-
-      type =
-        if float
-          Ruspea::Interpreter::Forms::Float
-        else
-          Ruspea::Interpreter::Forms::Integer
+          [number, rest, Ruspea::Interpreter::Forms::Integer]
         end
 
       [type.new(value, position), remaining, position + value.length]
@@ -34,6 +28,7 @@ module Ruspea::Interpreter::Matchers
     def read_digit(code, number = "")
       return read_digit(code[1..code.length], "-") if negative?(code, number)
       return [number, code] if !match?(code)
+
       read_digit(code[1..code.length], number + code[0])
     end
 
@@ -41,9 +36,8 @@ module Ruspea::Interpreter::Matchers
       number.length == 0 && code[0] == "-" && match?(code[1])
     end
 
-    def finished?(code)
-      char = code[0]
-      code[1..code.length].length == 0 || SEPARATOR.match?(char)
+    def float?(code)
+      code[0] == "." && match?(code[1..code.length])
     end
   end
 end
