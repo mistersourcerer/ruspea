@@ -2,16 +2,6 @@ module Ruspea::Interpreter
   class Reader
     include Ruspea::Interpreter::Forms
 
-    class NoMatches
-      def match?(_)
-        true
-      end
-
-      def read(_, position)
-        raise "No form was recognized at position #{position}."
-      end
-    end
-
     def next(code, position = Position::INITIAL)
       @matchers ||= MATCHERS + [NoMatches.new]
 
@@ -21,6 +11,16 @@ module Ruspea::Interpreter
     end
 
     private
+
+    class NoMatches
+      def match?(_)
+        true
+      end
+
+      def read(_, position)
+        raise "No form was recognized at position #{position}."
+      end
+    end
 
     # The order of the matching is important.
     MATCHERS = [
