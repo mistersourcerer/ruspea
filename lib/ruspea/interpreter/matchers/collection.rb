@@ -20,11 +20,14 @@ module Ruspea::Interpreter::Matchers
       code[0] == open_delimiter
     end
 
-    def read_collection(code, position)
+    private
+
+    def read_collection(code, position, &filter)
       reader = Ruspea::Interpreter::Reader.new
       new_position = position + 1
       remaining = code[1..code.length]
-      elements = []
+      filter ||= ->(_) { true }
+      forms = []
 
       while(remaining[0] != close_delimiter)
         if remaining.length == 0
@@ -32,14 +35,10 @@ module Ruspea::Interpreter::Matchers
         end
 
         form, remaining, new_position = reader.next(remaining, new_position)
-        elements = elements + [form]
+        forms = forms + [form] if filter.call(form)
       end
 
-      [elements, remaining, new_position]
+      [forms, remaining, new_position]
     end
-
-    protected
-
-    private
   end
 end
