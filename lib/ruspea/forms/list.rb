@@ -7,7 +7,7 @@ module Ruspea::Forms
         puts "#{sym.value} is not a function!"
         raise error
       }
-      fn.call(value.tail)
+      fn.call(self.class.new(value.tail, value.tail.head.position))
     end
 
     def inspect
