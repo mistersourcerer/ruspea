@@ -1,6 +1,6 @@
-module Ruspea::Interpreter::Forms
+module Ruspea::Forms
   class Array
-    include Ruspea::Interpreter::Form
+    include Ruspea::Form
 
     def inspect
       values = self.value.map { |value|

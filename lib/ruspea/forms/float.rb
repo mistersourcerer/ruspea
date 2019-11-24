@@ -1,6 +1,6 @@
-module Ruspea::Interpreter::Forms
+module Ruspea::Forms
   class Float
-    include Ruspea::Interpreter::Form
+    include Ruspea::Form
 
     def cast(string)
       Float(string)

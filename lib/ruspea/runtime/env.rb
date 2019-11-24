@@ -17,12 +17,17 @@ module Ruspea::Runtime
         define(sym, value)
       end
 
-      def lookup(sym)
-        raise(Resolution.new(sym))
+      def lookup(sym, &not_found)
+        resolution_error = Resolution.new(sym)
+        if !not_found.nil?
+          not_found.call sym, resolution_error
+        else
+          raise resolution_error
+        end
       end
 
-      def [](sym)
-        lookup(sym)
+      def [](sym, &not_found)
+        lookup(sym, &not_found)
       end
 
       def eql?(other)
@@ -56,8 +61,8 @@ module Ruspea::Runtime
       define(sym, value)
     end
 
-    def lookup(sym)
-      @table.fetch(sym) { @context[sym] }
+    def lookup(sym, &not_found)
+      @table.fetch(sym) { @context[sym, &not_found] }
     end
 
     def fallback(env)
@@ -73,8 +78,8 @@ module Ruspea::Runtime
       @context = env
     end
 
-    def [](sym)
-      lookup(sym)
+    def [](sym, &not_found)
+      lookup(sym, &not_found)
     end
 
     def eql?(other)

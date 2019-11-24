@@ -15,7 +15,7 @@ module Ruspea::Interpreter::Matchers
         result =
           if started
             [
-              Ruspea::Interpreter::Forms::String.new(string, position),
+              Ruspea::Forms::String.new(string, position),
               remaining,
               position + string.length + 2
             ]

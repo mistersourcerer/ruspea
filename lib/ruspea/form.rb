@@ -1,10 +1,14 @@
-module Ruspea::Interpreter
+module Ruspea
   module Form
     attr_reader :value, :position
 
-    def initialize(value, position = Position::INITIAL)
+    def initialize(value, position = Ruspea::Interpreter::Position::INITIAL)
       @value = cast(value)
       @position = position
+    end
+
+    def eval(context)
+      value
     end
 
     def cast(value)
@@ -21,13 +25,16 @@ module Ruspea::Interpreter
 
     def ==(other)
       if other.is_a?(self.class) &&
-          other.value == self.value &&
-          other.position == self.position
+          other.value == self.value
 
         return true
       end
 
       false
+    end
+
+    def hash
+      value.hash
     end
   end
 end

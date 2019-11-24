@@ -1,6 +1,6 @@
 module Ruspea::Interpreter
   class Reader
-    include Ruspea::Interpreter::Forms
+    include Ruspea::Forms
 
     def next(code, position = Position::INITIAL)
       @matchers ||= MATCHERS + [NoMatches.new]

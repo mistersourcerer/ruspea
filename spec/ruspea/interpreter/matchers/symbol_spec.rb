@@ -1,4 +1,4 @@
-module Ruspea::Interpreter::Forms
+module Ruspea::Forms
   RSpec.describe Ruspea::Interpreter::Matchers::Symbol do
     subject(:reader) { Ruspea::Interpreter::Reader.new }
 

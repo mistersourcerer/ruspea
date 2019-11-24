@@ -10,7 +10,7 @@ module Ruspea::Interpreter::Matchers
         next_until_end(code[1..code.length], new_position)
 
       [
-        Ruspea::Interpreter::Forms::List.new(list, position),
+        Ruspea::Forms::List.new(list, position),
         remaining,
         new_position + 1
       ]
@@ -43,7 +43,7 @@ module Ruspea::Interpreter::Matchers
       reader = Ruspea::Interpreter::Reader.new
       form, remaining, new_position = reader.next(remaining, new_position)
 
-      if form.is_a?(Ruspea::Interpreter::Forms::Separator)
+      if form.is_a?(Ruspea::Forms::Separator)
         form, remaining, new_position = reader.next(remaining, new_position)
       end
 

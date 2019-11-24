@@ -7,7 +7,7 @@ module Ruspea::Interpreter::Matchers
     def read(code, position = Position::INITIAL, separators = "")
       if !match?(code)
         return [
-          Ruspea::Interpreter::Forms::Separator.new(separators, position),
+          Ruspea::Forms::Separator.new(separators, position),
           code,
           position + separators.length
         ]

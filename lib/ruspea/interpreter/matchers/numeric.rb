@@ -10,10 +10,10 @@ module Ruspea::Interpreter::Matchers
       value, remaining, type =
         if float?(rest)
           read_digit(rest[1..rest.length], number + ".") + [
-            Ruspea::Interpreter::Forms::Float
+            Ruspea::Forms::Float
           ]
         else
-          [number, rest, Ruspea::Interpreter::Forms::Integer]
+          [number, rest, Ruspea::Forms::Integer]
         end
 
       [type.new(value, position), remaining, position + value.length]

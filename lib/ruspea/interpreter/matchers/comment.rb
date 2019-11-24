@@ -42,7 +42,7 @@ module Ruspea::Interpreter::Matchers
       remaining, new_position = final_position(code, position)
 
       return [
-        Ruspea::Interpreter::Forms::Comment.new(comment, position),
+        Ruspea::Forms::Comment.new(comment, position),
         remaining,
         new_position
       ]

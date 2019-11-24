@@ -1,6 +1,14 @@
-module Ruspea::Interpreter::Forms
+module Ruspea::Forms
   class List
-    include Ruspea::Interpreter::Form
+    include Ruspea::Form
+
+    def eval(context)
+      fn = context[value.head] { |sym, error|
+        puts "#{sym.value} is not a function!"
+        raise error
+      }
+      fn.call(value.tail)
+    end
 
     def inspect
       return @inspect if @inspect

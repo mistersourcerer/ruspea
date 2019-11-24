@@ -2,14 +2,14 @@ module Ruspea::Interpreter::Matchers
   class Map < Collection["{", "}"]
     def read(code, position = Position::INITIAL)
       elements, remaining, new_position = read_collection(code, position) { |form|
-        !form.is_a?(Ruspea::Interpreter::Forms::Separator)
+        !form.is_a?(Ruspea::Forms::Separator)
       }
       tuples = elements.each_slice(2).to_a
 
       validate_format(tuples, position)
 
       [
-        Ruspea::Interpreter::Forms::Map.new(Hash[tuples], position),
+        Ruspea::Forms::Map.new(Hash[tuples], position),
         remaining[1..remaining.length],
         new_position + 1]
     end

@@ -9,7 +9,7 @@ module Ruspea::Interpreter::Matchers
         read(code[1..code.length], position, lines + 1)
       else
         [
-          Ruspea::Interpreter::Forms::Line.new(lines, position),
+          Ruspea::Forms::Line.new(lines, position),
           code,
           position << lines
         ]

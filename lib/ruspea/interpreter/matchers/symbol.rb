@@ -22,9 +22,9 @@ module Ruspea::Interpreter::Matchers
     def final_form(code, current, position)
       form =
         if match = KEYWORD.match(current)
-          Ruspea::Interpreter::Forms::Keyword.new(match[:keyword], position)
+          Ruspea::Forms::Keyword.new(match[:keyword], position)
         else
-          Ruspea::Interpreter::Forms::Symbol.new(current, position)
+          Ruspea::Forms::Symbol.new(current, position)
         end
 
       [form, code, position + current.length]

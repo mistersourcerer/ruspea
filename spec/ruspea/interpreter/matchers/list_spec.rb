@@ -1,4 +1,4 @@
-module Ruspea::Interpreter::Forms
+module Ruspea::Forms
   RSpec.describe Ruspea::Interpreter::Matchers::List do
     subject(:reader) { Ruspea::Interpreter::Reader.new }
     let(:pos) { Ruspea::Interpreter::Position }

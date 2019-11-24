@@ -75,10 +75,5 @@ module Ruspea::Runtime
       return false if self.class != other.class
       head == other.head && tail == other.tail
     end
-
-    def inspect
-      @printer ||= Ruspea::Printer.new
-      @printer.call self
-    end
   end
 end

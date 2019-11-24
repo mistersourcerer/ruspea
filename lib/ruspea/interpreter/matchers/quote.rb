@@ -13,9 +13,9 @@ module Ruspea::Interpreter::Matchers
     private
 
     def quote(form, position)
-      Ruspea::Interpreter::Forms::List.new(
+      Ruspea::Forms::List.new(
         Ruspea::Runtime::List.create(
-          Ruspea::Interpreter::Forms::Symbol.new(
+          Ruspea::Forms::Symbol.new(
             "quote",
             Ruspea::Interpreter::Position.new(0, 0)
           ),
