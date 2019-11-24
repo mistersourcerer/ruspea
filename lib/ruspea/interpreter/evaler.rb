@@ -1,9 +1,13 @@
 module Ruspea::Interpreter
   class Evaler
     CORE = {
-      "atom?" => Ruspea::Core::Atom.new,
+      #"atom?" => Ruspea::Core::Atom.new,
       "quote" => Ruspea::Core::Quote.new,
+      # "car"   => CAR = Ruspea::Core::Car.new,
+      # "head"  => CAR,
+      # "first" => CAR,
     }
+
     def initialize
       @reader = Reader.new
 

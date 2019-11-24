@@ -18,6 +18,15 @@ module Ruspea::Interpreter
     end
 
     describe "(core) Functions" do
+      describe "atom?" do
+        it "returns true for numbers, strings and keywords" do
+          pending
+          expect(evaler.call("(atom? 1)")).to eq [true]
+          expect(evaler.call("(atom? \"ruspea\")")).to eq [true]
+          expect(evaler.call("(atom? :a)")).to eq [true]
+        end
+      end
+
       describe "quote" do
         it "returns the forms unevaled" do
           expect(evaler.call("(quote (1 2))")).to eq [
@@ -37,11 +46,16 @@ module Ruspea::Interpreter
         end
       end
 
-      describe "atom?" do
-        it "returns true for numbers, strings and keywords" do
-          expect(evaler.call("(atom? 1)")).to eq [true]
-          expect(evaler.call("(atom? \"ruspea\")")).to eq [true]
-          expect(evaler.call("(atom? :a)")).to eq [true]
+      describe "car/head/first" do
+        it "returns the head of the list" do
+          pending
+          expect(evaler.call("(car '(1 2))")).to eq [
+            Ruspea::Forms::Integer.new(1),
+          ]
+
+          expect(evaler.call("(car '(a 2))")).to eq [
+            Ruspea::Forms::Symbol.new("a")
+          ]
         end
       end
     end

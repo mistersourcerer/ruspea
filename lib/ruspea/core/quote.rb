@@ -5,7 +5,7 @@ module Ruspea::Core
     end
 
     def call(form)
-      form.head
+      form.value.head
     end
   end
 end
