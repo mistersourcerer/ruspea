@@ -18,6 +18,25 @@ module Ruspea::Interpreter
     end
 
     describe "(core) Functions" do
+      describe "quote" do
+        it "returns the forms unevaled" do
+          expect(evaler.call("(quote (1 2))")).to eq [
+            Ruspea::Forms::List.new(
+              Ruspea::Runtime::List.create(
+                Ruspea::Forms::Integer.new(1),
+                Ruspea::Forms::Integer.new(2),
+              )
+            )
+          ]
+          expect(evaler.call("(quote a)")).to eq [
+            Ruspea::Forms::Symbol.new("a")
+          ]
+          expect(evaler.call("(quote :a)")).to eq [
+            Ruspea::Forms::Keyword.new("a")
+          ]
+        end
+      end
+
       describe "atom?" do
         it "returns true for numbers, strings and keywords" do
           expect(evaler.call("(atom? 1)")).to eq [true]

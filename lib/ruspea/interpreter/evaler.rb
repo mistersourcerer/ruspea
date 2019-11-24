@@ -1,11 +1,18 @@
 module Ruspea::Interpreter
   class Evaler
+    CORE = {
+      "atom?" => Ruspea::Core::Atom.new,
+      "quote" => Ruspea::Core::Quote.new,
+    }
     def initialize
       @reader = Reader.new
+
       @core = Ruspea::Runtime::Env.new
       pos = Ruspea::Interpreter::Position.new(0, 0)
-      sym = Ruspea::Forms::Symbol.new("atom?", pos)
-      @core[sym] = Ruspea::Core::Atom.new
+
+      CORE.each { |name, fn|
+        @core[Ruspea::Forms::Symbol.new(name, pos)] = fn
+      }
     end
 
     def call(code)
