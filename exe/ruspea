@@ -1,4 +1,4 @@
 #!/usr/bin/env ruby
 require "ruspea"
 
-# Ruspea::Repl::Loop.new.run
+Ruspea::Repl::Loop.new.run
