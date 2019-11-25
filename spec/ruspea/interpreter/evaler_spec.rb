@@ -1,19 +1,25 @@
 module Ruspea::Interpreter
   RSpec.describe Evaler do
     subject(:evaler) { described_class.new }
+    let(:reader) { Reader.new }
+
+    def form_for(code)
+      form, _, _ = reader.next(code)
+      form
+    end
 
     describe "Atoms" do
       it "evaluates numbers" do
-        expect(evaler.call("1")).to eq [1]
+        expect(evaler.call(form_for("1"))).to eq 1
       end
 
       it "evalutes strings" do
-        expect(evaler.call("\"ruspea\"")).to eq ["ruspea"]
+        expect(evaler.call(form_for("\"ruspea\""))).to eq "ruspea"
       end
 
       it "evaluates keywords" do
-        expect(evaler.call(":a")).to eq [:a]
-        expect(evaler.call("a:")).to eq [:a]
+        expect(evaler.call(form_for(":a"))).to eq :a
+        expect(evaler.call(form_for("a:"))).to eq :a
       end
     end
 
@@ -29,20 +35,19 @@ module Ruspea::Interpreter
 
       describe "quote" do
         it "returns the forms unevaled" do
-          expect(evaler.call("(quote (1 2))")).to eq [
-            Ruspea::Forms::List.new(
+          expect(evaler.call(form_for("(quote (1 2))")))
+            .to eq Ruspea::Forms::List.new(
               Ruspea::Runtime::List.create(
                 Ruspea::Forms::Integer.new(1),
                 Ruspea::Forms::Integer.new(2),
               )
             )
-          ]
-          expect(evaler.call("(quote a)")).to eq [
-            Ruspea::Forms::Symbol.new("a")
-          ]
-          expect(evaler.call("(quote :a)")).to eq [
-            Ruspea::Forms::Keyword.new("a")
-          ]
+
+          expect(evaler.call(form_for("(quote a)")))
+            .to eq Ruspea::Forms::Symbol.new("a")
+
+          expect(evaler.call(form_for("(quote :a)")))
+            .to eq Ruspea::Forms::Keyword.new("a")
         end
       end
 

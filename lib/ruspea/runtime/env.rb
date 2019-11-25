@@ -76,6 +76,7 @@ module Ruspea::Runtime
       # Until we find the "root" context.
       env.context = _current_context
       @context = env
+      self
     end
 
     def [](sym, &not_found)

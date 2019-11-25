@@ -9,8 +9,6 @@ module Ruspea::Interpreter
     }
 
     def initialize
-      @reader = Reader.new
-
       @core = Ruspea::Runtime::Env.new
       pos = Ruspea::Interpreter::Position.new(0, 0)
 
@@ -19,17 +17,15 @@ module Ruspea::Interpreter
       }
     end
 
-    def call(code)
-      context = Ruspea::Runtime::Env.new(@core)
-      form, remaining, _ = reader.next(code)
-      forms = [form]
+    def call(form, context = nil)
+      exec_context =
+        if !context.nil?
+          Ruspea::Runtime::Env.new(context.fallback(@core))
+        else
+          Ruspea::Runtime::Env.new(@core)
+        end
 
-      while(!remaining.nil? && remaining.length > 0)
-        form, remaining, _ = reader.next(code)
-        forms << form
-      end
-
-      forms.map { |form| form.eval(context) }
+      form.eval(exec_context)
     end
 
     private
