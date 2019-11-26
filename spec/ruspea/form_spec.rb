@@ -13,7 +13,7 @@ module Ruspea
       end
 
       it "creates a form in the initial (1, 1) position" do
-        expect(form.position).to eq Ruspea::Interpreter::Position.new(1, 1)
+        expect(form.position).to eq Position.new(1, 1)
       end
     end
 

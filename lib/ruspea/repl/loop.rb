@@ -1,11 +1,11 @@
-module Ruspea::Repl
-  class Loop
+module Ruspea
+  class Repl::Loop
     def initialize
-      @reader = Ruspea::Interpreter::Reader.new
-      @evaler = Ruspea::Interpreter::Evaler.new
-      # @printer = Ruspea::Printer.new
+      @reader = Reader.new
+      @evaler = Evaler.new
+      @printer = Printer.new
 
-      @env = Ruspea::Runtime::Env.new
+      @env = Runtime::Env.new
     end
 
     def run(input: STDIN)
@@ -23,10 +23,11 @@ module Ruspea::Repl
           while(code.length > 0)
             form, code, _ = @reader.next(code)
             result = @evaler.call(form, @env)
-            puts result
+            @printer.print result
+            print "\n"
           end
           prompt_back
-        rescue Ruspea::Error::Standard => e
+        rescue Error::Standard => e
           print_error e
         rescue StandardError => e
           puts "A Ruby exception was raised. Inspect it? Y/n"
@@ -53,25 +54,6 @@ module Ruspea::Repl
       puts e.class
       puts e.message
       prompt_back
-    end
-
-    def should_exit?(env)
-      env.call Ruspea::Runtime::Sym.new("%repl_should_exit?")
-    rescue Ruspea::Error::Resolution
-      false
-    end
-
-    def interprete(line, env)
-      _, forms = @reader.call(line)
-      forms.each do |expression|
-        # puts "read: "
-        # pp expression
-        result = @evaler.call(expression, context: env)
-        # puts "evaled: "
-        # pp result
-        Process.kill("SIGINT", Process.pid) if should_exit?(env)
-        print @printer.call(result)
-      end
     end
   end
 end

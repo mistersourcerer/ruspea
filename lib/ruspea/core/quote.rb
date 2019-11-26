@@ -1,7 +1,7 @@
-module Ruspea::Core
-  class Quote
+module Ruspea
+  class Core::Quote
     def initialize
-      @pos = Ruspea::Interpreter::Position.new(0, 0)
+      @pos = Position.new(0, 0)
     end
 
     def call(form)

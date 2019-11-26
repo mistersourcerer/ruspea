@@ -2,7 +2,7 @@ module Ruspea
   module Form
     attr_reader :value, :position
 
-    def initialize(value, position = Ruspea::Interpreter::Position::INITIAL)
+    def initialize(value, position = Position::INITIAL)
       @value = cast(value)
       @position = position
     end
