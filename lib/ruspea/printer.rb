@@ -1,7 +1,9 @@
 module Ruspea
   class Printer
-    def print(value)
-      MATCHERS.fetch(value.class) { GenericPrinter.new }
+    def call(value)
+      MATCHERS
+        .fetch(value.class) { GenericPrinter.new }
+        .print(value)
     end
 
     private
@@ -14,7 +16,7 @@ module Ruspea
 
     MATCHERS = {
       Symbol => "Keyword",
-      # String => "String",
+      String => "String",
       # Form::Symbol => "Symbol",
     }.map { |type, class_name|
       [type, const_get("Ruspea::Printer::Matchers::#{class_name}").new]

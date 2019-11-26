@@ -8,7 +8,7 @@ module Ruspea
       @env = Runtime::Env.new
     end
 
-    def run(input: STDIN)
+    def run(input: $stdin, output: $stdout)
       trap "SIGINT" do
         puts "See you soon."
         exit(130)
@@ -22,9 +22,8 @@ module Ruspea
 
           while(code.length > 0)
             form, code, _ = @reader.next(code)
-            result = @evaler.call(form, @env)
-            @printer.print result
-            print "\n"
+            value = @evaler.call(form, @env)
+            output.print "#{@printer.call(value)}\n"
           end
           prompt_back
         rescue Error::Standard => e
@@ -46,7 +45,6 @@ module Ruspea
     private
 
     def prompt_back(ns: "#user")
-      puts ""
       print "#{ns}=> "
     end
 
