@@ -6,6 +6,7 @@ module Ruspea
       # "car"   => CAR = Core::Car.new,
       # "head"  => CAR,
       # "first" => CAR,
+      "eq?"   => Core::Eq.new,
     }
 
     def initialize
