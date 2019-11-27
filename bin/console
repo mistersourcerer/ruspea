@@ -5,6 +5,6 @@ require "ruspea"
 
 require "pry"
 
-include Ruspea::Interpreter::Forms
+include Ruspea::Forms
 
 Pry.start
