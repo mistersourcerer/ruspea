@@ -5,15 +5,22 @@ module Ruspea
     end
 
     def call(form, context)
-      return false if form.value.count > 1
+      result = @evaler.call(form.value.head, context)
+      return true if nill?(result)
 
-      puts "atom? #{form.value.head}(#{form.value.head.class})"
-      case @evaler.call(form.value.head, context)
-      when Integer, String, Symbol, Runtime::Nill.instance
+      case result
+      when Integer, String, Symbol
         true
       else
         false
       end
+    end
+
+    private
+
+    def nill?(result)
+      result.class.include?(Form) &&
+        result.value.is_a?(Runtime::Nill)
     end
   end
 end
