@@ -26,6 +26,19 @@ module Ruspea
           ), pos.new(2, 1))
         ), pos.new(1, 1))
       )
+
+      result = reader.next("'()")
+      form = result.first
+      expect(form).to eq (
+        List.new(
+          list.create(
+            Symbol.new("quote", pos.new(0, 0)),
+            List.new(
+              Runtime::Nill.instance, pos.new(1, 1)
+            )
+          )
+        )
+      )
     end
 
     it "recongizes nested quotings" do

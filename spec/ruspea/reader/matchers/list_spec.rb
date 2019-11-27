@@ -48,6 +48,13 @@ module Ruspea
       ))
     end
 
+    it "recongizes empty lists" do
+      result = reader.next("( )")
+      form = result.first
+
+      expect(form).to eq List.new(Runtime::Nill.instance, pos.new(1, 1))
+    end
+
     it "returns the remaining code and new position" do
       result = reader.next("(1 2) (3 4)")
 
