@@ -107,7 +107,7 @@ module Ruspea
       end
 
       it "returns nil if empty list" do
-        expect(evaler.call(form("(rest '())"))).to eq Runtime::Nill.instance
+        expect(evaler.call(form("(rest '())"))).to eq Runtime::Nil.instance
       end
 
       it "raises if argument is not a list" do

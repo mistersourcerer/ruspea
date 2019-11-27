@@ -52,7 +52,7 @@ module Ruspea
       result = reader.next("( )")
       form = result.first
 
-      expect(form).to eq List.new(Runtime::Nill.instance, pos.new(1, 1))
+      expect(form).to eq List.new(Runtime::Nil.instance, pos.new(1, 1))
     end
 
     it "returns the remaining code and new position" do

@@ -1,5 +1,5 @@
 module Ruspea
-  class Printer::Matchers::Nill
+  class Printer::Matchers::Nil
     def print(_)
       "nil"
     end

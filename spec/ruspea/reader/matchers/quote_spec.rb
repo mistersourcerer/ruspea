@@ -34,7 +34,7 @@ module Ruspea
           list.create(
             Symbol.new("quote", pos.new(0, 0)),
             List.new(
-              Runtime::Nill.instance, pos.new(1, 1)
+              Runtime::Nil.instance, pos.new(1, 1)
             )
           )
         )

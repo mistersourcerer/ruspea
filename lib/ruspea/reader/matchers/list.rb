@@ -27,7 +27,7 @@ module Ruspea
       raise "Expected to find a ) for list at #{position}" if finished?(code)
 
       remaining, new_position = ignore_separators(code, position)
-      list = Runtime::Nill.instance
+      list = Runtime::Nil.instance
 
       if remaining[0] == ")"
         [

@@ -1,7 +1,7 @@
 require "singleton"
 
 module Ruspea::Runtime
-  class Nill
+  class Nil
     include Singleton
 
     ARRAY = [].freeze
@@ -47,7 +47,7 @@ module Ruspea::Runtime
     end
 
     def ==(other)
-      return true if other.is_a? Nill
+      return true if other.is_a? Nil
       false
     end
   end

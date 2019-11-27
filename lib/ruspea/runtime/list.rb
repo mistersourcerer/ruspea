@@ -3,7 +3,7 @@ module Ruspea::Runtime
     attr_reader :head, :tail, :count
 
     def self.create(*items)
-      return Nill.instance if items.length == 0
+      return Nil.instance if items.length == 0
 
       new items[0], create(*items[1..items.length]), count: items.length
     end
@@ -13,7 +13,7 @@ module Ruspea::Runtime
       list.cons(el)
     end
 
-    def initialize(head, tail = Nill.instance, count: 0)
+    def initialize(head, tail = Nil.instance, count: 0)
       @head = head
       @tail = tail
       @count = count
@@ -32,7 +32,7 @@ module Ruspea::Runtime
     end
 
     def take(amount, from = self)
-      return Nill.instance if amount == 0 || from.empty?
+      return Nil.instance if amount == 0 || from.empty?
 
       from
         .take(amount - 1, from.tail)
@@ -41,7 +41,7 @@ module Ruspea::Runtime
 
     def map(fun = nil, list: self, &callable)
       raise "not ready!"
-      return Nill.instance if list.empty?
+      return Nil.instance if list.empty?
 
       mapper =
         if !callable.nil?

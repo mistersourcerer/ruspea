@@ -8,7 +8,7 @@ module Ruspea
       check_arguments form
       result = @evaler.call(form.value.tail.head, context)
       tail = result.is_a?(Forms::List) ? result.value : result
-      if !tail.is_a?(Runtime::List) && !tail.is_a?(Runtime::Nill)
+      if !tail.is_a?(Runtime::List) && !tail.is_a?(Runtime::Nil)
         raise Error::Argument.new(Runtime::List, tail, function: "cons")
       end
 

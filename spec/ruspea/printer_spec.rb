@@ -24,7 +24,7 @@ module Ruspea
 
     describe List do
       it "prints empty lists" do
-        expect(printer.print(Runtime::Nill.instance)).to eq "()"
+        expect(printer.print(Runtime::Nil.instance)).to eq "()"
       end
 
       it "prints" do
@@ -33,7 +33,7 @@ module Ruspea
       end
     end
 
-    describe Nill do
+    describe Nil do
       it "prints nil values" do
         expect(printer.print(nil)).to eq "nil"
       end

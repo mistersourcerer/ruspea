@@ -20,7 +20,7 @@ module Ruspea
 
     def nill?(result)
       result.class.include?(Form) &&
-        result.value.is_a?(Runtime::Nill)
+        result.value.is_a?(Runtime::Nil)
     end
   end
 end
