@@ -9,7 +9,7 @@ module Ruspea
       return true if nill?(result)
 
       case result
-      when Integer, String, Symbol
+      when Integer, String, Symbol, Forms::Symbol
         true
       else
         false

@@ -3,11 +3,6 @@ module Ruspea
     let(:evaler) { Evaler.new }
     let(:reader) { Reader.new }
 
-    def form(code)
-      form, _, _ = reader.next(code)
-      form
-    end
-
     describe "atoms" do
       it "evaluates numbers" do
         expect(evaler.call(form("1"))).to eq 1
@@ -42,10 +37,11 @@ module Ruspea
     end
 
     describe Core::Atom do
-      it "returns true for numbers, strings and keywords" do
+      it "returns true for numbers, strings, keywords and symbols" do
         expect(evaler.call(form("(atom? 1)"))).to eq true
         expect(evaler.call(form("(atom? \"ruspea\")"))).to eq true
         expect(evaler.call(form("(atom? :a)"))).to eq true
+        expect(evaler.call(form("(atom? 'b)"))).to eq true
       end
     end
 
