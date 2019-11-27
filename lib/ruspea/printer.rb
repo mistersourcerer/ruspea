@@ -30,6 +30,7 @@ module Ruspea
       Forms::Symbol => "Symbol",
       Runtime::List => "List",
       Runtime::Nill => "List",
+      NilClass => "Nill",
     }.map { |type, class_name|
       [type, const_get("Ruspea::Printer::Matchers::#{class_name}").new]
     }.to_h

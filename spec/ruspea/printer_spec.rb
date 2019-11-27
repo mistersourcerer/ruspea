@@ -32,5 +32,11 @@ module Ruspea
         expect(printer.print(list)).to eq "(1 2 3)"
       end
     end
+
+    describe Nill do
+      it "prints nil values" do
+        expect(printer.print(nil)).to eq "nil"
+      end
+    end
   end
 end
