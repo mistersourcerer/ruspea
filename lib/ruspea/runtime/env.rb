@@ -66,6 +66,8 @@ module Ruspea::Runtime
     end
 
     def fallback(env)
+      return self if env.nil?
+
       _current_context = @context
       # TODO: the "correct" implementation of this specific piece
       # would be to "cascade" the current context, meaning:

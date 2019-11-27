@@ -1,7 +1,8 @@
 module Ruspea::Error
   class Resolution < Standard
     def initialize(symbol)
-      super "Unable to resolve: #{symbol} in the current context"
+      value = symbol.respond_to?(:value) ? symbol.value : symbol
+      super "Unable to resolve: #{value} in the current context"
     end
   end
 end

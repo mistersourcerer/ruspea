@@ -18,14 +18,14 @@ module Ruspea
     end
 
     def call(form, context = nil)
-      exec_context =
+      fallback =
         if !context.nil?
-          Runtime::Env.new(context.fallback(@core))
+          context.fallback(@core)
         else
-          Runtime::Env.new(@core)
+          @core
         end
 
-      form.eval(exec_context)
+      form.eval Runtime::Env.new(fallback)
     end
 
     private
