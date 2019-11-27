@@ -1,3 +1,3 @@
-module Ruspea::Error
-  class Standard < StandardError; end
+module Ruspea
+  class Error::Standard < StandardError; end
 end

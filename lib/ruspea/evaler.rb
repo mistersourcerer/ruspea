@@ -3,10 +3,12 @@ module Ruspea
     CORE = {
       "quote" => Core::Quote.new,
       "atom?" => Core::Atom.new,
-      # "car"   => CAR = Core::Car.new,
-      # "head"  => CAR,
-      # "first" => CAR,
       "eq?"   => Core::Eq.new,
+      "first" => FIRST = Core::First.new,
+      "head"  => FIRST,
+      "rest"  => REST = Core::Rest.new,
+      "tail"  => REST,
+      "cons"  => Core::Cons.new,
     }
 
     def initialize
