@@ -1,7 +1,5 @@
 module Ruspea
   RSpec.describe Evaler do
-    include Forms
-
     subject(:evaler) { described_class.new }
     let(:reader) { Reader.new }
 
@@ -25,6 +23,24 @@ module Ruspea
       end
     end
 
+    describe "quote" do
+      it "returns the forms unevaled" do
+        expect(evaler.call(form_for("(quote (1 2))")))
+          .to eq Forms::List.new(
+            Runtime::List.create(
+              Forms::Integer.new(1),
+              Forms::Integer.new(2),
+            )
+          )
+
+        expect(evaler.call(form_for("(quote a)")))
+          .to eq Forms::Symbol.new("a")
+
+        expect(evaler.call(form_for("(quote :a)")))
+          .to eq Forms::Keyword.new("a")
+      end
+    end
+
     describe "(core) Functions" do
       describe "atom?" do
         it "returns true for numbers, strings and keywords" do
@@ -32,24 +48,6 @@ module Ruspea
           expect(evaler.call("(atom? 1)")).to eq [true]
           expect(evaler.call("(atom? \"ruspea\")")).to eq [true]
           expect(evaler.call("(atom? :a)")).to eq [true]
-        end
-      end
-
-      describe "quote" do
-        it "returns the forms unevaled" do
-          expect(evaler.call(form_for("(quote (1 2))")))
-            .to eq List.new(
-              Runtime::List.create(
-                Integer.new(1),
-                Integer.new(2),
-              )
-            )
-
-          expect(evaler.call(form_for("(quote a)")))
-            .to eq Symbol.new("a")
-
-          expect(evaler.call(form_for("(quote :a)")))
-            .to eq Keyword.new("a")
         end
       end
 

@@ -1,9 +1,9 @@
 module Ruspea
   class Printer
     def call(value)
-      MATCHERS
-        .fetch(value.class) { GenericPrinter.new }
-        .print(value)
+      MATCHERS.fetch(value.class) {
+        value.class.include?(Form) ? FormPrinter.new(self) : GenericPrinter.new
+      }.print(value)
     end
 
     private
@@ -14,10 +14,22 @@ module Ruspea
       end
     end
 
+    class FormPrinter
+      def initialize(printer)
+        @printer = printer
+      end
+
+      def print(form)
+        @printer.call(form.value)
+      end
+    end
+
     MATCHERS = {
       Symbol => "Keyword",
       String => "String",
-      # Form::Symbol => "Symbol",
+      Forms::Symbol => "Symbol",
+      Runtime::List => "List",
+      Runtime::Nill => "List",
     }.map { |type, class_name|
       [type, const_get("Ruspea::Printer::Matchers::#{class_name}").new]
     }.to_h
