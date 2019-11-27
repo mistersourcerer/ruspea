@@ -12,4 +12,10 @@ RSpec.configure do |config|
   config.expect_with :rspec do |c|
     c.syntax = :expect
   end
+
+  def form(code)
+    @_reader ||= Ruspea::Reader.new
+    form, _, _ = @_reader.next(code)
+    form
+  end
 end

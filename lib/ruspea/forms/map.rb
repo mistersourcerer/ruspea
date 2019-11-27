@@ -1,6 +1,15 @@
-module Ruspea::Forms
-  class Map
+module Ruspea
+  class Forms::Map
     include Ruspea::Form
+
+    def eval(context)
+      @evaler ||= Evaler.new
+
+      self.value
+        .map { |sym, value| [sym.value, @evaler.call(value, context)] }
+        .to_h
+        .then { |hash| Runtime::Map.new(hash) }
+    end
 
     def inspect
       values = self.value.map { |k, value|
@@ -14,8 +23,7 @@ module Ruspea::Forms
           # The pure hash comparison wasn't working on me.
           # Something is weird... =/
           other.value.keys == self.value.keys &&
-          other.value.values == self.value.values &&
-          other.position == self.position
+          other.value.values == self.value.values
 
         return true
       end

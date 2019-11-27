@@ -31,6 +31,7 @@ module Ruspea
       Runtime::List => "List",
       Runtime::Nil => "List",
       NilClass => "Nil",
+      Runtime::Map => "Map",
     }.map { |type, class_name|
       [type, const_get("Ruspea::Printer::Matchers::#{class_name}").new]
     }.to_h
