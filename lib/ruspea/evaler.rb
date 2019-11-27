@@ -1,8 +1,8 @@
 module Ruspea
   class Evaler
     CORE = {
-      #"atom?" => Core::Atom.new,
       "quote" => Core::Quote.new,
+      "atom?" => Core::Atom.new,
       # "car"   => CAR = Core::Car.new,
       # "head"  => CAR,
       # "first" => CAR,
