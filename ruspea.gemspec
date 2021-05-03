@@ -1,7 +1,4 @@
-
-lib = File.expand_path("../lib", __FILE__)
-$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require "ruspea/version"
+require_relative "lib/ruspea/version"
 
 Gem::Specification.new do |spec|
   spec.name          = "ruspea_lang"
@@ -13,6 +10,7 @@ Gem::Specification.new do |spec|
   spec.description   = %q{A full featured lisp to be used as a Ruby Library (written in Ruby)}
   spec.homepage      = "https://github.com/mistersourcerer/ruspea"
   spec.license       = "MIT"
+  spec.required_ruby_version = Gem::Requirement.new(">= 3.0.1")
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.

@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    ruspea_lang (0.1.2)
+    ruspea_lang (0.2.0)
       zeitwerk
 
 GEM
