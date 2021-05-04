@@ -11,10 +11,16 @@ module Ruspea
             expect { evaler.eval(invalid_quote) }.to raise_error Error::Syntax
           end
 
-          it "returns the first argument" do
-            quote_symbol = DS::List.create("quote", :a)
+          it "quotes a symbol instance" do
+            symbol_a = DS::List.create("quote", Prim::Sym.new("a"))
 
-            expect(evaler.eval(quote_symbol)).to eq :a
+            expect(evaler.eval(symbol_a).label).to eq "a"
+          end
+
+          it "returns the first argument" do
+            quote_symbol = DS::List.create("quote", Prim::Sym.new("a"))
+
+            expect(evaler.eval(quote_symbol)).to eq Prim::Sym.new("a")
           end
 
           it "works when argument is a list" do
@@ -29,6 +35,12 @@ module Ruspea
             invalid_atom = DS::List.create("atom", "a", "b")
 
             expect { evaler.eval(invalid_atom) }.to raise_error Error::Syntax
+          end
+
+          it "returns true for symbols" do
+            sym_atom = DS::List.create("atom", Prim::Sym.new("omg"))
+
+            expect(evaler.eval(sym_atom)).to eq true
           end
 
           it "returns true for string" do

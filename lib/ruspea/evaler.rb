@@ -5,6 +5,7 @@ module Ruspea
     end
 
     def eval(expr)
+      # return sym(expr) if sym?(expr)
       return expr if atom?(expr)
       return list(expr) if expr.is_a?(DS::List)
 
@@ -15,10 +16,15 @@ module Ruspea
       expr.is_a?(String) ||
         expr.is_a?(Numeric) ||
         expr.is_a?(TrueClass) || expr.is_a?(FalseClass) ||
+        sym?(expr) ||
         expr == DS::Nill.instance
     end
 
     private
+
+    def sym?(expr)
+      expr.is_a?(Prim::Sym)
+    end
 
     def list(expr)
       operand = expr.head
