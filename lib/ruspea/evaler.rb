@@ -1,13 +1,21 @@
 module Ruspea
   class Evaler
     def initialize
-      @primitives = Primitives.new
+      @primitives = Primitives.new(self)
     end
 
     def eval(expr)
+      return expr if atom?(expr)
       return list(expr) if expr.is_a?(DS::List)
 
       raise "Invalid Expression"
+    end
+
+    def atom?(expr)
+      expr.is_a?(String) ||
+        expr.is_a?(Numeric) ||
+        expr.is_a?(TrueClass) || expr.is_a?(FalseClass) ||
+        expr == DS::Nill.instance
     end
 
     private
@@ -21,6 +29,10 @@ module Ruspea
   end
 
   class Primitives
+    def initialize(evaler)
+      @evaler = evaler
+    end
+
     def knows?(operand)
       respond_to?(operand)
     end
@@ -30,11 +42,17 @@ module Ruspea
       arg.head
     end
 
+    def atom(arg)
+      raise args_error(1, arg.count) if arg.count > 1
+      @evaler.atom?(arg.head)
+    end
+
     private
 
     def args_error(expected, given)
       Error::Syntax.new <<~ER
-        Wrong number of args, expected #{expected} but #{given} given
+        Wrong number of args for #{caller_locations.first.label}, 
+        expected #{expected} but #{given} given
       ER
     end
   end
