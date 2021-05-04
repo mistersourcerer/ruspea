@@ -33,9 +33,11 @@ module Ruspea::DS
         end
       end
 
-      describe "#eq?" do
-        it "knows when two lists are alike (eq)" do
+      context "Equality" do
+        it "knows when two lists are alike" do
           expect(list.eq?(builder.create(1, 2, 3, 4))).to eq true
+          expect(list.eql?(builder.create(1, 2, 3, 4))).to eq true
+          expect(list == builder.create(1, 2, 3, 4)).to eq true
         end
       end
 
