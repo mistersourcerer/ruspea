@@ -83,6 +83,48 @@ module Ruspea
           end
         end
 
+        describe "eq" do
+          it "raises if more than two arguments are passed" do
+            invalid_eq = DS::List.create("eq", "a", "b", "c")
+
+            expect { evaler.eval(invalid_eq) }.to raise_error Error::Syntax
+          end
+
+          it "raises if only one arg is passed" do
+            invalid_eq = DS::List.create("eq", "a")
+
+            expect { evaler.eval(invalid_eq) }.to raise_error Error::Syntax
+          end
+
+          it "returns true when symbols have the same label" do
+            eq_sym = DS::List.create("eq", Prim::Sym.new("a"), Prim::Sym.new("a"))
+
+            expect(evaler.eval(eq_sym)).to eq true
+          end
+
+          it "returns false when symbols have different label" do
+            eq_diff_sym = DS::List.create("eq", Prim::Sym.new("a"), Prim::Sym.new("b"))
+
+            expect(evaler.eval(eq_diff_sym)).to eq false
+          end
+
+          it "returns true when numbers are the same" do
+            eq_int = DS::List.create("eq", 1, 1)
+            eq_float = DS::List.create("eq", 4.20, 4.20)
+            eq_value = DS::List.create("eq", 1, 1.0)
+
+            expect(evaler.eval(eq_int)).to eq true
+            expect(evaler.eval(eq_float)).to eq true
+            expect(evaler.eval(eq_value)).to eq true
+          end
+
+          it "returns false for different numbers" do
+            eq_diff_int = DS::List.create("eq", 1, 2)
+
+            expect(evaler.eval(eq_diff_int)).to eq false
+          end
+        end
+
       end
     end
   end

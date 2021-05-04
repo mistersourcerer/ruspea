@@ -6,6 +6,7 @@ module Ruspea
 
     def eval(expr)
       # return sym(expr) if sym?(expr)
+      return expr if expr.is_a?(String)
       return expr if atom?(expr)
       return list(expr) if expr.is_a?(DS::List)
 
@@ -13,8 +14,8 @@ module Ruspea
     end
 
     def atom?(expr)
-      expr.is_a?(String) ||
-        expr.is_a?(Numeric) ||
+      expr.is_a?(Numeric) ||
+        expr.is_a?(String) ||
         expr.is_a?(TrueClass) || expr.is_a?(FalseClass) ||
         sym?(expr) ||
         expr == DS::Nill.instance
@@ -51,6 +52,16 @@ module Ruspea
     def atom(arg)
       raise args_error(1, arg.count) if arg.count > 1
       @evaler.atom?(arg.head)
+    end
+
+    def eq(arg)
+      raise args_error(2, arg.count) if arg.count > 2
+      raise args_error(2, arg.count) if arg.count == 1
+
+      left, right = *arg
+      return false unless @evaler.atom?(left) && @evaler.atom?(right)
+
+      left == right
     end
 
     private
