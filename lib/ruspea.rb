@@ -1,9 +1,14 @@
 require "pathname"
 require "zeitwerk"
-Zeitwerk::Loader.for_gem.setup
 
 module Ruspea
   def self.root
-    Pathname.new File.expand_path("../", __FILE__)
+    Pathname.new __dir__
   end
+
+  module DS; end
 end
+
+loader = Zeitwerk::Loader.for_gem
+loader.push_dir Ruspea.root.join("ruspea/ds"), namespace: Ruspea::DS
+loader.setup
