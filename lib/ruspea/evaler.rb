@@ -77,6 +77,15 @@ module Ruspea
       list.head
     end
 
+    def cdr(arg)
+      raise args_error(1, arg.count) if arg.count > 1
+
+      list = @evaler.eval(arg.head)
+      raise arg_type("list", list.class) if !@evaler.list?(list)
+
+      list.tail
+    end
+
     private
 
     def args_error(expected, given)

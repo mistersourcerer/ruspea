@@ -133,9 +133,9 @@ module Ruspea
           end
 
           it "raises if arg is not a list" do
-            car_too_many_args = DS::List.create("car", 1)
+            car_without_list = DS::List.create("car", 1)
 
-            expect { evaler.eval(car_too_many_args) }.to raise_error Error::Execution
+            expect { evaler.eval(car_without_list) }.to raise_error Error::Execution
           end
 
           it "returns the first element of the list" do
@@ -145,6 +145,29 @@ module Ruspea
             )
 
             expect(evaler.eval(car)).to eq 1
+          end
+        end
+
+        describe "cdr" do
+          it "raises if more than one arg is passed" do
+            cdr_too_many_args = DS::List.create(Prim::Sym.new("cdr"), 1, 2)
+
+            expect { evaler.eval(cdr_too_many_args) }.to raise_error Error::Syntax
+          end
+
+          it "raises if arg is not a list" do
+            cdr_without_list = DS::List.create(Prim::Sym.new("cdr"), 1)
+
+            expect { evaler.eval(cdr_without_list) }.to raise_error Error::Execution
+          end
+
+          it "returns the first element of the list" do
+            cdr = DS::List.create(
+              Prim::Sym.new("cdr"),
+              DS::List.create("quote", DS::List.create(1, 2, 3))
+            )
+
+            expect(evaler.eval(cdr)).to eq DS::List.create(2, 3)
           end
         end
 
