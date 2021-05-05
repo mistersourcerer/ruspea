@@ -86,6 +86,16 @@ module Ruspea
       list.tail
     end
 
+    def cons(arg)
+      raise args_error(2, arg.count) if arg.count > 2
+      raise args_error(2, arg.count) if arg.count == 1
+
+      head, tail = @evaler.eval(arg.head), @evaler.eval(arg.tail.head)
+      raise arg_type("list", tail.class) if !@evaler.list?(tail)
+
+      tail.cons(head)
+    end
+
     private
 
     def args_error(expected, given)

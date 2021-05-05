@@ -171,6 +171,41 @@ module Ruspea
           end
         end
 
+        describe "cons" do
+          it "raises if only one arg is passed" do
+            cons_not_enough = DS::List.create("cons", 1)
+
+            expect { evaler.eval(cons_not_enough) }.to raise_error Error::Syntax
+          end
+
+          it "raises if more than two args are passed" do
+            cons_too_many = DS::List.create("cons", 1, 2, 3)
+
+            expect { evaler.eval(cons_too_many) }.to raise_error Error::Syntax
+          end
+
+          it "raises if second arg is not a list" do
+            cons_without_list = DS::List.create("cons", 1, 1)
+
+            expect { evaler.eval(cons_without_list) }.to raise_error Error::Execution
+          end
+
+          it "returns a list where head is first arg and tail second arg" do
+            cons = DS::List.create(
+              "cons", 1, DS::List.create("quote", DS::List.create(2, 3)))
+            cons_list = DS::List.create(
+              "cons",
+              DS::List.create("quote", DS::List.create(1, 2)),
+              DS::List.create("quote", DS::List.create(3, 4))
+            )
+
+            expect(evaler.eval(cons)).to eq DS::List.create(1, 2, 3)
+            expect(evaler.eval(cons_list)).to eq DS::List.create(
+              DS::List.create(1, 2), 3, 4
+            )
+          end
+        end
+
       end
     end
   end
