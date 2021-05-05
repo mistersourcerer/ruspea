@@ -25,6 +25,15 @@ module Ruspea
       expr.is_a?(DS::List) || expr.is_a?(DS::Nill)
     end
 
+    def value_of(list)
+      return DS::Nill.instance if list.empty?
+
+      value = self.eval(list.head)
+      return value if list.tail.empty?
+
+      value_of(list.tail)
+    end
+
     private
 
     def sym?(expr)
@@ -35,7 +44,8 @@ module Ruspea
       operand = String(expr.head)
       args = expr.tail
 
-      @primitives.public_send(operand, args) if @primitives.knows?(operand)
+      return @primitives.public_send(operand, args) if @primitives.knows?(operand)
+      raise "#{operand} is not a function"
     end
   end
 
@@ -96,7 +106,29 @@ module Ruspea
       tail.cons(head)
     end
 
+    def cond(arg)
+      return DS::Nill.instance if arg.empty?
+      check_clause(arg, 1)
+    end
+
     private
+
+    def check_clause(clauses, clause_number)
+      raise non_list_clause(clauses.head) if !@evaler.list?(clauses.head)
+
+      condition = clauses.head.head
+      to_eval = clauses.head.tail
+      current_value = @evaler.eval(condition)
+
+      if !current_value
+        return DS::Nill.instance if clauses.tail.empty?
+        return check_clause(clauses.tail, clause_number + 1)
+      end
+
+      return current_value if to_eval.empty?
+
+      @evaler.value_of(to_eval)
+    end
 
     def args_error(expected, given)
       Error::Syntax.new <<~ER
@@ -110,6 +142,10 @@ module Ruspea
         Wrong argument type for #{caller_locations.first.label}, 
         expected #{expected} but #{given} given
       ER
+    end
+
+    def non_list_clause(given)
+      Error::Execution.new "Clause #{given} should be a List"
     end
   end
 end

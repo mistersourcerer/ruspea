@@ -206,6 +206,69 @@ module Ruspea
           end
         end
 
+        describe "cond" do
+          it "returns Nil if no arguments are given" do
+            cond_nil = DS::List.create("cond")
+
+            expect(evaler.eval(cond_nil)).to eq DS::Nill.instance
+          end
+
+          context "When finds a list where first element evals to true" do
+            it "returns value after evaluating whole list" do
+              cond_two = DS::List.create(
+                "cond",
+                DS::List.create(
+                  DS::List.create("eq", 1, 2),
+                  1
+                ),
+                DS::List.create(
+                  DS::List.create("eq", Prim::Sym.new("a"), Prim::Sym.new("a")),
+                  2
+                )
+              )
+
+              cond_a = DS::List.create(
+                "cond",
+                DS::List.create(
+                  DS::List.create("eq", 1, 2),
+                  1
+                ),
+                DS::List.create(
+                  DS::List.create("eq", Prim::Sym.new("a"), Prim::Sym.new("a")),
+                  2, 3, 5, DS::List.create("quote", Prim::Sym.new("a"))
+                )
+              )
+
+              clisp_consistency_three = DS::List.create(
+                "cond",
+                DS::List.create(
+                  DS::List.create("eq", 1, 2),
+                  1
+                ),
+                DS::List.create(3)
+              )
+
+              expect(evaler.eval(cond_two)).to eq 2
+              expect(evaler.eval(cond_a)).to eq Prim::Sym.new("a")
+              expect(evaler.eval(clisp_consistency_three)).to eq 3
+            end
+          end
+
+
+          it "raises if a non-list 'clause' is evaluated" do
+            non_list_clause = DS::List.create(
+              "cond",
+              DS::List.create(
+                DS::List.create("eq", 1, 2),
+                1
+              ),
+              2
+            )
+
+            expect { evaler.eval(non_list_clause) }.to raise_error Error::Execution
+          end
+        end
+
       end
     end
   end

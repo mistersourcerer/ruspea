@@ -22,5 +22,9 @@ module Ruspea::Prim
       return false if self.class != other.class
       self.label == other.label
     end
+
+    def inspect
+      "'#{label}"
+    end
   end
 end
