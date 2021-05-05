@@ -6,6 +6,10 @@ module Ruspea::Prim
       @label = label
     end
 
+    def to_s
+      @label
+    end
+
     def eq?(other)
       self == other
     end

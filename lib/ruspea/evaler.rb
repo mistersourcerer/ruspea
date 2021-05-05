@@ -32,7 +32,7 @@ module Ruspea
     end
 
     def list(expr)
-      operand = expr.head
+      operand = String(expr.head)
       args = expr.tail
 
       @primitives.public_send(operand, args) if @primitives.knows?(operand)
