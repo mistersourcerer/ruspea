@@ -1,6 +1,6 @@
 require "singleton"
 
-module Ruspea::DS
+module Ruspea::Core
   class Nill
     include Singleton
 

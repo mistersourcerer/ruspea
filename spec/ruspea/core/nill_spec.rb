@@ -1,6 +1,6 @@
-module Ruspea::DS
-  RSpec.describe Nill do
-    subject(:nill) { Nill.instance }
+module Ruspea
+  RSpec.describe Core::Nill do
+    subject(:nill) { described_class.instance }
 
     it { should be_empty }
 
@@ -28,7 +28,7 @@ module Ruspea::DS
       it { should be_eql nill }
 
       it "should not be equal as a non empty list" do
-        expect(nill == List.create(1)).to eq false
+        expect(nill == Core::List.create(1)).to eq false
       end
     end
   end

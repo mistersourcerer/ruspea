@@ -10,5 +10,4 @@ module Ruspea
 end
 
 loader = Zeitwerk::Loader.for_gem
-loader.push_dir Ruspea.root.join("ruspea/ds"), namespace: Ruspea::DS
 loader.setup

@@ -1,4 +1,4 @@
-module Ruspea::DS
+module Ruspea::Core
   class List
     attr_reader :head, :tail, :count
 

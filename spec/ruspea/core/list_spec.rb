@@ -1,5 +1,5 @@
-module Ruspea::DS
-  RSpec.describe List do
+module Ruspea
+  RSpec.describe Core::List do
     subject(:builder) { described_class }
 
     describe ".create" do
@@ -76,7 +76,7 @@ module Ruspea::DS
 
       describe "#take" do
         it "returns N elements from the 'top' of the list" do
-          expect(list.take(3)).to eq List.create(1, 2, 3)
+          expect(list.take(3)).to eq described_class.create(1, 2, 3)
         end
       end
     end # inspecting Lists

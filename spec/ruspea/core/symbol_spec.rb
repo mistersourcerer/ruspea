@@ -1,6 +1,6 @@
 module Ruspea
   RSpec.describe Core::Symbol do
-    subject(:symbol) { Core::Symbol.new "lol" }
+    subject(:symbol) { described_class.new "lol" }
 
     describe "#inspect" do
       it "returns the quote representation for the symbol" do

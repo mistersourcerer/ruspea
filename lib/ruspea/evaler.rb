@@ -16,15 +16,15 @@ module Ruspea
         expr.is_a?(String) ||
         expr.is_a?(TrueClass) || expr.is_a?(FalseClass) ||
         sym?(expr) ||
-        expr == DS::Nill.instance
+        expr == Core::Nill.instance
     end
 
     def list?(expr)
-      expr.is_a?(DS::List) || expr.is_a?(DS::Nill)
+      expr.is_a?(Core::List) || expr.is_a?(Core::Nill)
     end
 
     def value_of(list)
-      return DS::Nill.instance if list.empty?
+      return Core::Nill.instance if list.empty?
 
       value = self.eval(list.head)
       return value if list.tail.empty?
@@ -105,7 +105,7 @@ module Ruspea
     end
 
     def cond(arg)
-      return DS::Nill.instance if arg.empty?
+      return Core::Nill.instance if arg.empty?
       check_clause(arg, 1)
     end
 
@@ -119,7 +119,7 @@ module Ruspea
       current_value = @evaler.eval(condition)
 
       if !current_value
-        return DS::Nill.instance if clauses.tail.empty?
+        return Core::Nill.instance if clauses.tail.empty?
         return check_clause(clauses.tail, clause_number + 1)
       end
 

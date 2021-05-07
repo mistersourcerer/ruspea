@@ -15,8 +15,8 @@ module Ruspea
     end
   end
 
-  RSpec.describe "Scoping: symbol vs. value association" do
-    subject(:scope) { Core::Scope.new }
+  RSpec.describe Core::Scope, "symbol vs. value association" do
+    subject(:scope) { described_class.new }
     let(:reg_test) { PublicRegTest.new }
 
     describe "#register" do
@@ -100,6 +100,11 @@ module Ruspea
 
       it "ensures private methods are not registered" do
         expect(scope.defined?("nope!")).to eq false
+      end
+
+      it "binds all 'method names' to the same object" do
+        expect(scope.resolve("omg")).to be reg_test
+        expect(scope.resolve("bbq")).to be reg_test
       end
     end
 
