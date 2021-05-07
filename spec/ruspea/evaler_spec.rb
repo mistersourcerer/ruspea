@@ -8,7 +8,7 @@ module Ruspea
           it "raises if more than one argument is passed" do
             invalid_quote = DS::List.create("quote", :a, :b)
 
-            expect { evaler.eval(invalid_quote) }.to raise_error Error::Syntax
+            expect { evaler.eval(invalid_quote) }.to raise_error Error::Execution
           end
 
           it "quotes a symbol instance" do
@@ -34,7 +34,7 @@ module Ruspea
           it "raises if more than one argument is passed" do
             invalid_atom = DS::List.create("atom", "a", "b")
 
-            expect { evaler.eval(invalid_atom) }.to raise_error Error::Syntax
+            expect { evaler.eval(invalid_atom) }.to raise_error Error::Execution
           end
 
           it "returns true for symbols" do
@@ -87,13 +87,13 @@ module Ruspea
           it "raises if more than two arguments are passed" do
             invalid_eq = DS::List.create("eq", "a", "b", "c")
 
-            expect { evaler.eval(invalid_eq) }.to raise_error Error::Syntax
+            expect { evaler.eval(invalid_eq) }.to raise_error Error::Execution
           end
 
           it "raises if only one arg is passed" do
             invalid_eq = DS::List.create("eq", "a")
 
-            expect { evaler.eval(invalid_eq) }.to raise_error Error::Syntax
+            expect { evaler.eval(invalid_eq) }.to raise_error Error::Execution
           end
 
           it "returns true when symbols have the same label" do
@@ -129,7 +129,7 @@ module Ruspea
           it "raises if more than one arg is passed" do
             car_too_many_args = DS::List.create("car", 1, 2)
 
-            expect { evaler.eval(car_too_many_args) }.to raise_error Error::Syntax
+            expect { evaler.eval(car_too_many_args) }.to raise_error Error::Execution
           end
 
           it "raises if arg is not a list" do
@@ -152,7 +152,7 @@ module Ruspea
           it "raises if more than one arg is passed" do
             cdr_too_many_args = DS::List.create(Core::Symbol.new("cdr"), 1, 2)
 
-            expect { evaler.eval(cdr_too_many_args) }.to raise_error Error::Syntax
+            expect { evaler.eval(cdr_too_many_args) }.to raise_error Error::Execution
           end
 
           it "raises if arg is not a list" do
@@ -175,13 +175,13 @@ module Ruspea
           it "raises if only one arg is passed" do
             cons_not_enough = DS::List.create("cons", 1)
 
-            expect { evaler.eval(cons_not_enough) }.to raise_error Error::Syntax
+            expect { evaler.eval(cons_not_enough) }.to raise_error Error::Execution
           end
 
           it "raises if more than two args are passed" do
             cons_too_many = DS::List.create("cons", 1, 2, 3)
 
-            expect { evaler.eval(cons_too_many) }.to raise_error Error::Syntax
+            expect { evaler.eval(cons_too_many) }.to raise_error Error::Execution
           end
 
           it "raises if second arg is not a list" do

@@ -129,7 +129,7 @@ module Ruspea
     end
 
     def args_error(expected, given)
-      Error::Syntax.new <<~ER
+      Error::Execution.new <<~ER
         Wrong number of args for #{caller_locations.first.label}, 
         expected #{expected} but #{given} given
       ER
