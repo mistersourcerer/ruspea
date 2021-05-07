@@ -19,16 +19,72 @@ module Ruspea
     subject(:scope) { Core::Scope.new }
     let(:reg_test) { PublicRegTest.new }
 
+    describe "#register" do
+      it "binds an object to a specific symbol" do
+        scope.register "omg", "lol"
+
+        expect(scope.resolve("omg")).to eq "lol"
+      end
+
+      it "overrides existent bindings" do
+        scope.register "omg", "lol"
+        scope.register "omg", "420"
+
+        expect(scope.resolve("omg")).to eq "420"
+      end
+
+      it "accepts symbols as 'labels'" do
+        scope.register Core::Symbol.new("omg"), "lol"
+
+        expect(scope.resolve("omg")).to eq "lol"
+        expect(scope.resolve(Core::Symbol.new("omg"))).to eq "lol"
+      end
+    end
+
+    describe "#defined?" do
+      it "returns true if the given Symbol is already bound" do
+        scope.register "omg", "lol"
+
+        expect(scope.defined?("omg")).to eq true
+        expect(scope.defined?(Core::Symbol.new("omg"))).to eq true
+      end
+
+      it "returns false if the given Symbol is not bound" do
+        expect(scope.defined?("x")).to eq false
+      end
+    end
 
     describe "#resolve" do
       it "retrieves the object associated with a specific symbol" do
-        scope.register "omg", -> { "lol" }
+        scope.register "omg", "lol"
 
-        expect(scope.resolve("omg").call).to eq "lol"
+        expect(scope.resolve("omg")).to eq "lol"
       end
 
       it "raises when symbol is not bound" do
         expect { scope.resolve("omg") }.to raise_error Error::Execution
+      end
+    end
+
+    context "hash syntax (sugar)" do
+      describe "#[]=" do
+        it "binds a symbol to an object" do
+          scope["omg"] = "lol"
+
+          expect(scope.resolve("omg")).to eq "lol"
+        end
+      end
+
+      describe "#[]" do
+        it "resolves a bound symbol" do
+          scope["omg"] = "lol"
+
+          expect(scope["omg"]).to eq "lol"
+        end
+
+        it "raises for unbound symbols" do
+          expect { scope["omg"] }.to raise_error Error::Execution
+        end
       end
     end
 
@@ -46,5 +102,6 @@ module Ruspea
         expect(scope.defined?("nope!")).to eq false
       end
     end
+
   end
 end

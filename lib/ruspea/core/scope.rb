@@ -6,12 +6,6 @@ module Ruspea::Core
       @bindings = {}
     end
 
-    def register_public(instance)
-      instance
-        .public_methods(false)
-        .each { |label| bindings[Symbol(label)] = instance }
-    end
-
     def defined?(label)
       bindings.key? Symbol(label)
     end
@@ -24,6 +18,20 @@ module Ruspea::Core
 
     def register(label, object)
       bindings[Symbol(label)] = object
+    end
+
+    def register_public(instance)
+      instance
+        .public_methods(false)
+        .each { |label| register label, instance }
+    end
+
+    def []=(label, object)
+      register label, object
+    end
+
+    def [](label)
+      resolve label
     end
 
     private
