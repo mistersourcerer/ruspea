@@ -19,12 +19,25 @@ module Ruspea
     subject(:scope) { Core::Scope.new }
     let(:reg_test) { PublicRegTest.new }
 
+
+    describe "#resolve" do
+      it "retrieves the object associated with a specific symbol" do
+        scope.register "omg", -> { "lol" }
+
+        expect(scope.resolve("omg").call).to eq "lol"
+      end
+
+      it "raises when symbol is not bound" do
+        expect { scope.resolve("omg") }.to raise_error Error::Execution
+      end
+    end
+
     describe "#register_public" do
       before do
         scope.register_public reg_test
       end
 
-      it "extract all method names and register them as functions" do
+      it "extracts all method names and register them as functions" do
         expect(scope.defined?("omg")).to eq true
         expect(scope.defined?("bbq")).to eq true
       end
