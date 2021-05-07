@@ -46,18 +46,12 @@ module Ruspea::DS
         array + [list.head])
     end
 
-    def eq?(other)
-      self == other
-    end
-
-    def eql?(other)
-      self == other
-    end
-
     def ==(other)
       return false if self.class != other.class
       head == other.head && tail == other.tail
     end
+
+    alias eql? ==
 
     def inspect
       "List:#{to_a.to_s}"

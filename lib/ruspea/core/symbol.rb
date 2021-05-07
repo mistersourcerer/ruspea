@@ -6,25 +6,19 @@ module Ruspea::Core
       @label = String(label)
     end
 
-    def to_s
-      label
-    end
-
-    def eq?(other)
-      self == other
-    end
-
-    def eql?(other)
-      self == other
-    end
-
     def ==(other)
       return false if self.class != other.class
       label == other.label
     end
 
+    alias eql? ==
+
     def hash
       label.hash
+    end
+
+    def to_s
+      label
     end
 
     def inspect
