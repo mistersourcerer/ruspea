@@ -5,8 +5,6 @@ module Ruspea
     end
 
     def eval(expr)
-      # return sym(expr) if sym?(expr)
-      return expr if expr.is_a?(String)
       return expr if atom?(expr)
       return list(expr) if list?(expr)
 
@@ -37,7 +35,7 @@ module Ruspea
     private
 
     def sym?(expr)
-      expr.is_a?(Prim::Sym)
+      expr.is_a?(Core::Symbol)
     end
 
     def list(expr)

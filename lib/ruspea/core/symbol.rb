@@ -1,13 +1,13 @@
-module Ruspea::Prim
-  class Sym
+module Ruspea::Core
+  class Symbol
     attr_reader :label
 
     def initialize(label)
-      @label = label
+      @label = String(label)
     end
 
     def to_s
-      @label
+      label
     end
 
     def eq?(other)
@@ -20,7 +20,11 @@ module Ruspea::Prim
 
     def ==(other)
       return false if self.class != other.class
-      self.label == other.label
+      label == other.label
+    end
+
+    def hash
+      label.hash
     end
 
     def inspect

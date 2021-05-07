@@ -12,15 +12,15 @@ module Ruspea
           end
 
           it "quotes a symbol instance" do
-            symbol_a = DS::List.create("quote", Prim::Sym.new("a"))
+            symbol_a = DS::List.create("quote", Core::Symbol.new("a"))
 
             expect(evaler.eval(symbol_a).label).to eq "a"
           end
 
           it "returns the first argument" do
-            quote_symbol = DS::List.create("quote", Prim::Sym.new("a"))
+            quote_symbol = DS::List.create("quote", Core::Symbol.new("a"))
 
-            expect(evaler.eval(quote_symbol)).to eq Prim::Sym.new("a")
+            expect(evaler.eval(quote_symbol)).to eq Core::Symbol.new("a")
           end
 
           it "works when argument is a list" do
@@ -38,7 +38,7 @@ module Ruspea
           end
 
           it "returns true for symbols" do
-            sym_atom = DS::List.create("atom", Prim::Sym.new("omg"))
+            sym_atom = DS::List.create("atom", Core::Symbol.new("omg"))
 
             expect(evaler.eval(sym_atom)).to eq true
           end
@@ -97,13 +97,13 @@ module Ruspea
           end
 
           it "returns true when symbols have the same label" do
-            eq_sym = DS::List.create("eq", Prim::Sym.new("a"), Prim::Sym.new("a"))
+            eq_sym = DS::List.create("eq", Core::Symbol.new("a"), Core::Symbol.new("a"))
 
             expect(evaler.eval(eq_sym)).to eq true
           end
 
           it "returns false when symbols have different label" do
-            eq_diff_sym = DS::List.create("eq", Prim::Sym.new("a"), Prim::Sym.new("b"))
+            eq_diff_sym = DS::List.create("eq", Core::Symbol.new("a"), Core::Symbol.new("b"))
 
             expect(evaler.eval(eq_diff_sym)).to eq false
           end
@@ -150,20 +150,20 @@ module Ruspea
 
         describe "cdr" do
           it "raises if more than one arg is passed" do
-            cdr_too_many_args = DS::List.create(Prim::Sym.new("cdr"), 1, 2)
+            cdr_too_many_args = DS::List.create(Core::Symbol.new("cdr"), 1, 2)
 
             expect { evaler.eval(cdr_too_many_args) }.to raise_error Error::Syntax
           end
 
           it "raises if arg is not a list" do
-            cdr_without_list = DS::List.create(Prim::Sym.new("cdr"), 1)
+            cdr_without_list = DS::List.create(Core::Symbol.new("cdr"), 1)
 
             expect { evaler.eval(cdr_without_list) }.to raise_error Error::Execution
           end
 
           it "returns the first element of the list" do
             cdr = DS::List.create(
-              Prim::Sym.new("cdr"),
+              Core::Symbol.new("cdr"),
               DS::List.create("quote", DS::List.create(1, 2, 3))
             )
 
@@ -222,7 +222,7 @@ module Ruspea
                   1
                 ),
                 DS::List.create(
-                  DS::List.create("eq", Prim::Sym.new("a"), Prim::Sym.new("a")),
+                  DS::List.create("eq", Core::Symbol.new("a"), Core::Symbol.new("a")),
                   2
                 )
               )
@@ -234,8 +234,8 @@ module Ruspea
                   1
                 ),
                 DS::List.create(
-                  DS::List.create("eq", Prim::Sym.new("a"), Prim::Sym.new("a")),
-                  2, 3, 5, DS::List.create("quote", Prim::Sym.new("a"))
+                  DS::List.create("eq", Core::Symbol.new("a"), Core::Symbol.new("a")),
+                  2, 3, 5, DS::List.create("quote", Core::Symbol.new("a"))
                 )
               )
 
@@ -249,7 +249,7 @@ module Ruspea
               )
 
               expect(evaler.eval(cond_two)).to eq 2
-              expect(evaler.eval(cond_a)).to eq Prim::Sym.new("a")
+              expect(evaler.eval(cond_a)).to eq Core::Symbol.new("a")
               expect(evaler.eval(clisp_consistency_three)).to eq 3
             end
           end
