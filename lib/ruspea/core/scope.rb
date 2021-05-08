@@ -24,6 +24,7 @@ module Ruspea::Core
       instance
         .public_methods(false)
         .each { |label| register label, instance }
+      self
     end
 
     def []=(label, object)
