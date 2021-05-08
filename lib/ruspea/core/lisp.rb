@@ -11,8 +11,7 @@ module Ruspea::Core
     end
 
     def eq(arg)
-      raise args_error(2, arg.count) if arg.count > 2
-      raise args_error(2, arg.count) if arg.count == 1
+      raise args_error(2, arg.count) if arg.count != 2
 
       left, right = *arg
       return false unless atom?(left) && atom?(right)
@@ -22,7 +21,7 @@ module Ruspea::Core
 
     def car(arg)
       raise args_error(1, arg.count) if arg.count > 1
-
+      raise evaler_missing if !block_given?
       list = yield(arg.head)
       raise arg_type("list", list.class) if !list?(list)
 
@@ -31,7 +30,7 @@ module Ruspea::Core
 
     def cdr(arg)
       raise args_error(1, arg.count) if arg.count > 1
-
+      raise evaler_missing if !block_given?
       list = yield(arg.head)
       raise arg_type("list", list.class) if !list?(list)
 
@@ -39,9 +38,8 @@ module Ruspea::Core
     end
 
     def cons(arg)
-      raise args_error(2, arg.count) if arg.count > 2
-      raise args_error(2, arg.count) if arg.count == 1
-
+      raise args_error(2, arg.count) if arg.count != 2
+      raise evaler_missing if !block_given?
       head, tail = yield(arg.head), yield(arg.tail.head)
       raise arg_type("list", tail.class) if !list?(tail)
 
@@ -109,6 +107,12 @@ module Ruspea::Core
 
     def non_list_clause(given)
       Ruspea::Error::Execution.new "Clause #{given} should be a List"
+    end
+
+    def evaler_missing
+      Ruspea::Error::Execution.new <<~ER
+        Evaluator block missing for #{caller_locations.first.label}
+      ER
     end
   end
 end
