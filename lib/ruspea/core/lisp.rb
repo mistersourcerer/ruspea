@@ -48,6 +48,7 @@ module Ruspea::Core
 
     def cond(arg, &evaler)
       return Nill.instance if arg.empty?
+      raise evaler_missing if !block_given?
       check_clause(arg, 1, &evaler)
     end
 

@@ -145,6 +145,54 @@ module Ruspea
           expect(lisp.cons(cons_list, &evaler_blk)).to eq list(list(1, 2), 3, 4)
         end
       end
+
+      describe "cond" do
+        it "returns Nil if no arguments are given" do
+          expect(lisp.cond list).to eq Core::Nill.instance
+        end
+
+        it "raises if no evaluator block is passed" do
+          expect { lisp.cond list(list) }.to raise_error Error::Execution
+        end
+
+        context "When it finds a list where first element evals to true" do
+          it "returns value after evaluating whole list" do
+            cond_returning_primitive = list(
+              list(list("eq", 1, 2), 1),
+              list(list("eq", sym("a"), sym("a")), 2)
+            )
+
+            # Ensures that doesn't matter that we have
+            # a bunch of stuff after the first "eq" condition,
+            # everything is evaled and the last value returned.
+            cond_much_stuff = list(
+              list(list("eq", 1, 2), 1),
+              list(list("eq", sym("a"), sym("a")), 2, 3, 5, list("quote", sym("a")))
+            )
+
+            clisp_consistency = list(
+              list(list("eq", 1, 2), 1),
+              list(3)
+            )
+
+            expect(lisp.cond(cond_returning_primitive, &evaler_blk)).to eq 2
+            expect(lisp.cond(cond_much_stuff, &evaler_blk)).to eq sym("a")
+            expect(lisp.cond(clisp_consistency, &evaler_blk)).to eq 3
+          end
+        end
+
+
+        it "raises if a non-list 'clause' is evaluated" do
+          non_list_clause = list(
+            list(list("eq", 1, 2), 1),
+            2
+          )
+
+          expect { lisp.cond(non_list_clause, &evaler_blk) }
+            .to raise_error Error::Execution
+        end
+      end
+
     end
   end
 end

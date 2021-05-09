@@ -5,8 +5,7 @@ module Ruspea
       return expr if prim?(expr)
       return list(expr, ctx) if list?(expr)
       return ctx.resolve(expr) if sym?(expr)
-
-      raise "Invalid Expression"
+      raise Error::Execution.new("Invalid Expression")
     end
 
     def prim?(expr)
@@ -28,9 +27,13 @@ module Ruspea
 
     def list(expr, ctx)
       operand = String(expr.head)
-      raise "#{operand} is not a function" if !ctx.defined?(operand)
+      raise not_a_fun(operand) if !ctx.defined?(operand)
       invokable(operand, ctx)
         .call(expr.tail) { |expr| self.eval(expr, ctx) }
+    end
+
+    def not_a_fun(operand)
+      Error::Execution.new "#{operand} is not a function"
     end
 
     def invokable(operand, ctx)

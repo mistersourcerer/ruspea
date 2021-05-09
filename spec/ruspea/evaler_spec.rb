@@ -1,74 +1,53 @@
 module Ruspea
   RSpec.describe Evaler do
+    def list(*args)
+      Core::List.create(*args)
+    end
+
+    def sym(label)
+      Core::Symbol.new(label)
+    end
+
     let(:lisp) { Core::Scope.new.register_public Core::Lisp.new }
     let(:ctx) { Core::Context.new lisp }
     subject(:evaler) { described_class.new }
 
-    describe "#eval", "List" do
-      context "primitive functions" do
-        describe "cond" do
-          it "returns Nil if no arguments are given" do
-            cond_nil = Core::List.create("cond")
+    describe "#eval" do
+      it "raises if a unknown expression is evaluated" do
+        expect { evaler.eval(:a) }.to raise_error Error::Execution
+      end
 
-            expect(evaler.eval(cond_nil, ctx)).to eq Core::Nill.instance
-          end
-
-          context "When finds a list where first element evals to true" do
-            it "returns value after evaluating whole list" do
-              cond_two = Core::List.create(
-                "cond",
-                Core::List.create(
-                  Core::List.create("eq", 1, 2),
-                  1
-                ),
-                Core::List.create(
-                  Core::List.create("eq", Core::Symbol.new("a"), Core::Symbol.new("a")),
-                  2
-                )
-              )
-
-              cond_a = Core::List.create(
-                "cond",
-                Core::List.create(
-                  Core::List.create("eq", 1, 2),
-                  1
-                ),
-                Core::List.create(
-                  Core::List.create("eq", Core::Symbol.new("a"), Core::Symbol.new("a")),
-                  2, 3, 5, Core::List.create("quote", Core::Symbol.new("a"))
-                )
-              )
-
-              clisp_consistency_three = Core::List.create(
-                "cond",
-                Core::List.create(
-                  Core::List.create("eq", 1, 2),
-                  1
-                ),
-                Core::List.create(3)
-              )
-
-              expect(evaler.eval(cond_two, ctx)).to eq 2
-              expect(evaler.eval(cond_a, ctx)).to eq Core::Symbol.new("a")
-              expect(evaler.eval(clisp_consistency_three, ctx)).to eq 3
-            end
-          end
-
-
-          it "raises if a non-list 'clause' is evaluated" do
-            non_list_clause = Core::List.create(
-              "cond",
-              Core::List.create(
-                Core::List.create("eq", 1, 2),
-                1
-              ),
-              2
-            )
-
-            expect { evaler.eval(non_list_clause, ctx) }.to raise_error Error::Execution
-          end
+      context "Lists" do
+        it "evaluates lists as function calls (uses context for lookup)" do
+          expect(evaler.eval(list("quote", sym("a")), ctx)).to eq sym("a")
         end
 
+        it "raises if a function doesn't exists" do
+          expect { evaler.eval(list("quote", 1)) }.to raise_error Error::Execution
+        end
+      end
+
+      context "Primitives" do
+        it "evaluates a number to itself" do
+          expect(evaler.eval(1)).to eq 1
+          expect(evaler.eval(4.20)).to eq 4.20
+        end
+
+        it "evaluates a string to itself" do
+          expect(evaler.eval("bbq")).to eq "bbq"
+        end
+
+        it "evaluates boolean to themselves" do
+          expect(evaler.eval(true)).to eq true
+          expect(evaler.eval(false)).to eq false
+        end
+
+        it "looks up symbol binding in the context" do
+          scope = Core::Scope.new.tap { |s| s["a"] = "b" }
+          ctx = Core::Context.new scope
+
+          expect(evaler.eval(sym("a"), ctx)).to eq "b"
+        end
       end
     end
   end
