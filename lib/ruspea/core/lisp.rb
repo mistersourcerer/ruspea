@@ -52,6 +52,13 @@ module Ruspea::Core
       check_clause(arg, 1, &evaler)
     end
 
+    def lambda(arg, *body, &evaler)
+      non_sym = find(arg) { |expr| !expr.is_a?(Symbol) }
+      raise only_symbols(non_sym) if !non_sym.nil?
+      raise evaler_missing if !block_given?
+      Callable.new arg.to_a, body, evaler
+    end
+
     private
 
     def atom?(expr)
@@ -92,6 +99,13 @@ module Ruspea::Core
       value_of(list.tail, &evaler)
     end
 
+    def find(list, &blk)
+      raise "need a block to specify what to search for" if !block_given?
+      return nil if list.empty?
+      return list.head if yield(list.head)
+      find(list.tail, &blk)
+    end
+
     def args_error(expected, given)
       Ruspea::Error::Execution.new <<~ER
         Wrong number of args for #{caller_locations.first.label}, 
@@ -113,6 +127,13 @@ module Ruspea::Core
     def evaler_missing
       Ruspea::Error::Execution.new <<~ER
         Evaluator block missing for #{caller_locations.first.label}
+      ER
+    end
+
+    def only_symbols(value)
+      Ruspea::Error::Execution.new <<~ER
+        Argument names should be symbols. 
+        Expected #{value} to be a symbol
       ER
     end
   end

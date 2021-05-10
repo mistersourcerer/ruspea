@@ -193,6 +193,40 @@ module Ruspea
         end
       end
 
+      describe "#lambda" do
+        it "raises if any non-symbol is in the list param" do
+          expect { lisp.lambda(list(sym("a"), 1)) }.to raise_error Error::Execution
+        end
+
+        it "raises if no evaluation block is given" do
+          expect { lisp.lambda(list(sym("a"), sym("b"))) }.to raise_error Error::Execution
+        end
+
+        context "Constructed function" do
+          subject(:fun) {
+            lisp.lambda(
+              list(sym("a"), sym("b")), list("-", sym("a"), sym("b")),
+              &evaler_blk
+            )
+          }
+
+          it "returns a callable object with correct arity" do
+            expect(fun.arity).to eq 2
+          end
+
+          it "raises if called with wrong arity" do
+            pending
+            expect { fun.call }.to raise_error Error::Execution
+          end
+
+          it "binds the parameters correctly" do
+            pending
+            expect(fun.call 5, 4).to eq 1
+            expect(fun.call 4, 5).to eq -1
+          end
+        end
+      end
+
     end
   end
 end

@@ -28,8 +28,20 @@ module Ruspea
     def list(expr, ctx)
       operand = String(expr.head)
       raise not_a_fun(operand) if !ctx.defined?(operand)
+
       invokable(operand, ctx)
-        .call(expr.tail) { |expr| self.eval(expr, ctx) }
+        .call(expr.tail) { |expr, new_ctx = nil|
+          self.eval(expr, ctx)
+          # we will need something like:
+          # invokation_ctx =
+          #   if !new_ctx.nil?
+          #     ctx.around new_ctx
+          #   else
+          #     ctx
+          #   end
+
+          # self.eval(expr, invokation_ctx)
+        }
     end
 
     def not_a_fun(operand)
