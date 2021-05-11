@@ -195,17 +195,20 @@ module Ruspea
 
       describe "#lambda" do
         it "raises if any non-symbol is in the list param" do
-          expect { lisp.lambda(list(sym("a"), 1)) }.to raise_error Error::Execution
+          expect { lisp.lambda(list(list(sym("a"), 1))) }.to raise_error Error::Execution
         end
 
         it "raises if no evaluation block is given" do
-          expect { lisp.lambda(list(sym("a"), sym("b"))) }.to raise_error Error::Execution
+          expect { lisp.lambda(list(list(sym("a"), sym("b")))) }.to raise_error Error::Execution
         end
 
         context "Constructed function" do
           subject(:fun) {
             lisp.lambda(
-              list(sym("a"), sym("b")), list("-", sym("a"), sym("b")),
+              list(
+                list(sym("a"), sym("b")),
+                list("-", sym("a"), sym("b"))
+              ),
               &evaler_blk
             )
           }
