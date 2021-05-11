@@ -10,7 +10,8 @@ module Ruspea::Core
       bindings.key? Symbol(label)
     end
 
-    def resolve(label)
+    def resolve(label, &blk)
+      return bindings.fetch(label, &blk) if block_given?
       raise not_defined(label) if !self.defined?(label)
 
       bindings[Symbol(label)]
@@ -27,12 +28,12 @@ module Ruspea::Core
       self
     end
 
-    def []=(label, object)
-      register label, object
+    def [](label, &blk)
+      resolve(label, &blk)
     end
 
-    def [](label)
-      resolve label
+    def []=(label, object)
+      register label, object
     end
 
     private

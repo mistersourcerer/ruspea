@@ -61,8 +61,15 @@ module Ruspea
         expect(scope.resolve("omg")).to eq "lol"
       end
 
-      it "raises when symbol is not bound" do
+      it "raises when symbol is unbounded" do
         expect { scope.resolve("omg") }.to raise_error Error::Execution
+      end
+
+      it "executes block if symbol is unbounded" do
+        executed = nil
+        scope.resolve("omg") { |label| executed = label }
+
+        expect(executed).to eq "omg"
       end
     end
 
@@ -84,6 +91,13 @@ module Ruspea
 
         it "raises for unbound symbols" do
           expect { scope["omg"] }.to raise_error Error::Execution
+        end
+
+        it "yields for unbound symbols" do
+          executed = nil
+          scope["omg"] { |label| executed = label }
+
+          expect(executed).to eq "omg"
         end
       end
     end
