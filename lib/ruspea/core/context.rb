@@ -16,25 +16,45 @@ module Ruspea::Core
   # this is just an interim breadcrumb type of situation
   # for the author himself.
   class Context
-    extend Forwardable
-    def_delegator :@scope, :[], :[]=
+    NIL_CONTEXT = new
 
-    def initialize(scope = nil)
-      @scope = scope || Scope.new
+    extend Forwardable
+    def_delegators :@scope, :[]=
+
+    def initialize(scope = Scope.new, fallback = NIL_CONTEXT)
+      @scope = scope
+      @fallback = fallback
+      yield(self) if block_given?
     end
 
     # Reimplement this with the "outer ctx" lookup
     def defined?(label)
-      scope.defined? label
+      scope.defined?(label) || fallback?(label)
     end
 
     # Reimplement this with the "outer ctx" lookup
     def resolve(label)
-      scope.resolve label
+      # Maybe raise if !defined?(label) ?
+      return scope[label] if scope.defined?(label)
+      fallback[label]
     end
+
+    alias_method :[], :resolve
+
+    def around(other_ctx)
+      self.class.new other_ctx.scope, self
+    end
+
+    protected
+
+    attr_reader :scope
 
     private
 
-    attr_reader :scope
+    attr_reader :fallback
+
+    def fallback?(label)
+      !fallback.nil? && fallback.defined?(label)
+    end
   end
 end
