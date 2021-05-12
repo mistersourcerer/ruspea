@@ -8,6 +8,13 @@ module Ruspea
       raise Error::Execution.new("Invalid Expression")
     end
 
+    def value_of(list, ctx = Core::NilContext.instance)
+      return Core::Nill.instance if list.empty?
+      value = self.eval(list.head, ctx)
+      return value if list.tail.empty?
+      value_of(list.tail, ctx)
+    end
+
     def prim?(expr)
       expr.is_a?(Numeric) ||
         expr.is_a?(String) ||

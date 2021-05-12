@@ -16,6 +16,10 @@ module Ruspea::Core
       scope[label]
     end
 
+    def around(ctx)
+      ctx
+    end
+
     alias_method :[], :resolve
 
     def []=(_, _)

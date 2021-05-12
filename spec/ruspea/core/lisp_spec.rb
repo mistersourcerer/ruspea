@@ -79,7 +79,9 @@ module Ruspea
     context "When args need evaluation" do
       let(:ctx) { Core::Context.new Core::Scope.new.register_public(lisp) }
       let(:evaler) { Evaler.new }
-      let(:evaler_blk) { ->(arg) { evaler.eval(arg, ctx) } }
+      let(:evaler_blk) { ->(arg, ivk_ctx = nil) {
+        evaler.eval(arg, ivk_ctx || ctx) }
+      }
 
       describe "car" do
         it "raises if more than one arg is passed" do
@@ -207,8 +209,9 @@ module Ruspea
             lisp.lambda(
               list(
                 list(sym("a"), sym("b")),
-                list("-", sym("a"), sym("b"))
+                list(list("quote", sym("a")))
               ),
+              ctx, # so we can use the quote invocation in the body
               &evaler_blk
             )
           }
@@ -216,6 +219,10 @@ module Ruspea
           it "returns a callable object" do
             expect(fun).to respond_to :call
             expect(fun.arity).to eq 2
+          end
+
+          it "passes an evaler block that allows for body evaluation" do
+            expect(fun.call(0, 0)).to eq sym("a")
           end
         end
       end

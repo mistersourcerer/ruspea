@@ -1,10 +1,10 @@
 module Ruspea
   class Core::Callable
-    def initialize(params, body, ctx, evaler)
+    def initialize(params, body, ctx, evaler = nil, &evaler_block)
       @params = params
       @body = body
       @ctx = ctx
-      @evaler = evaler
+      @evaler = evaler_block || evaler || raise("Evaler needed")
     end
 
     def arity

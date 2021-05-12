@@ -58,5 +58,13 @@ module Ruspea
         end
       end
     end
+
+    describe "#value_of" do
+      it "evaluates all elements on a list, returns the last elem value" do
+        ctx["lol"] = "bbq"
+
+        expect(evaler.value_of(list(1, 2, sym("lol")), ctx)).to eq "bbq"
+      end
+    end
   end
 end

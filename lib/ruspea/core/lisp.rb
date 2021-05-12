@@ -52,13 +52,15 @@ module Ruspea::Core
       check_clause(arg, 1, &evaler)
     end
 
-    def lambda(arg, ctx = nil, &evaler)
+    def lambda(arg, ctx = NilContext.instance, &evaler)
       args = arg.head
       body = arg.tail.head
       non_sym = find(args) { |expr| !expr.is_a?(Symbol) }
       raise only_symbols(non_sym) if !non_sym.nil?
       raise evaler_missing if !block_given?
-      Callable.new args.to_a, body, ctx, evaler
+      Callable.new(args.to_a, body, ctx) { |body_to_eval, invokation_ctx|
+        value_of(body_to_eval, invokation_ctx, &evaler)
+      }
     end
 
     private
@@ -92,10 +94,10 @@ module Ruspea::Core
       value_of(to_eval, &evaler)
     end
 
-    def value_of(list, &evaler)
+    def value_of(list, ctx = nil, &evaler)
       return Nill.instance if list.empty?
 
-      value = evaler.call(list.head)
+      value = evaler.call(list.head, ctx)
       return value if list.tail.empty?
 
       value_of(list.tail, &evaler)
