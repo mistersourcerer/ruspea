@@ -52,12 +52,13 @@ module Ruspea::Core
       check_clause(arg, 1, &evaler)
     end
 
-    def lambda(arg, &evaler)
+    def lambda(arg, ctx = nil, &evaler)
+      args = arg.head
       body = arg.tail.head
-      non_sym = find(arg.head) { |expr| !expr.is_a?(Symbol) }
+      non_sym = find(args) { |expr| !expr.is_a?(Symbol) }
       raise only_symbols(non_sym) if !non_sym.nil?
       raise evaler_missing if !block_given?
-      Callable.new arg.head.to_a, body, evaler
+      Callable.new args.to_a, body, ctx, evaler
     end
 
     private

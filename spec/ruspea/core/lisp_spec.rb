@@ -215,22 +215,7 @@ module Ruspea
 
           it "returns a callable object" do
             expect(fun).to respond_to :call
-          end
-
-          it "returns a object with #arity" do
             expect(fun.arity).to eq 2
-          end
-
-
-          it "raises if called with wrong arity" do
-            pending
-            expect { fun.call }.to raise_error Error::Execution
-          end
-
-          it "binds the parameters correctly" do
-            pending
-            expect(fun.call 5, 4).to eq 1
-            expect(fun.call 4, 5).to eq -1
           end
         end
       end

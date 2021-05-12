@@ -25,6 +25,14 @@ module Ruspea
         it "raises if a function doesn't exists" do
           expect { evaler.eval(list("quote", 1)) }.to raise_error Error::Execution
         end
+
+        it "passes the current context if scoped function has #arity == 2" do
+          passed_ctx = nil
+          ctx["weird"] = ->(_, current_ctx) { passed_ctx = current_ctx }
+          evaler.eval(list("weird"), ctx)
+
+          expect(passed_ctx).to be ctx
+        end
       end
 
       context "Primitives" do

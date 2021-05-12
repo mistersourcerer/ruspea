@@ -28,20 +28,7 @@ module Ruspea
     def list(expr, ctx)
       operand = String(expr.head)
       raise not_a_fun(operand) if !ctx.defined?(operand)
-
-      invokable(operand, ctx)
-        .call(expr.tail) { |expr, new_ctx = nil|
-          self.eval(expr, ctx)
-          # we will need something like:
-          # invokation_ctx =
-          #   if !new_ctx.nil?
-          #     ctx.around new_ctx
-          #   else
-          #     ctx
-          #   end
-
-          # self.eval(expr, invokation_ctx)
-        }
+      invoke invokable(operand, ctx), expr.tail, ctx
     end
 
     def not_a_fun(operand)
@@ -52,6 +39,15 @@ module Ruspea
       target = ctx.resolve(operand)
       return target if target.respond_to?(:call)
       target.method(operand)
+    end
+
+    def invoke(target, arg, ctx)
+      blk = ->(expr, own_ctx) { self.eval(expr, own_ctx || ctx) }
+      if target.arity == 2
+        target.call(arg, ctx, &blk)
+      else
+        target.call(arg, &blk)
+      end
     end
   end
 end

@@ -16,9 +16,6 @@ module Ruspea::Core
   # this is just an interim breadcrumb type of situation
   # for the author himself.
   class Context
-    extend Forwardable
-    def_delegators :@scope, :[]=
-
     def initialize(scope = Scope.new, fallback = NilContext.instance)
       @scope = scope
       @fallback = fallback
@@ -36,6 +33,13 @@ module Ruspea::Core
     end
 
     alias_method :[], :resolve
+
+    def register(label, value)
+      scope[label] = value
+      self
+    end
+
+    alias_method :[]=, :register
 
     def around(other_ctx)
       self.class.new other_ctx.scope, self

@@ -3,6 +3,7 @@ module Ruspea::Core
     include Casting
 
     def initialize
+      # TODO: use an immutable Hash here
       @bindings = {}
     end
 
@@ -19,6 +20,7 @@ module Ruspea::Core
 
     def register(label, object)
       bindings[Symbol(label)] = object
+      self
     end
 
     def register_public(instance)
