@@ -1,8 +1,2 @@
 #!/usr/bin/env ruby
 require "ruspea"
-
-if ARGV.any? { |arg| arg == "-r" }
-  Ruspea::Repl::Loopr.new.run
-else
-  Ruspea::Repl::Loop.new.run
-end
