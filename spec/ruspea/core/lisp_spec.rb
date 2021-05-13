@@ -227,6 +227,38 @@ module Ruspea
         end
       end
 
+      describe "#defun" do
+        let(:clean_ctx) { ctx.around Core::Context.new }
+        subject(:fun) {
+          lisp.defun(
+            list(
+              sym("make_true"),
+              list(sym("x")),
+              list(
+                list(
+                  "cond",
+                  list(
+                    list("eq", sym("x"), true),
+                    true
+                  ),
+                  list(# when param is false, call the function again with true
+                    list("make_true", true),
+                    true
+                  )
+                )
+              )
+            ),
+            ctx,
+            &evaler_blk
+          )
+        }
+
+        it "bounds a lambda to a symbol in the scope where lambda was declared" do
+          expect(fun.call(true)).to eq true
+          expect(fun.call(false)).to eq true
+        end
+      end
+
     end
   end
 end

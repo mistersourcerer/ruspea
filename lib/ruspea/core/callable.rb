@@ -13,7 +13,7 @@ module Ruspea
 
     def call(*args, &evaler_blk)
       raise arity_error(arity, args.count) if arity != args.count
-      (evaler_blk || evaler).call(body, invocation_ctx(args))
+      (evaler_blk || evaler).call(body, invocation_ctx(args, evaler))
     end
 
     private
@@ -27,11 +27,12 @@ module Ruspea
       ER
     end
 
-    def invocation_ctx(args)
+    def invocation_ctx(args, evaler)
+      evaled_args = args.map { |arg| evaler.call(arg, ctx) }
       params
         .each_with_index
         .reduce(ctx.around(Core::Context.new)) { |ivk_ctx, (param, idx)|
-          ivk_ctx.tap { |c| c[param] = args[idx] }
+          ivk_ctx.tap { |c| c[param] = evaled_args[idx] }
         }
     end
   end

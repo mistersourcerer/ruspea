@@ -34,6 +34,7 @@ module Ruspea
           val_for_a = own_ctx["a"]
           val_for_b = own_ctx["b"]
         }
+        fun.call(4, 20)
 
         expect(val_for_a).to eq 4
         expect(val_for_b).to eq 20
@@ -44,6 +45,20 @@ module Ruspea
 
         expect(ctx.defined?("a")).to eq false
         expect(ctx.defined?("b")).to eq false
+      end
+
+      it "evaluates the arguments before binding them in the ivk ctx" do
+        ctx["banana"] = "terracota"
+        ctx["platanos"] = "daterra"
+        val_for_a = nil
+        val_for_b = nil
+        fun.call(sym("banana"), sym("platanos")) { |_, own_ctx|
+          val_for_a = own_ctx["a"]
+          val_for_b = own_ctx["b"]
+        }
+
+        expect(val_for_a).to eq "terracota"
+        expect(val_for_b).to eq "daterra"
       end
     end
   end

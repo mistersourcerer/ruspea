@@ -49,7 +49,7 @@ module Ruspea
     end
 
     def invoke(target, arg, ctx)
-      blk = ->(expr, own_ctx) { self.eval(expr, own_ctx || ctx) }
+      blk = ->(expr, own_ctx = nil) { self.eval(expr, own_ctx || ctx) }
       if target.arity == 2
         target.call(arg, ctx, &blk)
       else

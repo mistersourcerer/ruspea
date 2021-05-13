@@ -59,8 +59,16 @@ module Ruspea::Core
       raise only_symbols(non_sym) if !non_sym.nil?
       raise evaler_missing if !block_given?
       Callable.new(args.to_a, body, ctx) { |body_to_eval, invokation_ctx|
-        value_of(body_to_eval, invokation_ctx, &evaler)
+        if atom?(body_to_eval)
+          body_to_eval
+        else
+          value_of(body_to_eval, invokation_ctx, &evaler)
+        end
       }
+    end
+
+    def defun(arg, ctx = NilContext.instance, &evaler)
+      ctx[arg.head] = self.lambda(arg.tail, ctx, &evaler)
     end
 
     private
