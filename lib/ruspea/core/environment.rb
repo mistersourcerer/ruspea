@@ -6,20 +6,20 @@ module Ruspea::Core
     include Casting
 
     def initialize
-      @context = Immutable::Hash.new
+      @bindings = Immutable::Hash.new
     end
 
     def []=(label, value)
-      @context = @context.put(Symbol(label), value)
+      @bindings = @bindings.put(Symbol(label), value)
     end
 
     def [](label)
       raise unbounded_error(label) if !bound?(label)
-      @context.get(Symbol(label))
+      @bindings.get(Symbol(label))
     end
 
     def bound?(label)
-      @context.include? Symbol(label)
+      @bindings.include? Symbol(label)
     end
 
     private
