@@ -13,6 +13,7 @@ module Ruspea::Core
 
     alias eql? ==
 
+    # Todo: use MurMurHash here?
     def hash
       label.hash
     end
