@@ -50,5 +50,9 @@ module Ruspea::Core
       return true if other.is_a? Nill
       false
     end
+
+    def inspect
+      "()"
+    end
   end
 end

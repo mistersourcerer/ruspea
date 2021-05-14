@@ -26,10 +26,7 @@ module Ruspea
       it { should be_eq nill }
       it { should be_equal nill }
       it { should be_eql nill }
-
-      it "should not be equal as a non empty list" do
-        expect(nill == Core::List.create(1)).to eq false
-      end
+      it { should_not be_eq Core::List.create(1)  }
     end
   end
 end

@@ -26,4 +26,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rspec", "~> 3.10"
 
   spec.add_dependency "zeitwerk"
+  spec.add_dependency "immutable-ruby"
 end

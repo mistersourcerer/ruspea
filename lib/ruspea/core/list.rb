@@ -54,7 +54,7 @@ module Ruspea::Core
     alias eql? ==
 
     def inspect
-      "List:#{to_a.to_s}"
+      "(#{to_a.to_s})"
     end
   end
 end
