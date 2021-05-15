@@ -6,6 +6,13 @@ module Ruspea
     subject(:lbd) { described_class.new }
 
     describe ".call" do
+      it "raises if parameter is not a list" do
+        expect { lbd.call(1, env) }.to raise_error(
+          Error::Execution,
+          /Argument should be a list with one element, received 1 instead/
+        )
+      end
+
       it "raises if no arguments list is passed" do
         expect { lbd.call(List(), env) }.to raise_error(
           Error::Execution,
@@ -32,9 +39,6 @@ module Ruspea
       it "the callable built has the right arity" do
         expect(lbd.call(List(List()), env).arity).to eq 0
         expect(lbd.call(List(List(Symbol("a"))), env).arity).to eq 1
-      end
-
-      context "Invoking the returned callable" do
       end
     end
   end

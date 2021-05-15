@@ -1,6 +1,10 @@
 module Ruspea
   class Lisp::Lambda
+    include Core::Predicates
+    include Lisp::Errors
+
     def call(args, ctx)
+      raise arg_type_error(args) if !list?(args)
       raise params_required_error if args.empty?
       raise params_required_error if !list?(args.head)
       if non_symbol = find(args.head) { |arg| !sym?(arg) }
@@ -12,18 +16,10 @@ module Ruspea
 
     private
 
-    def list?(expr)
-      expr.respond_to?(:head) && expr.respond_to?(:tail)
-    end
-
     def find(list, &blk)
       return list.head if yield(list.head)
       return nil if list.empty?
       find(list.tail, &blk)
-    end
-
-    def sym?(expr)
-      expr.is_a?(Core::Symbol)
     end
 
     def params_required_error
