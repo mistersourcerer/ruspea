@@ -4,8 +4,9 @@ module Ruspea
     extend Forwardable
 
     FALLBACK = Core::Environment.new
+    EVALUATOR = Evaluator.new
 
-    def initialize(evaluator, fallback = FALLBACK)
+    def initialize(evaluator = EVALUATOR, fallback = FALLBACK)
       @evaluator = evaluator
       @fallback = fallback
       @env = Core::Environment.new
