@@ -14,8 +14,8 @@ module Ruspea
     def atom?(expr)
       return sym?(expr) ||
         list?(expr) && expr.empty? ||
-        expr.is_a?(TrueClass) || expr.is_a?(FalseClass) ||
-        expr.is_a?(Numeric) ||
+        bool?(expr) ||
+        numeric?(expr) ||
         expr.is_a?(String)
     end
   end
