@@ -2,7 +2,7 @@ module Ruspea
   module Lisp::Errors
     def arg_type_error(given)
       Error::Execution.new <<~ERR
-        Argument should be a list with one element, received #{given} instead
+        Argument should be a list, received #{given} instead
       ERR
     end
 

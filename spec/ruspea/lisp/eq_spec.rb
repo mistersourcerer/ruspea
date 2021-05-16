@@ -8,7 +8,7 @@ module Ruspea
       it "raises if parameter is not a list" do
         expect { eq_fun.call(1, ctx) }.to raise_error(
           Error::Execution,
-          /Argument should be a list with one element, received 1 instead/
+          /Argument should be a list, received 1 instead/
         )
       end
 
