@@ -1,6 +1,7 @@
 module Ruspea
   module Lisp::Errors
     def arg_type_error(given)
+      given ||= "'()"
       Error::Execution.new <<~ERR
         Argument should be a list, received #{given} instead
       ERR
