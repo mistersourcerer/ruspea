@@ -1,5 +1,7 @@
 module Ruspea
   class Evaluator
+    include Core::Predicates
+
     def eval(expr, env = Core::Environment.new)
       return expr if prim?(expr)
       return sym(expr, env) if sym?(expr)
@@ -30,16 +32,9 @@ module Ruspea
     end
 
     def prim?(expr)
-      expr.is_a?(String) ||
-        expr.is_a?(Numeric)
-    end
-
-    def sym?(expr)
-      expr.is_a?(Core::Symbol)
-    end
-
-    def list?(expr)
-      expr.respond_to?(:append) && expr.respond_to?(:each)
+      string?(expr) ||
+        numeric?(expr) ||
+        bool?(expr)
     end
   end
 end

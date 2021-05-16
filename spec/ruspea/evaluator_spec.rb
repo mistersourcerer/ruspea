@@ -17,6 +17,11 @@ module Ruspea
         it "evaluates a string to itself" do
           expect(evaluator.eval("lol")).to eq "lol"
         end
+
+        it "evaluates bools" do
+          expect(evaluator.eval(true)).to eq true
+          expect(evaluator.eval(false)).to eq false
+        end
       end
 
       context "Symbol" do

@@ -15,5 +15,9 @@ module Ruspea
     def bool?(*exprs)
       exprs.all? { |expr| expr.is_a?(TrueClass) || expr.is_a?(FalseClass) }
     end
+
+    def string?(*exprs)
+      exprs.all? { |expr| expr.is_a?(String) }
+    end
   end
 end
