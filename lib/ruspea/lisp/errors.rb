@@ -7,10 +7,12 @@ module Ruspea
       ERR
     end
 
-    def args_error(given, expected)
-      Error::Execution.new <<~ERR
-        Wrong number of arguments: given #{given}, expected #{expected}
-      ERR
+    def check_args(args, expected)
+      if args.empty? || args.size != expected
+        raise Error::Execution.new <<~ERR
+          Wrong number of arguments: given #{args.size}, expected #{expected}
+        ERR
+      end
     end
   end
 end

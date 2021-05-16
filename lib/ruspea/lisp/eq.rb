@@ -5,7 +5,7 @@ module Ruspea
 
     def call(args, _)
       raise arg_type_error(args) if !list?(args)
-      raise args_error(args.size, 2) if args.empty? || args.size != 2
+      check_args(args, 2)
       lhs, rhs = args.head, args.tail.head
       return lhs == rhs if comparable?(lhs, rhs)
       return true if empty_list?(lhs, rhs)

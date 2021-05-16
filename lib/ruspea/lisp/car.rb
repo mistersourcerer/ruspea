@@ -4,8 +4,9 @@ module Ruspea
     include Lisp::Errors
 
     def call(args, _)
-      raise arg_type_error(args) if !list?(args) || !list?(args.head)
-      raise args_error(args.size, 1) if args.empty? || args.size != 1
+      raise arg_type_error(args) if !list?(args)
+      raise arg_type_error(args.head) if !list?(args.head)
+      check_args(args, 1)
       args.head.head
     end
   end
