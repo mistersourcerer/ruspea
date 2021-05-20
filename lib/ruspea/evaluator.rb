@@ -16,11 +16,12 @@ module Ruspea
 
     def list(expr, env)
       fun = as_callable(expr.head, env)
-      fun.call(expr.tail, Core::Context.new(self, env))
+      fun.call(expr.tail, env)
     end
 
-    def as_callable(label, env)
-      env[label].tap { |fun|
+    def as_callable(to_call, env)
+      return list(to_call, env) if list?(to_call) # to allow inline invocation
+      env[to_call].tap { |fun|
         raise not_callable_error(fun) if !fun.respond_to?(:call)
       }
     end

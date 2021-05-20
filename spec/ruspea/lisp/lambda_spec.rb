@@ -2,7 +2,7 @@ module Ruspea
   RSpec.describe Lisp::Lambda do
     include Core::Casting
 
-    let(:env) { {} }
+    let(:env) { Core::Environment.new }
     subject(:lbd) { described_class.new }
 
     describe ".call" do

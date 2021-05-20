@@ -1,25 +1,27 @@
 module Ruspea
   class Core::Function
+    EVALUATOR = Evaluator.new
+
     attr_reader :arity
 
-    def initialize(parameters, body, context)
+    def initialize(parameters, body, environment)
       @parameters = parameters
       @arity = parameters.size
       @body = body
-      @ctx = context
+      @env = environment
     end
 
-    def call(args)
+    def call(args, evaluator: EVALUATOR)
       raise arguments_error(args.size) if args.size != arity
       bind(args)
       body.reduce(nil) { |_, expr|
-        ctx.eval(expr)
+        evaluator.eval(expr, env)
       }
     end
 
     private
 
-    attr_reader :ctx, :body, :parameters
+    attr_reader :env, :body, :parameters
 
     def arguments_error(passed)
       Error::Execution.new <<~ERR
@@ -29,7 +31,7 @@ module Ruspea
 
     def bind(args)
       parameters.each_with_index { |param, idx|
-        ctx[param] = args.at(idx)
+        env[param] = args.at(idx)
       }
     end
   end

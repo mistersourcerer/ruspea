@@ -2,11 +2,12 @@ module Ruspea
   class Lisp::Cond
     include Core::Predicates
     include Lisp::Errors
+    EVALUATOR = Evaluator.new
 
-    def call(args, ctx)
+    def call(args, env, evaluator: EVALUATOR)
       raise arg_type_error(args) if !list?(args)
-      return nil if ! clause = truthy_clause(args, ctx)
-      clause.tail.reduce(nil) { |_, expr| ctx.eval(expr) }
+      return nil if ! clause = truthy_clause(args, env, evaluator)
+      clause.tail.reduce(nil) { |_, expr| evaluator.eval(expr, env) }
     end
 
     private
@@ -23,10 +24,10 @@ module Ruspea
       find(list.tail, counter + 1, &blk)
     end
 
-    def truthy_clause(clauses, ctx)
+    def truthy_clause(clauses, env, evaluator)
       find(clauses) { |clause, idx|
         raise non_list_clause_error(idx + 1) if !list?(clause)
-        first_expr = ctx.eval(clause.head)
+        first_expr = evaluator.eval(clause.head, env)
         first_expr != false && first_expr != nil
       }
     end

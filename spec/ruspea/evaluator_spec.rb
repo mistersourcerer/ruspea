@@ -47,19 +47,31 @@ module Ruspea
           expect(evaluator.eval(expr, env)).to eq 42
         end
 
-        it "passed the args and the context to the callable" do
+        it "passes args and environment to the callable" do
           passed_args = nil
-          passed_ctx = nil
-          env["going_down"] = ->(args, ctx) {
+          passed_env = nil
+          env["going_down"] = ->(args, _env) {
             passed_args = args
-            passed_ctx = ctx
+            passed_env = _env
           }
           expr = List(Symbol("going_down"), 1, 2, 3)
           evaluator.eval(expr, env)
 
           expect(passed_args).to eq List(1, 2, 3)
-          expect(passed_ctx.respond_to?(:eval)).to eq true
-          expect(passed_ctx.respond_to?(:[])).to eq true
+          expect(passed_env).to eq env
+        end
+
+        it "evaluates args before invocate the function" do
+          pending
+          passed_args = nil
+          env["answer"] = 42
+          env["going_down"] = ->(args, _) {
+            passed_args = args
+          }
+          expr = List(Symbol("going_down"), Symbol("answer"))
+          evaluator.eval(expr, env)
+
+          expect(passed_args.head).to eq 42
         end
 
         it "raise if first element is not bound" do
@@ -77,6 +89,24 @@ module Ruspea
             Error::Execution,
             /Unable to treat 420 as a callable thing/
           )
+        end
+
+        context "inline invocation" do
+          it "allows 'inline' invokation for the lambda" do
+            pending
+            # ((lambda (x y) (cons x (cdr y))) 'z '(a b c))
+            expr =
+              List(# outer list/invokation
+                List(
+                  Symbol("lambda"), List(Symbol("x"), Symbol("y")), #declaration
+                  List(Symbol("cons"), Symbol("x"), List("cdr", Symbol("y"))) # body
+                ),# lambda declaration
+                List("quote", Symbol("z")),
+                List("quote", List(Symbol("a"), Symbol("b"), Symbol("c")))
+              )
+
+            expect(ctx.eval(expr)).to eq List(Symbol("z"), Symbol("b"), Symbol("c"))
+          end
         end
       end
     end

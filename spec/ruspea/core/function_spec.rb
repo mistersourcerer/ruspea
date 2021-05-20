@@ -4,9 +4,9 @@ module Ruspea
 
     let(:params) { List("a", "b") }
     let(:body) { List(1) }
-    let(:ctx) { Core::Context.new }
+    let(:env) { Core::Environment.new }
 
-    subject(:fun) { described_class.new(params, body, ctx) }
+    subject(:fun) { described_class.new(params, body, env) }
 
     describe "#arity" do
       it "knows it's arity given the params list" do
@@ -38,11 +38,11 @@ module Ruspea
 
       it "binds the arguments for passed to the function" do
         body = List(Symbol("a"))
-        f = described_class.new(params, body, ctx)
+        f = described_class.new(params, body, env)
         expect(f.call(List(4, 20))).to eq 4
 
         body = List(Symbol("b"))
-        f = described_class.new(params, body, ctx)
+        f = described_class.new(params, body, env)
         expect(f.call(List(4, 20))).to eq 20
       end
     end
