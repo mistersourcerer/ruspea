@@ -10,11 +10,15 @@ module Ruspea
     EMPTY_SCOPE = Immutable::Hash.new
 
     def initialize(lookup: STACK_ENGINE, new_scope: SCOPE_ENGINE)
-      @lookup = lookup.push(new_scope)
+      @lookup = lookup.push(Scope(new_scope))
     end
     NIL_ENV = new
 
     def push(scope = nil)
+      if scope.is_a?(self.class)
+        return self.class.new(lookup: @lookup, new_scope: scope.lookup.last)
+      end
+
       scope = Scope(scope) if !scope.nil?
       scope ||= EMPTY_SCOPE
       self.class.new(lookup: @lookup, new_scope: scope)
@@ -53,6 +57,10 @@ module Ruspea
       return true if to_lookup.last.key?(Symbol(label))
       bound?(label, to_lookup.pop)
     end
+
+    protected
+
+    attr_reader :lookup
 
     private
 

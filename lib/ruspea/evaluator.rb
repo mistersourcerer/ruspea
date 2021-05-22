@@ -15,12 +15,24 @@ module Ruspea
     end
 
     def list(expr, env)
-      fun = as_callable(expr.head, env)
-      fun.call(expr.tail, env)
+      fun =
+        if list?(expr.head) # allow for inline invocation
+          list(expr.head, env)
+        else
+          as_callable(expr.head, env)
+        end
+
+      eval_args = fun.respond_to?(:eval_args?) ? fun.eval_args? : true
+      args =
+        if eval_args
+          expr.tail.map { |e| self.eval(e, env) }
+        else
+          expr.tail
+        end
+      fun.call(args, env)
     end
 
     def as_callable(to_call, env)
-      return list(to_call, env) if list?(to_call) # to allow inline invocation
       env[to_call].tap { |fun|
         raise not_callable_error(fun) if !fun.respond_to?(:call)
       }

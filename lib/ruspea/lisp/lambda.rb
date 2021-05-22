@@ -14,6 +14,10 @@ module Ruspea
       Core::Function.new(args.head, args.tail.head, ctx)
     end
 
+    def eval_args?
+      false
+    end
+
     private
 
     def find(list, &blk)

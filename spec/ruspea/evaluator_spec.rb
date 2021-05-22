@@ -62,7 +62,6 @@ module Ruspea
         end
 
         it "evaluates args before invocate the function" do
-          pending
           passed_args = nil
           env["answer"] = 42
           env["going_down"] = ->(args, _) {
@@ -92,20 +91,28 @@ module Ruspea
         end
 
         context "inline invocation" do
+          before do
+            env["lambda"] = Lisp::Lambda.new
+            env["quote"] = Lisp::Quote.new
+            env["cons"] = Lisp::Cons.new
+            env["cdr"] = Lisp::Cdr.new
+          end
+
           it "allows 'inline' invokation for the lambda" do
-            pending
             # ((lambda (x y) (cons x (cdr y))) 'z '(a b c))
             expr =
               List(# outer list/invokation
                 List(
                   Symbol("lambda"), List(Symbol("x"), Symbol("y")), #declaration
-                  List(Symbol("cons"), Symbol("x"), List("cdr", Symbol("y"))) # body
+                  List(
+                    List(Symbol("cons"), Symbol("x"), List("cdr", Symbol("y")))
+                  ) # body
                 ),# lambda declaration
                 List("quote", Symbol("z")),
                 List("quote", List(Symbol("a"), Symbol("b"), Symbol("c")))
               )
 
-            expect(ctx.eval(expr)).to eq List(Symbol("z"), Symbol("b"), Symbol("c"))
+            expect(evaluator.eval(expr, env)).to eq List(Symbol("z"), Symbol("b"), Symbol("c"))
           end
         end
       end

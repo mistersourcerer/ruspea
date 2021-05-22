@@ -47,6 +47,12 @@ module Ruspea
         expect(new_env["Ayrton"]).to eq "Senna"
         expect(new_env["fourtwenty"]).to eq true
       end
+
+      it "works with an actual environment" do
+        new_env = env.push(described_class.new(new_scope: {mos: "def"}))
+
+        expect(new_env["mos"]).to eq "def"
+      end
     end
 
     describe "#pop" do

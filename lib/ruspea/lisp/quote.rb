@@ -8,5 +8,9 @@ module Ruspea
       check_args(args, 1)
       args.head
     end
+
+    def eval_args?
+      false
+    end
   end
 end

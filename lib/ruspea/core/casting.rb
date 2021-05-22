@@ -14,6 +14,8 @@ module Ruspea
     end
 
     def Scope(thing)
+      return thing if thing.is_a?(Immutable::Hash)
+
       thing = Hash[thing] if !thing.is_a?(Hash)
       if thing.keys.any? { |k| !sym?(k) }
         thing = Hash[thing.map { |k, v| [Symbol(k), v] }]
