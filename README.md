@@ -139,7 +139,7 @@ Those are enhancements that are not here... just yet 😬.
   - No TCO. Goes hand to hand with the previous one.
   - No standard library.
   - No multi-arity functions.
-    They are in the Runtime though. Just to lazy to build the syntax reader for each right now.
+    They are in the Runtime though. Just too lazy to build the syntax reader for it right now.
   - No examples. Besides the "standard library" ones ([`lib/language`](https://github.com/mistersourcerer/ruspea/blob/master/lib/language/standard.rsp))
 
 ## Installation
@@ -154,7 +154,7 @@ And then execute:
 
     $ bundle
 
-Or install it yourself as:
+Or install it yourself:
 
     $ gem install ruspea_lang
 
