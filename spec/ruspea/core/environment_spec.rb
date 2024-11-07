@@ -42,9 +42,9 @@ module Ruspea
 
       it "works without a parameter" do
         new_env = env.push
-        new_env["Ayrton"] = "Senna"
+        new_env["Yasiin"] = "Bey"
 
-        expect(new_env["Ayrton"]).to eq "Senna"
+        expect(new_env["Yasiin"]).to eq "Bey"
         expect(new_env["fourtwenty"]).to eq true
       end
 
