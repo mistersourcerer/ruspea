@@ -25,6 +25,9 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake", "~> 13.0"
   spec.add_development_dependency "rspec", "~> 3.10"
 
-  spec.add_dependency "zeitwerk"
+  spec.add_dependency "fiddle"
   spec.add_dependency "immutable-ruby"
+  spec.add_dependency "logger"
+  spec.add_dependency "ostruct"
+  spec.add_dependency "zeitwerk"
 end
